@@ -16,3 +16,4 @@ _minted-dissertation/
 *.run.xml
 *.pyg
 *.pdf
+!/dissertation.pdf
