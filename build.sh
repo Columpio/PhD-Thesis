@@ -5,4 +5,4 @@ cd ../PhDThesisEng
 make clean
 make dissertation
 cd ..
-pdfunite PhDThesis/dissertation.pdf PhDThesisEng/dissertation.pdf dissertation.pdf
+sejda-console merge -b retain -f PhDThesis/dissertation.pdf PhDThesisEng/dissertation.pdf -o dissertation.pdf
