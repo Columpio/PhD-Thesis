@@ -178,7 +178,7 @@ $$\tuple{g_1[P_1\!\leftarrow\! U_1],\ldots,g_i[p \!\leftarrow\! t, P_i \!\leftar
 \begin{center}
 \begin{tikzpicture}[scale=1.2]
 \begin{axis}[xmode=log, ymode=log, legend pos= north west, xlabel={Runtime of \ringen{\cvc{}}, ms}, xlabel style = {align=center,font=\footnotesize}, ylabel style = {align=center,font=\footnotesize}, ylabel={Runtime of {\color{red}\racer{}}, {\color{blue}\eldarica{}},\\{\color{brown}\cvcind{}} and {\color{cyan}\verimap{}}, ms}]
-% \begin{axis}[xmode=log, ymode=log, legend pos= north west, xlabel={ Regular model construction by \ringen{}}, ylabel style = {align=center}, ylabel={Elementary model construction by \\{\color{red}\textsc{Spacer}}, {\color{blue}\eldarica{}} and {\color{brown}\cvcind{}}}]
+% \begin{axis}[xmode=log, ymode=log, legend pos= north west, xlabel={ Regular model construction by \theringen{}}, ylabel style = {align=center}, ylabel={Elementary model construction by \\{\color{red}\textsc{Spacer}}, {\color{blue}\eldarica{}} and {\color{brown}\cvcind{}}}]
     \addplot[dashed,no marks,very thin] coordinates {(10,10) (600000,600000)};
     \addplot [dashed, no marks, thin] coordinates {(10,10) (600000,600000)};
     \addplot [dashed, no marks, thin] coordinates {(10,300000) (300000,300000)};
@@ -215,7 +215,7 @@ $$\tuple{g_1[P_1\!\leftarrow\! U_1],\ldots,g_i[p \!\leftarrow\! t, P_i \!\leftar
     \addplot+ table {\all};
   \end{axis}
 \end{tikzpicture}
-\caption{Размеры конечных моделей, построенных инструментом \cvc{}~--- сторонним решателем, вызываемым инструментом \ringen{}. Размер модели (на оси абсцисс) считается как \emph{сумма} мощностей всех сортов.}
+\caption{Размеры конечных моделей, построенных инструментом \cvc{}~--- сторонним решателем, вызываемым инструментом \theringen{}. Размер модели (на оси абсцисс) считается как \emph{сумма} мощностей всех сортов.}
 \label{fig:cardinalities}
 \end{center}
 \end{figure}
@@ -226,7 +226,7 @@ $$\tuple{g_1[P_1\!\leftarrow\! U_1],\ldots,g_i[p \!\leftarrow\! t, P_i \!\leftar
 \begin{figure}[t!]
 \begin{center}
 \begin{tikzpicture}[scale=1.2]
-\begin{axis}[xmode=log, ymode=log, legend pos= north west, xlabel={Время построения регулярных инвариантов\\при помощи \ringen{}, сек.}, xlabel style = {align=center,font=\footnotesize}, ylabel style = {align=center,font=\footnotesize}, ylabel={Время построения элементарных\\инвариантов при помощи {\color{red}\zprover{}}, {\color{blue}\eldarica{}},\\{\color{brown}\cvcind{}} и {\color{cyan}\verimap{}}, сек.}]
+\begin{axis}[xmode=log, ymode=log, legend pos= north west, xlabel={Время построения регулярных инвариантов\\при помощи \theringen{}, сек.}, xlabel style = {align=center,font=\footnotesize}, ylabel style = {align=center,font=\footnotesize}, ylabel={Время построения элементарных\\инвариантов при помощи {\color{red}\zprover{}}, {\color{blue}\eldarica{}},\\{\color{brown}\cvcind{}} и {\color{cyan}\verimap{}}, сек.}]
     \addplot[dashed,no marks,very thin] coordinates {(10,10) (600000,600000)};
     \addplot [dashed, no marks, thin] coordinates {(10,10) (600000,600000)};
     \addplot [dashed, no marks, thin] coordinates {(10,300000) (300000,300000)};

@@ -344,7 +344,7 @@ Here the following notations are used: functional symbols are denoted by $f \in 
   A tuple of closed terms $ \tuple{t_1, \ldots, t_n} $ is \emph{accepted} by an $ n $-automaton
   $ A = \automatonDef $, if $ \tuple{A [t_1], \ldots, A [t_n]} \in S_F $, where
   \begin{align*}
-    A \big[f(t_{1},\ldots,t_{m}) \big] \eqdef\left\{\begin{array}{rl}
+    A \big[f(t_{1},\ldots,t_{m}) \big] \eqdef\left\{\begin{array}{ll}
     s, &\text{ if } \big(f (A[t_1],\ldots, A[t_m])\rightarrow s\big)\in\autTrans,\\
     \text{not defined}, &\text{ otherwise}.
     \end{array}\right.
