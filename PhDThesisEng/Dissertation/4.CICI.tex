@@ -1,0 +1,651 @@
+\chapter{Collaborative Inference of Combined Invariants}\label{ch:cici}
+
+% В данной главе предложен метод вывода комбинированных инвариантов.
+% Комбинированные инварианты (раздел~\cref{sec:cici/combinedInvs}),~--- это инварианты, выраженные в расширении языка ограничений предикатами принадлежности терма языку из произвольного класса.
+% Метод, представленный в разделе~\cref{sec:cici/inference}, позволяет модифицировать любой основанный на направляемом контрпримерами уточнении абстракций (\cegar{}) алгоритм вывода инвариантов в языке ограничений таким образом, чтобы он эффективно выводил комбинированные инварианты. Модификация этого метода  состоит в коллаборативном взаимообмене информацией с алгоритмом вывода инвариантов в классе, с которым производится комбинация (эта идея описана в  разделе~\cref{sec:cici/idea}).
+This chapter proposes a method for the inference of combined invariants.
+Combined invariants (Section~\cref{sec:cici/combinedInvs}) are invariants expressed in the extension of the constraint language by predicates of term membership to a language of an arbitrary class.
+The method presented in Section~\cref{sec:cici/inference} enables the modification of any counterexample-guided abstraction refinement (\cegar{}) based invariant inference algorithm in the constraint language. This modification enables the algorithm to effectively infer combined invariants. The modification of this method involves a collaborative exchange of information with the invariant inference algorithm in the class with which it is combined (this idea is described in Section~\cref{sec:cici/idea}).
+
+\section{Core Idea of Collaborative Inference}\label{sec:cici/idea}
+% Для простоты изложения ключевая идея коллаборативного вывода представлена как модификации подхода \cegar{} \emph{для систем переходов}.
+For ease of presentation, the key idea of collaborative inference is presented as a modification of the \cegar{} approach \emph{for transition systems}.
+
+\subsection{\cegar{} for transition systems}\label{sec:cici/origCEGAR}
+% Пусть $\tuple{\states, \csubseteq, \cbot, \ctop, \ccap, \ccup, \cneg}$~--- это полная булева решётка, представляющая множества конкретных состояний программы. 
+Let $\tuple{\states, \csubseteq, \cbot, \ctop, \ccap, \ccup, \cneg}$ be a complete Boolean lattice representing sets of specific program states.
+
+\begin{define}
+% \emph{Система переходов (программа)} является тройкой $TS = \tuple{\states, \init, \thepost}$, где  $\init \in \states$~--- это начальные состояния, а функция $\thepost : \states \mapsto \states$ называется \emph{функцией перехода},  имеет  следующие свойства:
+% \begin{itemize}
+%     \item $\thepost$ монотонна, т.е. из $s_1 \csubseteq s_2$ следует $\post{s_1} \csubseteq \post{s_2}$;
+%     \item $\thepost$ аддитивна, т.е. $\post{s_1 \ccup s_2} = \post{s_1}\ccup\post{s_2}$;
+%     \item $\post{\cbot}=\init$.
+A \emph{transition system (program)} is a triple $TS = \tuple{\states, \init, \thepost}$, where $\init \in \states$ are the initial states, and the function $\thepost : \states \mapsto \states$ is referred to as a \emph{transition function}. It has the following properties:
+\begin{itemize}
+    \item $\thepost$ is monotonous, i.e.,  $s_1 \csubseteq s_2$ implies $\post{s_1} \csubseteq \post{s_2}$;
+    \item $\thepost$ is additive, i.e., $\post{s_1 \ccup s_2} = \post{s_1}\ccup\post{s_2}$;
+    \item $\post{\cbot}=\init$.
+\end{itemize}
+\end{define}
+
+\begin{define}
+    % Состояния $s\in\states$ называются \emph{достижимыми} из состояний $s'\in\states$, если существует такое $n\geq 0$, что $s = \thepost^n(s')$.
+    States $s\in\states$ are said to be \emph{reachable} from states $s'\in\states$ if there exists $n\geq 0$ such that $s = \thepost^n(s')$.
+\end{define}
+
+\begin{define}\label{defn:ind-invariant}
+% \emph{Проблема безопасности} является парой, включающей программу $TS$ и некоторое свойство $\property \in \states$.
+% Программа называется \emph{безопасной} относительно этого свойства, если для всех~$n$ выполняется $\thepost^n(\init) \csubseteq \property$, иначе она называется \emph{небезопасной}.
+A \emph{safety problem} is a pair of a program $TS$ and some property $\property \in \states$.
+A program is called \emph{safe} with respect to this property if $\thepost^n(\init) \csubseteq \property$ is satisfied for all~$n$, otherwise it is called \emph{unsafe}.
+
+% Безопасность может быть доказана при помощи \emph{(безопасного) индуктивного инварианта} $I \in \states$, для которого должно выполняться следующее:
+Safety can be proved using the \emph{(safe) inductive invariant} $I \in \states$, for which the following must hold:
+\[ \init \csubseteq I, \quad
+    \post{I} \csubseteq I, \quad
+    I \csubseteq \property. \]
+\end{define}
+
+% Так как все индуктивные инварианты по определению являются неподвижными точками функции перехода $\thepost$, то часто в контексте поиска индуктивного инварианта будут рассматриваться именно неподвижные точки.
+Since all inductive invariants are, by definition, fixed points of the transition function $\thepost$, it is often the fixed points that will be considered in the context of searching for an inductive invariant.
+
+\begin{theorem}[см.~\cite{Floyd1993}]
+% Программа безопасна тогда и только тогда, когда она имеет безопасный индуктивный инвариант.
+A program is safe if and only if it has a safe inductive invariant.
+\end{theorem}
+
+% Для того, чтобы \emph{автоматически выводить} индуктивные инварианты, обычно фиксируется некоторый \emph{класс инвариантов} $\invClass \subseteq \states$.
+In order to \emph{automatically infer} inductive invariants, some \emph{class of invariants} $\invClass \subseteq \states$ is usually fixed.
+% , который является эффективно представимым, например, класс множеств, представимых полиэдрами, или класс множеств, определимых эффективно-пропозициональным (EPR) фрагментом FOL.
+% \emph{Верификатор}~--- это алгоритм, который по проблеме безопасности
+% возвращает инвариант в классе инвариантов $\invClass$ в том случае, если программа безопасна, или контрпример в противном случае.
+% $\invClass$ тогда называется \emph{доменом} верификатора. Верификатор может не завершаться, например, в случае, когда программа безопасна, но в его домене нет инварианта, доказывающего безопасность.
+A \emph{verifier} is an algorithm that by a safety problem
+returns an invariant in the invariant class $\invClass$ if the program is safe, or a counterexample otherwise.
+$\invClass$ is referred to as the \emph{domain} of the verifier. The verifier may not terminate, for example, in the case when the program is safe, but there is no invariant in its domain that proves the safety.
+
+\begin{define}
+% Пусть есть полная решётка $\abstrDomain = \tuple{\theAbstrDomain, \asubseteq, \abot, \atop, \acap, \acup}$, назовём её абстрактным доменом, а её элементы~--- абстрактными состояниями.
+Let there be a complete lattice $\abstrDomain = \tuple{\theAbstrDomain, \asubseteq, \abot, \atop, \acap, \acup}$,  to which we will refer as an abstract domain, and to its elements as abstract states.
+
+% \emph{Связка Галуа} (Galois connection) или \emph{абстракция}~--- это пара отображений $\tuple{\alpha,\gamma}$ между частично упорядоченными множествами $\tuple{\states, \csubseteq}$ и $\tuple{\abstrDomain, \asubseteq}$, таких что:
+A \emph{Galois connection} or  an \emph{abstraction} is a pair of mappings $\tuple{\alpha,\gamma}$ between posets $\tuple{\states, \csubseteq}$ and $\tuple{\abstrDomain, \asubseteq}$ such that:
+\begin{align*}
+  \alpha &: \states \mapsto \abstrDomain \qquad \gamma :\abstrDomain \mapsto \states\\
+  \forall x \in \states\ &\forall y \in \abstrDomain\ \alpha\left(x\right) \asubseteq y \Leftrightarrow x \csubseteq \gamma\left(y\right).
+  \end{align*}
+\end{define}
+
+% Абстрактный домен вместе со связкой Галуа однозначно определяют класс инвариантов $\{ \gamma(a)\mid a \in \abstrDomain \}$, который также будет обозначаться как $\abstrDomain$.
+% В дальнейшем подразумевается, что проверки вида $\gamma(a) \csubseteq \property$ вычислимы.
+An abstract domain together with a Galois connection uniquely define the class of invariants $\{ \gamma(a)\mid a \in \abstrDomain \}$, which will also be denoted as $\abstrDomain$.
+In what follows, it is assumed that checks of the form $\gamma(a) \csubseteq \property$ are computable.
+
+\begin{define}
+% \emph{Абстрактная функция перехода} $\theapost : \abstrDomain \mapsto \abstrDomain$ <<поднимает>> функцию перехода в абстрактный домен, т.е. для всех $a\in\abstrDomain$ справедливо
+An \emph{abstract transition function} $\theapost : \abstrDomain \mapsto \abstrDomain$ ``raises'' a transition function to the abstract domain, i.e. for all $a\in\abstrDomain$ holds
+\[\alpha(\post{\gamma(a)})\asubseteq\apost{a}.\]
+\end{define}
+
+% Следующий классическая теорема~\cite{10.1145/512950.512973} показывает, как абстракции могут быть применены для верификации.
+The following classical theorem~\cite{10.1145/512950.512973} shows how abstractions can be applied for verification.
+
+\begin{theorem}
+% Пусть дана программа $TS=\tuple{\states, \init, \thepost}$ и свойство $\property$. Тогда $\gamma(a)$ является индуктивным инвариантом $\tuple{TS, \property}$, если существует элемент $a \in \abstrDomain$, такой, что
+Let the program $TS=\tuple{\states, \init, \thepost}$ and the property $\property$ be given. Then $\gamma(a)$ is an inductive invariant of $\tuple{TS, \property}$ if there exists an element $a \in \abstrDomain$ such that
+\[
+    \alpha(\init)\asubseteq a,\quad
+    \apost{a} \asubseteq a,\quad
+    \gamma(a)\csubseteq \property.
+\]
+\end{theorem}
+
+\begin{algorithm2e}[t]
+	\KwIn{program $TS$ and property $\property$.}
+	\KwOut{$SAFE$ and inductive invariant\\\quad or $UNSAFE$ and counterexample.}
+	\BlankLine
+    $\tuple{\alpha, \gamma}\leftarrow \textsc{Initial}()$\;
+	\While{true}{
+	    $cex, A \leftarrow \textsc{ModelCheck}(TS, \property, \tuple{\alpha, \gamma})$\;
+	    \If{$cex$ is empty}{
+	        \Return{$SAFE(A)$}
+	    } \If{\textsc{IsFeasible}(cex)}{
+	        \Return{$UNSAFE(cex)$}
+	    }
+        $\tuple{\alpha, \gamma} \leftarrow \textsc{Refine}(\tuple{\alpha, \gamma}, cex)$\;
+	}
+\caption{\cegar{} for transition systems}
+\label{code:oldcegar}
+\end{algorithm2e}
+
+% Классическим подходом к проверке является Counter-Example Guided Abstraction Refinement (\cegar{})~\cite{cegar}.
+% Псевдокод подхода \cegar{} для систем переходов представлен на листинге~\ref{code:oldcegar}.
+The pseudocode of \cegar{} for transition systems is presented in Listing~\ref{code:oldcegar}.
+% Алгоритм начинается с построения начальной абстракции $\tuple{\alpha, \gamma}$, например, с помощью тривиальных отображений $\alpha(s) = \abot$ и $\gamma(a) = \ctop$.
+% Далее при помощи абстракции процедура \textsc{ModelCheck} строит по программе конечную последовательность
+% абстрактных состояний $\overline{a}=\tuple{a_{0},\ldots,a_n}$ таких, что:
+The pseudocode of the \cegar{} approach for transition systems is shown in Listing~\ref{code:oldcegar}.
+The algorithm starts by constructing an initial abstraction $\tuple{\alpha, \gamma}$, for example, using the trivial mappings $\alpha(s) = \abot$ and $\gamma(a) = \ctop$.
+Then, using the abstraction, the \textsc{ModelCheck} procedure builds,  according to the program, a finite sequence of abstract states $\overline{a}=\tuple{a_{0},\ldots,a_n}$ such that:
+\begin{align}\label{prop:cegar-inv}
+    a_0 = \alpha(\init)\quad\text{ и }\quad
+    a_{i+1} = a_i \acup \apost{a_i}  \quad\forall i \in\{0,\ldots,n-1\}.
+\end{align}
+% Если для какого-то $i$ имеем $\gamma(a_i) \not\csubseteq \property$, то возвращается \emph{абстрактный контрпример} $cex$ либо в паре с $A=\cbot$ (если $i=0$), либо в паре с $A=\gamma(a_{i-1})$, который удовлетворяет $\gamma(a_{i-1}) \csubseteq \property$.
+% Если для всех $i$ справедливо $\gamma(a_i) \csubseteq \property$, и на некотором шаге выполняется $\apost{a_n} \asubseteq a_n$, то $\gamma(a_n)$ является индуктивным инвариантом, и поэтому \textsc{ModelCheck} возвращает пустой $cex$ и при этом $A=\gamma(a_n)$.
+% Понятие абстрактного контрпримера определяется каждой конкретной реализацией \cegar{}. Таким образом, возвращаемое из процедуры \textsc{ModelCheck} значение удовлетворяет следующему свойству:
+If for some $i$ we have $\gamma(a_i) \not\csubseteq \property$, then \emph{abstract counterexample} $cex$ is returned, or paired with $A=\cbot$ (if $i=0 $), or paired with $A=\gamma(a_{i-1})$ which satisfies $\gamma(a_{i-1}) \csubseteq \property$.
+If $\gamma(a_i) \csubseteq \property$ holds true for all $i$, and $\apost{a_n} \asubseteq a_n$ holds at some step, then $\gamma(a_n)$ is an inductive invariant, and therefore \ textsc{ModelCheck} returns an empty $cex$ and $A=\gamma(a_n)$.
+The concept of an abstract counterexample is defined by each concrete \cegar{} implementation. Thus, the value returned from the \textsc{ModelCheck} procedure satisfies the following property:
+\begin{align}\label{prop:cegar-inv-A}
+    A=\cbot\quad\text{ или }\quad\init \subseteq A \subseteq \property.
+\end{align}
+
+% Если процедура \textsc{ModelCheck} вернула пустой абстрактный контрпример, то программа безопасна и \cegar{} возвращает $\gamma(a_n)$ в качестве индуктивного инварианта. В противном случае необходима проверка того, соответствует ли абстрактному контрпримеру какой-либо конкретный контрпример в исходной программе (процедура \textsc{IsFeasible}).
+% Если это так, то \cegar{} останавливается и возвращает этот контрпример, а иначе переходит к итеративному уточнению абстракции $\tuple{\alpha,\gamma}$ для исключения контрпримера $cex$ (процедура \textsc{Refine}).
+If \textsc{ModelCheck} returns an empty abstract counterexample, then the program is safe and \cegar{} returns $\gamma(a_n)$ as an inductive invariant. Otherwise, it is necessary to check whether the abstract counterexample corresponds to any concrete counterexample in the source program (procedure \textsc{IsFeasible}).
+If so, then \cegar{} stops and returns this counterexample, otherwise it goes on to iteratively refine the $\tuple{\alpha,\gamma}$ abstraction to eliminate the $cex$ counterexample (the \textsc{Refine} procedure).
+
+\subsection{Collaborative inference via \cegar{} modification}
+% В данном разделе предложен подход к коллаборативному выводу комбинированных инвариантов.
+% Подход основан на коллаборации двух алгоритмов вывода инвариантов и является асимметричным в следующем смысле.
+% Во-первых, требуется, чтобы один из алгоритмов был экземпляром \cegar{}, другой же может быть произвольным.
+% Во-вторых,  всем процессом управляет основной \cegar{}-цикл,  многократно вызывая второй алгоритм.
+In this section, we propose an approach to the collaborative inference of combined invariants.
+The approach is based on the collaboration of two invariant inference algorithms and is asymmetric in the following sense.
+First, one of the algorithms is required to be an instance of \cegar{}, while the other can be arbitrary.
+Secondly, the main \cegar{} loop controls the entire process, repeatedly calling the second algorithm.
+
+% Предлагаемый подход назван \ourCEGAR{}, поскольку процесс <<коллаборации>> можно рассматривать как алгоритм \cegar{}, дополненный вызовами некоторого оракула $\oracle$. Пусть доменами верификаторов являются классы $\abstrDomain$ и $\blackBoxDomain$ соответственно. \ourCEGAR{} позволяет строить инварианты в объединении этих классов.
+The proposed approach is called \ourCEGAR{}, since the ``collaboration'' process can be considered as the \cegar{} algorithm supplemented by calls to some oracle $\oracle$. Let the classes $\abstrDomain$ and $\blackBoxDomain$ be the verifier domains, respectively. \ourCEGAR{} enables construction of invariants in the union of these classes.
+
+\begin{define}\label{def:combined-class}
+% Для классов состояний $\abstrDomain\subseteq\states$ и $\blackBoxDomain\subseteq\states$ \emph{комбинированный класс} состояний определяется следующим образом:
+For the $\abstrDomain\subseteq\states$ and $\blackBoxDomain\subseteq\states$ state classes, a \emph{combined state class} is defined as follows:
+$$\abstrDomain \uplus \blackBoxDomain \eqdef \{ A \ccup B \mid A\in\abstrDomain, B\in\blackBoxDomain \}.$$
+
+% \emph{Комбинированным (индуктивным) инвариантом} над $\abstrDomain$ и $\blackBoxDomain$ называется индуктивный инвариант в классе $\abstrDomain \uplus \blackBoxDomain$.
+A \emph{combined (inductive) invariant} over $\abstrDomain$ and $\blackBoxDomain$ is the inductive invariant in the class $\abstrDomain \uplus \blackBoxDomain$.
+\end{define}
+
+% При помощи комбинированных инвариантов можно верифицировать больше программ, чем верификаторами для комбинируемых абстрактных доменов по отдельности.
+% % Инвариант может существовать в $\abstrDomain \uplus \blackBoxDomain$, даже если он не существует в $\abstrDomain$ и $\blackBoxDomain$. 
+% Коллаборативный подход объединяет сильные стороны верификаторов для отдельных классов и способен сходиться на многих задачах, где отдельные верификаторы не будут завершаться.
+More programs can be verified with combined invariants than with verifiers for combined abstract domains alone.
+The collaborative approach combines the strengths of verifiers for individual classes and is able to converge on many problems where individual verifiers would not terminate.
+
+\begin{example}[$ForkJoin$]\label{ex:fork-join-chcs}
+% Рассмотрим трансформацию, которая преобразует параллельные программы следующим образом. 
+% На любом шаге трансформация может недетерминированно устранить все потоковые операции, объединив все потоки с главным ($Join$) и перейти к последовательному исполнению ($Seq$).
+% Если программа заканчивается последовательным кодом, то трансформация вставляет порождение новых потоков ($Fork$), за которым следуют произвольные преобразования потоков.
+% Если в каком-то фрагменте заданной программы встречается объединение потоков после порождения новых, то этот фрагмент не изменяется.
+Consider a transformation that transforms parallel programs in the following way.
+At any step, the transformation can non-deterministically eliminate all thread operations by joining all threads with the main one ($Join$) and proceed to sequential execution ($Seq$).
+If the program ends with sequential code, then the transformation inserts the spawning of new threads ($Fork$), followed by arbitrary transformations of the threads.
+If in some fragment of the given program there is a union of threads after the generation of new ones, then this fragment does not change.
+
+
+% Эта трансформация может быть представлена в виде функциональной программы. Для её описания не нужно рассматривать базовые конструкции языка программирования кроме тех, которые связаны с потоками, поэтому для представления программ может быть использован следующий алгебраический тип данных:
+This transformation can be represented as a functional program. To describe it, it is not necessary to consider the basic programming language constructs other than those associated with threads, so the following algebraic data type can be used to represent programs:
+$$ Prog ::= Seq\,|\,Fork(Prog)|\,Join(Prog). $$
+% Например, терм \texttt{Fork(Join(Seq))} представляет программу, которая порождает новые потоки, затем в какой-то момент их объединяет, а затем работает только последовательно.
+For example, the term \texttt{Fork(Join(Seq))} represents a program that spawns new threads, then joins them at some point, and then only runs sequentially.
+
+% Одним из свойств описанной трансформации является является то, что если исходная программа состоит из последовательности подряд идущих разветвлений и объединений потоков, то она никогда не может быть преобразована сама в себя.
+% Это свойство вместе с самой трансформацией может быть представлено функциональной программой на листинге~\ref{fig:ex-fork-join}.
+One of the properties of the described transformation is that if the source program consists of a sequence of consecutive forks and joins of threads, then it can never be transformed into itself.
+This property, together with the transformation itself, can be represented by the functional program in Listing~\ref{fig:ex-fork-join}.
+{\renewcommand{\figurename}{Listing}
+\begin{figure}
+    \centering
+\begin{minted}[breaklines,escapeinside=@@,linenos,frame=single,framesep=10pt]{fsharp}
+type Prog = Seq | Fork of Prog | Join of Prog
+fun randomTransform() : Prog
+fun nondet() : bool
+
+fun tr(p : Prog) : Prog =
+    match nondet(), p with
+    | false, Seq -> Fork(randomTransform())
+    | false, Fork(Join(p')) -> Fork(Join(tr(p')))
+    | _ -> Join(Seq)
+
+fun ok(p : Prog) : bool =
+    match p with
+    | Seq -> true
+    | Fork(Join(p')) -> ok(p')
+    | _ -> false
+
+(* for any program p : Prog *)
+assert (not ok(p) or tr(p) <> p)
+\end{minted}
+    \caption{Example of a functional program with algebraic data types}
+    \label{fig:ex-fork-join}
+\end{figure}}
+
+% Функция \texttt{tr} выполняет описанную выше трансформацию над представлением программы алгебраическим типом данных $Prog$, в частности, вводит произвольные преобразования потоков, вызывая функцию \texttt{randomTransform}. Функция \texttt{ok} проверяет, что программа является последовательностью подряд идущих операций разветвления (\texttt{Fork}) и объединения (\texttt{Join}) потоков. Утверждение в конце кодирует свойство, которое необходимо проверить.
+
+The \texttt{tr} function performs the transformation described above on the representation of the program by the $Prog$ algebraic data type, in particular, it introduces arbitrary thread transformations by calling the \texttt{randomTransform} function. The \texttt{ok} function checks that the program is a sequence of consecutive forks (\texttt{Fork}) and joins (\texttt{Join}) of threads. The statement at the end encodes the property to be checked.
+
+% Эта программа безопасна относительно заданного свойства, однако не имеет индуктивных инвариантов, выразимых в классах \elemclass{} или \regclass{} для функций  \texttt{ok}  и  \texttt{tr}.
+% Однако у неё есть комбинированные инварианты в $\elemclass{}\uplus\regclass{}$.
+% Так, для любых программ $p, t : Prog$, функция $\texttt{ok}(p)$ возвращает \texttt{true}, если имеем
+This program is safe with regards to this property, but has no inductive invariants expressible in the \elemclass{} or \regclass{} classes for the \texttt{ok} and \texttt{tr} functions. However, it has combined invariants in $\elemclass{}\uplus\regclass{}$. Thus, for any programs $p, t : Prog$  $\texttt{ok}(p)$ returns \texttt{true} if we have
+
+\begin{align}\label{eq:for-join-ok-inv}
+    p \in \evenInv{}.
+\end{align}
+% Если $\texttt{tr}(p) = t$, то следующая формула представляет собой индуктивный инвариант для функции \texttt{tr}:
+If $\texttt{tr}(p) = t$ then the following formula is an inductive invariant for  \texttt{tr}:
+\begin{align}\label{eq:fork-join-tr-inv}
+    \neg(p = t) \lor t \not\in \evenInv{},
+\end{align}
+% где $t \not\in \evenInv{}$ означает, что АТД-терм $t$ \emph{не} содержится в языке $\evenInv{}$ следующего автомата над деревьями.
+where $t \not\in \evenInv{}$ means that the ADT term $t$  \emph{is not} contained in language $\evenInv{}$ of the following tree automaton.
+% \begin{figure}[h]
+\vspace*{-2mm}\forkJoinExample{}\vspace*{-3mm}
+% \end{figure}
+\end{example}
+
+\begin{algorithm2e}[t!]
+	\KwData{verifier $\oracle$ over domain $\blackBoxDomain$.}
+	\KwIn{program $TS$ and property $\property$.}
+	\KwOut{$SAFE$ and combined invariant in $\abstrDomain\uplus\blackBoxDomain$\\or $UNSAFE$ and counterexample $cex$.}
+	\BlankLine
+    $\tuple{\alpha, \gamma}\leftarrow \textsc{Initial}()$\;
+    $A\leftarrow\cbot$\;
+	\While{true}{
+	    \textbf{asynchronously call} $\RunBlackBox\left(TS, \property, \tuple{\alpha, \gamma}, A\right)$\label{line:call-bb}\;
+	    $cex, A \leftarrow \textsc{ModelCheck}(TS, \property, \tuple{\alpha, \gamma})$\;
+	    \If{$cex$ is empty}{
+	        \Return{$SAFE(A)$}
+	    } \If{\textsc{IsFeasible}(cex)}{
+	        \Return{$UNSAFE(cex)$}
+	    }
+        $\tuple{\alpha, \gamma} \leftarrow \textsc{Refine}(\tuple{\alpha, \gamma}, cex)$\;
+	}
+\caption{\ourCEGAR{}}
+\label{code:cegar}
+\end{algorithm2e}
+
+\paragraph{\textbf{Description of \ourCEGAR{}.}}
+% Предлагаемый подход представлен на листинге~\ref{code:cegar}. Алгоритм работает аналогично классическому \cegar{}, представленному в разделе ~\ref{sec:cici/origCEGAR}, но также в начале каждой итерации он асинхронно опрашивает коллаборирующий верификатор $\oracle$ путём вызова процедуры \RunBlackBox{} (строка~\ref{line:call-bb}). Вызовы делаются асинхронно, чтобы предотвратить зацикливание алгоритма.
+The proposed approach is shown in Listing~\ref{code:cegar}. The algorithm works similarly to the classic \cegar{} presented in Section~\ref{sec:cici/origCEGAR} , but also at the beginning of each iteration it asynchronously polls the collaborating verifier $\oracle$ by calling the \RunBlackBox{} procedure (line~\ref {line:call-bb}). The calls are made asynchronously to prevent the algorithm from looping.
+
+\begin{algorithm2e}[t!]
+	\KwData{Verifier $\oracle$ over domain $\blackBoxDomain$.}
+	\KwIn{Program $TS = \tuple{\states, \init, \thepost}$, property $\property$, abstraction $\tuple{\alpha, \gamma}$, state set $A$ such that $A=\cbot$ or $\init \subseteq A \subseteq \property$.}
+% \KwOut{$SAFE$ с комбинированным инвариантом}
+	\BlankLine
+	$TS' \leftarrow \tuple{\states, \post{A}\csetminus A, \lambda B. \left(\post{B}\csetminus A\right)}$\;
+	$B, cex \leftarrow \oracle\left( TS', \property \right)$\label{line:oracle-call}\;
+	\If{$cex$ is empty}{
+	    \Halt{$SAFE(A\ccup B)$}\label{line:halt-combined-safe}\;
+	}
+	$\widehat{cex} \leftarrow \textsc{RecoverCex}\left(TS, \property, \tuple{\alpha, \gamma}, A, cex\right)$\label{line:recover-cex}\;
+	$\tuple{\alpha, \gamma}\leftarrow \textsc{Refine}(\tuple{\alpha, \gamma}, \widehat{cex})$\label{line:overwrite-abstraction}\;
+\caption{The \RunBlackBox{} procedure.}
+\label{code:runblackbox}
+\end{algorithm2e}
+
+% Процедура {\textbf{\RunBlackBox}} представлена на листинге~\ref{code:runblackbox}. По исходную проблему безопасности, текущей абстракции и множеству состояний $A = \gamma(a)$ для некоторого $a\in\abstrDomain$ она строит новую \emph{остаточную} систему переходов:
+The {\textbf{\RunBlackBox}} procedure is shown in Listing~\ref{code:runblackbox}. Given the original safety problem, the current abstraction, and the set of states $A = \gamma(a)$ for some $a\in\abstrDomain$, it constructs a new \emph{residual} transition system:
+\[TS' = \tuple{\states,\init',\thepost'} = \tuple{\states, \post{A}\csetminus A,\; \lambda B. \left(\post{B}\csetminus A\right)}.\]
+% Затем безопасность остаточной системы проверяется коллаборирующим верификатором $\oracle$.
+% На листинге $A\csetminus B$~--- сокращение для $A \ccap\cneg B$.
+% Процедура \RunBlackBox{} перезаписывает абстракцию, используемую в \cegar{} (стр.~\ref{line:overwrite-abstraction}): абстракция $\tuple{\alpha, \gamma}$ является глобальной и разделяется между двумя процедурами.
+The safety of the residual system is then verified by the $\oracle$.
+In the Listing, $A\csetminus B$ is shorthand for $A \ccap\cneg B$.
+The \RunBlackBox{} procedure overwrites the abstraction used in \cegar{} (p.~\ref{line:overwrite-abstraction}): the $\tuple{\alpha, \gamma}$ abstraction is global and is shared between the two procedures.
+
+% Остаточная система устроена следующим образом.
+% Её состояния в исходной системе достижимы из состояний, нарушающих индуктивность $A$.
+% В частности, её начальные состояния $\init'$~--- это $\post{A} \setminus A$, т.е. образ неиндуктивных состояний. Достижимые за один шаг в остаточной системе состояния $\thepost'(\init') = \post{\post{A} \setminus A} \setminus A$~--- это $\thepost$-образ неиндуктивных состояний.
+The residual system is structured as follows.
+Its states in the original system are reachable from states that violate the inductivity of $A$.
+In particular, its initial states $\init'$ are $\post{A} \setminus A$, i.e. the image of non-inductive states. The states $\thepost'(\init') = \post{\post{A} \setminus A} \setminus A$ are reachable in one step in the residual system is the $\thepost$-image of non-inductive states.
+
+% Основная идея алгоритма \ourCEGAR{} состоит в том, чтобы использовать дополнительный верификатор $\oracle$ для \emph{ослабления} неиндуктивного множества состояний $A$ до некоторой неподвижной точки в комбинированном классе.
+% Если второй верификатор найдёт индуктивный инвариант остаточной системы, т.е. некую индуктивную аппроксимацию $B$ неиндуктивных состояний, то $A \ccup B$ будет индуктивным инвариантом исходной системы.
+% Иными словами, путём построения остаточной системы алгоритм берёт безопасную, но неиндуктивную часть текущего кандидата в инварианты и передаёт её сотрудничающему верификатору, чтобы он дополнил её до неподвижной точки, т.е. индуктивного инварианта.
+
+The main idea of the \ourCEGAR{} algorithm is to use an additional verifier $\oracle$ to \emph{weaken} the non-inductive state set $A$ to some fixed point in the combined class.
+If the second verifier finds an inductive invariant of the residual system, i.e. some inductive approximation $B$ of non-inductive states, then $A \ccup B$ will be an inductive invariant of the original system.
+In other words, by constructing a residual system, the algorithm takes the safe but non-inductive part of the current invariant candidate and passes it to a collaborating verifier to complete it to a fixed point, i.e. inductive invariant.
+
+% Современные подходы к выводу индуктивных инвариантов программ, такие как \pdr{} (который можно рассматривать как усложнённый вариант \cegar{}), монотонно \emph{усиливают} кандидат в инварианты $A$ до тех пор, пока он не станет индуктивным.
+% Из-за этого проблемой таких подходов является выбор стратегии усиления~\cite{krishnan2020global}: из-за слишком резкого усиления могут быть пропущены нужные неподвижные точки, в то время как из-за медленного усиления алгоритм может сходиться к неподвижной точке слишком долго или вовсе расходиться.
+Modern approaches to the inference of inductive program invariants, such as \pdr{} (which can be thought of as a sophisticated version of \cegar{}), monotonously \emph{strengthen} an invariant candidate $A$ until it becomes inductive.
+Because of this, the problem with such approaches is the choice of strengthening strategy~\cite{krishnan2020global}: due to too sharp strengthening, necessary fixed points may be missed, while due to slow strengthening, the algorithm may converge to a fixed point too slowly or even diverge.
+
+% Так как предлагаемый подход немонотонен, он позволяет строить инварианты, невыводимые верификаторами по отдельности. Кроме того, он (эвристически) может ускорить построение инварианта даже в том случае, если один из верификаторов может вывести его самостоятельно (эта гипотеза проверена в разделе~\ref{sec:evaluation/performance}). Вероятность пропуска неподвижных точек из-за слишком резкого усиления уменьшается: даже если первый верификатор чрезмерно усиливает кандидата в инварианты, второй верификатор всё равно может обнаружить более слабую неподвижную точку.
+As the proposed approach is non-monotonic, it allows constructing invariants that cannot be inferred by verifiers individually. In addition, it (heuristically) can speed up the construction of the invariant even if one of the verifiers can infer it on its own (this hypothesis was tested in Section~\ref{sec:evaluation/performance}). The probability of missing fixed points due to too much strengthening is reduced: even if the first verifier over-strengthens an invariant candidate, the second verifier can still detect a weaker fixed point.
+
+% Таким образом, если второй верификатор $\oracle$ останавливается и возвращает индуктивный инвариант $B$, то \RunBlackBox{} возвращает комбинированный инвариант $A\ccup B$. Если $\oracle$ возвращает конкретный контрпример $cex$ к остаточной системе, то \RunBlackBox{} строит по нему абстрактный контрпример $\widehat{cex}$ к исходной системе и далее действует как обычный \cegar{}, уточняя домен с помощью $\widehat{cex}$.
+Thus, if the second verifier $\oracle$ stops and returns the inductive invariant $B$, then \RunBlackBox{} returns the combined invariant $A\ccup B$. If $\oracle$ returns a concrete counterexample $cex$ to the residual system, then \RunBlackBox{} constructs an abstract counterexample $\widehat{cex}$ to the original system from it and then acts like a regular \cegar{}, refining the domain with $ \widehat{cex}$.
+% Заметим, что множеств состояний $A$ и $B$ самих по себе недостаточно для доказательства безопасности исходной системы переходов. Другими словами, коллаборация осуществляется путём делегирования более \emph{простых} проблем верификатору $\oracle$, решение которых даёт только \emph{часть} ответа на исходную задачу.
+Note that the sets of states $A$ and $B$ by themselves are not enough to prove the safety of the original transition system. In other words, collaboration is done by delegating more \emph{simple} problems to the $\oracle$ verifier, the solution of which gives only \emph{part} of the answer to the original problem.
+
+\begin{lemma}\label{thm:runblackbox-safe}
+% Если процедура $\RunBlackBox\left(TS, \property, \tuple{\alpha, \gamma}, a\right)$ останавливается с результатом $SAFE(A \ccup B)$ (стр.~\ref{line:halt-combined-safe}), то $A \ccup B$ является комбинированным инвариантом проблемы $\tuple{TS, \property}$.
+If the procedure $\RunBlackBox\left(TS, \property, \tuple{\alpha, \gamma}, a\right)$ stops with the result $SAFE(A \ccup B)$ (p.~\ref{line:halt-combined-safe}), then $A \ccup B$ is a combined invariant of the $\tuple{TS, \property}$ problem.
+\end{lemma}
+\begin{proof}
+% Докажем, что $A \ccup B$ является индуктивным инвариантом, показав, что для него выполняются все три признака индуктивных инвариантов из определения~\ref{defn:ind-invariant}: в этом множестве содержатся все начальные состояния, оно сохраняет отношение перехода и оно является подмножеством  свойства.
+Let us prove that $A \ccup B$ is an inductive invariant by showing that it satisfies all three criteria of inductive invariants from Definition~\ref{defn:ind-invariant}: this set contains all initial states, it preserves the transition relation, and it is a subset of the property.
+
+\textit{Initial states.}
+From the invariant~\eqref{prop:cegar-inv-A} of the \cegar{} algorithm we have the following cases. Either $\init\csubseteq A\csubseteq A\ccup B$, qed. Either $A=\cbot$, so by definition $\post{\cbot}$, $\init=\post{\cbot}\csetminus \cbot=\post{A}\csetminus A \csubseteq B\csubseteq A \ccup B$.
+
+\textit{Preservation of the transition relation.}
+From soundness of the $\oracle$ verifier we know that $B$ is an inductive invariant $\left( \tuple{\states, \init', \thepost'}, \property \right)$, i.e., $\post{A}\csetminus A\csubseteq B$ ($\init'$ definition) and $\post{B}\csetminus A \csubseteq B$ ($\thepost'$ definition).
+Thus $\left(\post{A}\ccup \post{B}\right)\csetminus A\csubseteq B$, and so $\post{A}\ccup \post{B}\csubseteq A\ccup B$, hence, as the function $\thepost$ is additive, $\post{A\ccup B} \csubseteq A\ccup B$.
+
+\textit{Property subset}
+% Имеем $A \csubseteq \property$, что следует из инварианта~\eqref{prop:cegar-inv-A} алгоритма \cegar{} и $B \subseteq \property$ по предположению корректности алгоритма $\oracle$. Следовательно, имеем $A\ccup B\csubseteq \property$.
+We have $A \csubseteq \property$, which follows from the invariant~\eqref{prop:cegar-inv-A} of the \cegar{} algorithm and $B \subseteq \property$ by the assumption that the $\oracle$ algorithm is correct. Therefore, we have $A\ccup B\csubseteq \property$.
+\end{proof}
+
+% Контрпримерами для остаточной системы являются трассы, которые нарушают индуктивность текущего кандидата в инварианты $A$. \emph{Конкретный} контрпример к безопасности остаточной системы ($cex$ на стр.~\ref{line:oracle-call} с листинга~\ref{code:runblackbox}) соответствует некоторому \emph{абстрактному} контрпримеру исходной системы.
+% Поэтому \ourCEGAR{} параметризован процедурой \textsc{RecoverCex}, которая восстанавливает абстрактный контрпример к исходной системе по контрпримера к остаточной системе (стр.~\ref{line:recover-cex}).
+% В следующем разделе~\ref{sec:cici/inference} предложена такая процедура для программ, представленных системами дизъюнктов Хорна, и контрпримеров, представленных деревьями опровержений.
+Counterexamples for the residual system are traces that violate the inductiveness of the current candidate invariant $A$. A \emph{concrete} counterexample to the safety of the residual system ($cex$ on line ~\ref{line:oracle-call} from Listing ~\ref{code:runblackbox}) corresponds to some \emph{abstract} counterexample of the original system.
+Therefore, \ourCEGAR{} is parameterized by the procedure \textsc{RecoverCex}, which restores an abstract counterexample to the original system from a counterexample to the residual system (p.~\ref{line:recover-cex}).
+The following Section~\ref{sec:cici/inference} proposes such a procedure for programs represented by Horn clause systems and counterexamples represented by refutation trees.
+
+% Процедура \textsc{RecoverCex} должна удовлетворять следующему ограничению.
+The \textsc{RecoverCex} procedure must satisfy the following constraint.
+
+\begin{restrict}\label{thm:recovercex-sound}
+% Процедура $\textsc{RecoverCex}\left(TS, \property, \tuple{\alpha, \gamma}, a, cex\right)$
+% возвращает абстрактный контрпример к системе переходов $\tuple{TS, \property}$ относительно абстракции $\tuple{\alpha, \gamma}$.
+Procedure $\textsc{RecoverCex}\left(TS, \property, \tuple{\alpha, \gamma}, a, cex\right)$
+returns an abstract counterexample to the transition system $\tuple{TS, \property}$ with respect to the abstraction $\tuple{\alpha, \gamma}$.
+\end{restrict}
+
+\begin{theorem}
+% Если верификатор $\oracle$ корректен, то верификатор \ourCEGAR{} тоже корректен.
+If verifier $\oracle$ is correct, then verifier \ourCEGAR{} is also correct.
+
+\end{theorem}
+\begin{proof}
+% Справедливость этой теоремы непосредственно следует из корректности исходного \cegar{}~\cite{cegar}, леммы~\ref{thm:runblackbox-safe} и ограничения~\ref{thm:recovercex-sound}.
+The validity of this theorem follows directly from the correctness of the original \cegar{}~\cite{cegar}, Lemma~\ref{thm:runblackbox-safe}, and the constraint~\ref{thm:recovercex-sound}.
+\end{proof}
+
+\begin{theorem}
+% Если верно, что либо \cegar{}, либо верификатор $\oracle$ завершаются на системе $\tuple{TS,\property}$, то \ourCEGAR{} также завершается на этой же системе.
+If it is true that either \cegar{} or the $\oracle$ verifier terminates on system $\tuple{TS,\property}$, then \ourCEGAR{} also terminates on the same system.
+\end{theorem}
+\begin{proof}
+% Если верификатор $\oracle$ завершается, то завершается и первый вызов процедуры $\RunBlackBox\left(TS, \property, \tuple{\alpha, \gamma}, \cbot\right)$, так как $\init' = \post{\cbot}\csetminus \cbot = \init$ и $\thepost' = \lambda B. (\post{B}\csetminus \cbot) = \thepost$.
+% Если \cegar{} завершается, то завершается и \ourCEGAR{}, так как вызов \RunBlackBox{} является асинхронным.
+If the $\oracle$ verifier terminates, then the first call to $\RunBlackBox\left(TS, \property, \tuple{\alpha, \gamma}, \cbot\right)$ also terminates, since $\init' = \ post{\cbot}\csetminus \cbot = \init$ and $\thepost' = \lambda B. (\post{B}\csetminus \cbot) = \thepost$.
+If \cegar{} terminates, then \ourCEGAR{} terminates as well, since the call to \RunBlackBox{} is asynchronous.
+\end{proof}
+
+\section{Collaborative Invariant Inference}\label{sec:cici/inference}
+
+% В данном разделе весь подход в целом представлен как инстанциация алгоритма \ourCEGAR{} из прошлого раздела для систем дизъюнктов Хорна над АТД. 
+In this section, the entire approach is presented as an instantiation of the \ourCEGAR{} algorithm from the previous section for Horn clause systems over ADTs.
+
+% Итоговый подход обладает следующими двумя свойствами.
+% Во-первых, он позволяет выводить индуктивные инварианты, выраженные в языке первого порядка над АТД, обогащённом ограничениями на принадлежность термов языкам деревьев $\overline{x}\in L$.
+% Во-вторых, подход позволяет расширить Хорн-решатели запросами к решателям для логики первого порядка, например, основанным на насыщении~\cite{kovacs2013first}, и инструментам поиска конечных моделей~\cite{claessen2003new,reynolds2013finite}.
+The final approach has the following two properties.
+Firstly, it allows inferring inductive invariants expressed in the first-order language over ADTs, enriched with constraints on term membership in tree languages $\overline{x}\in L$.
+Secondly, the approach allows extending Horn solvers with queries to first-order logic solvers, such as those based on saturation~\cite{kovacs2013first}, and finite model finding tools~\cite{claessen2003new,reynolds2013finite}.
+
+% Прежде всего, определим, как будет выражаться класс комбинированных инвариантов.
+First of all, let us define how the class of combined invariants will be expressed.
+
+\subsection{Combined invariants}\label{sec:cici/combinedInvs}
+\begin{define}
+% Для каждого языка деревьев $\formallang\subseteq\huniv{\sigma_1}\times\dots\times\huniv{\sigma_m}$ определим предикатный символ принадлежности языку ``$\in\!\formallang$'' с арностью $\sigma_1\times\dots\times\sigma_m$. \emph{Ограничение принадлежности}~--- это атомарная формула с предикатным символом принадлежности языку.
+% Его семантика определяется расширением семантики Эрбрана $\hs$ следующим образом:
+% $\hs(\in\formallang)= \formallang.$
+% Язык ограничений АТД, расширенный такими атомами, называется \emph{языком первого порядка с ограничениями принадлежности}. Этот язык задаёт класс инвариантов обозначаемый $\regelemclass{}$ и абстрактный домен функций из предикатов $\relations$ в формулы языка с поэлементными операциями.
+For each tree language $\formallang\subseteq\huniv{\sigma_1}\times\dots\times\huniv{\sigma_m}$, define a predicate membership symbol for the language ``$\in\!\formallang$'' with arity $\sigma_1 \times\dots\times\sigma_m$. \emph{Membership constraint} is an atomic formula with a predicate language membership symbol.
+Its semantics is defined by an extension of the Herbrand semantics $\hs$ as follows:
+$\hs(\in\formallang)= \formallang.$
+The ADT constraint language extended by such atoms is called \emph{first order language with membership constraints}. This language defines a class of invariants denoted by $\regelemclass{}$ and an abstract domain of functions from $\relations$ predicates to formulas of the language with element-wise operations.
+\end{define}
+
+\begin{example}\label{exmp:running-example}
+% Функциональная программа из примера~\ref{ex:fork-join-chcs} соответствует следующей системе дизъюнктов Хорна:
+The functional program from Example~\ref{ex:fork-join-chcs} corresponds to the following Horn clause system:
+\begin{align*}
+p = Seq &\rightarrow ok(p)\\
+p' = Fork(Join(p)) \land ok(p) &\rightarrow ok(p')\\
+p = Seq \land t = Fork(p') &\rightarrow tr(p, t)\\
+t = Join(Seq) &\rightarrow tr(p, t)\\
+p' = Fork(Join(p)) \land t' = Fork(Join(t)) \land tr(p, t) &\rightarrow tr(p', t')\\
+ok(p) \land tr(p, p) &\rightarrow \bot
+\end{align*}
+
+% Она безопасна, но не имеет ни \regclass{}, ни \elemclass{} инвариантов.
+% Однако, у неё есть \regelemclass{} инвариант
+It is safe, but has neither \regclass{} nor \elemclass{} invariants.
+However, it has a \regelemclass{} invariant
+$$ok(p) \Leftrightarrow p \in \evenInv{},\quad tr(p, t) \Leftrightarrow \neg(p = t) \lor t \in \overline{\evenInv{}},$$
+% где $\evenInv{}$~--- язык деревьев, задаваемый автоматом из примера~\ref{ex:fork-join-chcs},
+% а $\overline{\evenInv{}}$ является его дополнением.
+where $\evenInv{}$ is a tree language given by the automaton from Example~\ref{ex:fork-join-chcs},
+and $\overline{\evenInv{}}$ is its complement.
+\end{example}
+
+\subsection{Horn clause systems as transition systems}
+
+% Определим полную булеву решетку конкретных состояний 
+Define a complete Boolean lattice of specific states $\tuple{\states, \csubseteq, \cbot, \ctop, \ccap, \ccup, \cneg}$.
+$$ \states \eqdef \text{a set of all mappings from every } P\in\relations \text{ to a subset of } \huniv{P} $$
+\begin{align*}
+  s_1 \csubseteq s_2 &\Leftrightarrow \forall P\in\relations\quad s_1(P)\subseteq s_2(P) &     s_1 \ccap s_2 &\eqdef \{P\mapsto s_1(P)\cap s_2(P) \mid P\in \relations \}\\
+  \cbot&\eqdef \{P\mapsto\emptyset \mid P\in \relations \}& s_1 \ccup s_2 &\eqdef \{P\mapsto s_1(P)\cup s_2(P) \mid P\in \relations \}\\
+  \ctop&\eqdef \{P\mapsto \huniv{P} \mid P\in \relations \}&  \cneg s &\eqdef \{P\mapsto \huniv{P} \setminus s(P) \mid P\in \relations \}
+\end{align*}
+
+% Система дизъюнктов Хорна $\prog$ задаёт систему переходов 
+The Horn clause system $\prog$ defines the transition system$\tuple{\states, \init, \thepost}$:
+\begin{align*}
+    \init&\eqdef\post{\cbot}\\
+    \post{s}(P)&\eqdef\left\{\overline{t} \mid
+\left(B \rightarrow P(\overline{t})\right) \text{ is a closed instance of some } C\in\prog,
+s \models B \right\}.
+\end{align*}
+
+% Без потери общности предположим, что система дизъюнктов Хорна $\prog$ имеет единственный предикат в запросе $Q$, т.е. далее будем рассматривать только системы полученные следующим образом:
+Assume without loss of generality that the Horn clause system $\prog$ has a single predicate in the query $Q$, i.e. further, we will consider only systems obtained as follows:
+$$ \prog' \eqdef \rules{\prog}\cup\left\{ \body{C}(\overline{x})\rightarrow Q(\overline{x})\mid C \text{ является запросом }\prog\right\}\cup\{Q(\overline{x})\rightarrow\bot\}.$$
+% Система дизъюнктов определяет свойство для системы переходов как: $\property(Q)\eqdef\bot$ и для каждого $P\in\relations$, $\property(P)\eqdef\top$.
+The clause system defines a property for the transition system as: $\property(Q)\eqdef\bot$ and for each $P\in\relations$, $\property(P)\eqdef\top$.
+
+\begin{proposition}
+% Система дизъюнктов Хорна $\prog$ выполнима, если соответствующая система переходов
+% $\tuple{\states, \init, \thepost}$ безопасна относительно $\property$.
+A system of Horn clauses $\prog$ is satisfiable if the corresponding transition system
+$\tuple{\states, \init, \thepost}$ is safe with respect to $\property$.
+\end{proposition}
+
+\subsection{Residual system generation}\label{sec:subst_lemmas}
+
+% Процедура \RunBlackBox{} начинает с построения остаточной системы $$\tuple{\post{A}\ccap \cneg A, \lambda B. \left(\post{B}\ccap \cneg A\right)},$$ которая передаётся коллаборирующему верификатору.
+The \RunBlackBox{} procedure starts by constructing the residual system $$\tuple{\post{A}\ccap \cneg A, \lambda B. \left(\post{B}\ccap \cneg A\right)},$$ which is passed to the collaborating verifier.
+% Процедура $\substituteLemmas$ с листинга~\ref{code:residual-chc} строит систему, эквивалентную такой остаточной системе, преобразуя исходную систему дизъюнктов Хорна $\prog$ в два шага.
+% Она принимает на вход исходную систему дизъюнктов $\prog$ и элемент абстрактного домена $a$, функцию из предикатных символов в формулы языка \regelemclass{}.
+The $\substituteLemmas$ procedure from Listing~\ref{code:residual-chc} constructs a system equivalent to such a residual system by transforming the original Horn clause system $\prog$ in two steps.
+It takes as input the original system $\prog$ and an elementary model $a$ as input.
+
+\begin{algorithm2e}[h]
+	\KwIn{Horn clause system $\prog$, elementary model $a$.}
+	\KwOut{Residual Horn system $\prog'$.}
+	\BlankLine
+
+    $\Phi \gets \prog\text{ with atoms }P(\overline{t})\text{ replaced by }a(P)(\overline{t})\lor P(\overline{t})$\label{line:subst-residual}\;
+    \Return $КНФ(\Phi)$\label{line:cnf}\;
+
+\caption{Algorithm for constructing a residual Horn system \substituteLemmas{}.}
+\label{code:residual-chc}
+\end{algorithm2e}
+
+
+% Процедура заменяет каждый атом $P(t_1,\ldots,t_m)$ в головках и телах Хорн-системы дизъюнкцией $a(P)(t_1,\ldots,t_m)\lor P(t_1,\ldots,t_m)$ (стр.~\ref{line:subst-residual}). Затем она перемещает $\signature$-формулу из головы в тело с отрицанием и разделяет дизъюнкт по дизъюнкции в теле, приводя его в КНФ. Например, дизъюнкт 
+The procedure replaces each atom $P(t_1,\ldots,t_m)$ in the heads and bodies of the Horn system with the disjunction $a(P)(t_1,\ldots,t_m)\lor P(t_1,\ldots,t_m)$ (line~\ref{line:subst-residual}). Then, it moves the $\signature$-formula from the head to the body with negation and splits the clause according to the disjunction in the body, bringing it into CNF. For example, the clause
+
+$$P(x)\land \phi(x, x')\rightarrow P(x')$$ 
+% сначала превратится в формулу
+will first turn into the formula
+$$ (a(P)(x) \lor P(x)) \land \phi(x, x') \rightarrow (a(P)(x') \lor P(x')), $$
+% которая после преобразования в КНФ (стр.~\ref{line:cnf}) будет разбита на дизъюнкты:
+which after transformation into CNF (p.~\ref{line:cnf}) will be divided into the following clauses:
+\begin{align*}
+  a(P)(x) \land \phi(x, x') \land \neg a(P)(x') &\rightarrow P(x')\\%\label{clause:tr-init}\\
+  P(x) \land \phi(x, x') \land \neg a(P)(x') &\rightarrow P(x').%\label{clause:tr-trans}
+\end{align*}
+% Таким образом, в результате преобразования в КНФ мы получаем систему дизъюнктов, которая семантически соответствует остаточной системе из прошлого раздела.
+Thus, as a result of transformation into CNF, we obtain a system of clauses which semantically corresponds to the residual system from the previous section.
+
+
+% \begin{figure}[t]
+% \begin{align*}
+% \forall p. \big( p = Seq &\rightarrow ok(p) \big) \land\\
+% \forall p, p'. \big( p' = Fork(Join(p)) \land ok(p) &\rightarrow ok(p') \big) \land\\
+% \forall p, t. \big( p = Seq \land t = Fork(p) &\rightarrow \left(\neg(p = t) \lor \neg(t = Seq) \lor L^{tr}(p, t)\right) \big) \land\\
+% \forall p, t. \big( t = Join(Seq) &\rightarrow \left(\neg(p = t) \lor \neg(t = Seq) \lor L^{tr}(p, t)\right) \big) \land\\
+% \forall p, p', t, t'. \big( p' = Fork(Join(p)) \land t' = Fork(Join(t)) \land \left(\neg(p = t) \lor \neg(t = Seq) \lor L^{tr}(p, t)\right) &\rightarrow \left(\neg(p' = t') \lor \neg(t' = Seq) \lor L^{tr}(p', t')\right) \big) \land\\
+% \forall p. \big( ok(p) \land \left(\neg(p = p)  \lor \neg(p = Seq) \lor L^{tr}(p, p)\right) &\rightarrow \bot \big)
+% \end{align*}
+% \begin{align*}
+% p = Seq &\rightarrow\left(p = Seq \lor ok(p)\right)&\\
+% p' = Fork(Join(p)) \land \left(p = Seq \lor ok(p)\right) &\rightarrow\left(p' = Seq \lor ok(p')\right)&\\
+% p = Seq \land t = Fork(p') &\rightarrow\left(\neg(p = t) \lor t = Join(Seq) \lor tr(p, t)\right)&\\
+% t = Join(Seq) &\rightarrow\left(\neg(p = t) \lor t = Join(Seq) \lor tr(p, t)\right)&\\
+% p' = Fork(Join(p)) \land t' = Fork(Join(t)) &\land \left(\neg(p = t) \lor t = Join(Seq) \lor tr(p, t)\right) \rightarrow&\\
+% &\rightarrow\left(\neg(p' = t') \lor t' = Join(Seq) \lor tr(p', t')\right)&\\
+% \left(p = Seq \lor ok(p)\right) &\land \left(\neg(p = p)  \lor p = Join(Seq) \lor tr(p, p)\right) \rightarrow \bot
+% \end{align*}
+% \caption{Example of applying transformation \substituteLemmas{}.}
+%     \label{fig:exmp-transformed}
+% \end{figure}
+
+\begin{example}
+% Возьмём абстрактное состояние $a(tr)(p, t) \equiv \neg(p = t) \lor t = Join(Seq)$, $a(ok)(p) \equiv p = Seq$ и систему из примера~\ref{exmp:running-example}. Процедура \substituteLemmas{} сначала даст формулу
+Consider abstract state $a(tr)(p, t) \equiv \neg(p = t) \lor t = Join(Seq)$, $a(ok)(p) \equiv p = Seq$ and the system from Example~\ref{exmp:running-example}. The procedure \substituteLemmas{} will first give the formula
+\begin{align*}
+  p = Seq &\rightarrow\big(p = Seq \lor ok(p)\big)&\\
+  p' = Fork(Join(p)) \land \big(p = Seq \lor ok(p)\big) &\rightarrow\big(p' = Seq \lor ok(p')\big)&\\
+  p = Seq \land t = Fork(p') &\rightarrow\big(\neg(p = t) \lor t = Join(Seq) \lor tr(p, t)\big)&\\
+  t = Join(Seq) &\rightarrow\big(\neg(p = t) \lor t = Join(Seq) \lor tr(p, t)\big)&\\
+  p' = Fork(Join(p)) \land t' = Fork(Join(t)) &\land&\\
+  \land\big(\neg(p = t) \lor t = Join(Seq) \lor tr(p, t)\big)
+  &\rightarrow\big(\neg(p' = t') \lor t' = Join(Seq) \lor tr(p', t')\big)&\\
+  \big(p = Seq \lor ok(p)\big) \land \big(\neg(p = p)  &\lor p = Join(Seq) \lor tr(p, p)\big) \rightarrow \bot,
+  \end{align*}
+% в \autoref{fig:exmp-transformed},
+% которая может быть упрощена до системы дизъюнктов
+which can be simplified down to the clause system
+\begin{align*}
+  p = Fork(Join(Seq)) &\rightarrow ok(p)\\
+  p' = Fork(Join(p)) \land ok(p) &\rightarrow ok(p')\\
+  t = Fork(Join(Join(Seq))) &\rightarrow tr(p, t)\\
+  p' = Fork(Join(p)) \land t' = Fork(Join(t)) \land p' = t'\land tr(p, t) &\rightarrow tr(p', t')\\
+  \big(p = Seq \lor ok(p)\big) \land \big(p = Join(Seq) \lor tr(p, p)\big) &\rightarrow \bot.
+  \end{align*}
+\end{example}
+
+\subsection{\ourCEGAR{} for clauses: recovery of counterexamples}\label{sec:recover-cex}
+
+% В данном разделе представлена процедура построения абстрактного контрпримера исходной системы по конкретному контрпримеру для остаточной системы, получаемой как $\prog'=\substituteLemmas(\prog, a)$. Иными словами, представлена инстанциация процедуры \textsc{RecoverCex} из листинга~\ref{code:runblackbox}.
+
+This section presents a procedure for constructing an abstract counterexample of the original system from a specific counterexample for the residual system obtained as $\prog'=\substituteLemmas(\prog, a)$. In other words, this is the instantiation of the \textsc{RecoverCex} procedure from Listing~\ref{code:runblackbox}.
+
+\paragraph{Abstract counterexamples.}
+% Определим абстрактный контрпример к системе дизъюнктов Хорна как дерево опровержений, некоторые листья которого могут быть абстрактными состояниями.
+% Для формально определения введём трансформацию дизъюнктов $\simplifiedSubstituteLemmas{\prog, a}$, которая для каждого предиката $P \in \relations$ добавляет к системе $\prog$ новые дизъюнкты $ a(P)(\overline{x}) \rightarrow P(\overline{x}) $.
+We define an abstract counterexample of a Horn clause system as a refutation tree, some of whose leaves may be abstract states.
+For a formal definition, we introduce the transformation of clauses $\simplifiedSubstituteLemmas{\prog, a}$, which for each predicate $P \in \relations$ adds new clauses $ a(P)(\overline{x})\rightarrow P(\overline{x}) $ to the system $\prog$.
+
+
+\begin{define}
+% \emph{Абстрактный контрпример} для Хорн-системы $\prog$ относительно абстрактного состояния $a$~--- это дерево опровержений Хорн-системы $\simplifiedSubstituteLemmas{\prog, a}$.
+An \emph{abstract counterexample} of a Horn system $\prog$ with respect to the abstract state $a$ is the refutation tree of the Horn system $\simplifiedSubstituteLemmas{\prog, a}$.
+\end{define}
+
+% Пусть $T$~--- дерево опровержений $\prog' = \substituteLemmas(\prog, a)$.
+% Далее приведена рекурсивная процедура построения дерева опровержений $T'$ для $\prog'' = \simplifiedSubstituteLemmas{\prog, a}$ по дереву $T$.
+Let $T$ be a refutation tree of $\prog' = \substituteLemmas(\prog, a)$.
+The following is a recursive procedure for constructing a refutation tree $T'$ for $\prog'' = \simplifiedSubstituteLemmas{\prog, a}$ given the tree $T$.
+
+% \textbf{База рекурсии}. Пусть $T$ является листом $\tuple{C, \Phi}$, где $C \in \prog'$. Поскольку $\Phi=\body{C}$~--- формула без предикатов, то $C$~--- это
+\textbf{Recursion base}. Let $T$ be a leaf $\tuple{C, \Phi}$, where $C \in \prog'$. Since $\Phi=\body{C}$ is a predicate-free formula, then $C$ is
+$$ \phi\land a(P_1)(\overline{x}_1)\land\ldots\land a(P_n)(\overline{x}_n)\land \neg a(P)(\overline{x})\rightarrow P(\overline{x}),$$
+% Построим $T'$ как $\tuple{C', \Phi'}$, где
+We construct $T'$ as $\tuple{C', \Phi'}$, where
+\[
+    C' \equiv \phi\land P_1(\overline{x}_1)\land\ldots\land P_n(\overline{x}_n) \rightarrow P(\overline{x})\quad\text{ and }\quad \Phi' \equiv \phi \land a(P_1)(\overline{x}_1) \land 
+\ldots \land a(P_n)(\overline{x}_n),
+\]
+%с $n$ дочерними листьями $\tuple{C_i', a(P_i)(\overline{x}_i)}$, где $C_i'\equiv a(P_i)(\overline{x}_i)\rightarrow P_i(\overline{x}_i)$. Определение дерева опровержения для $T'$ тривиально выполняется. Заметим, что $\hs\models\Phi\rightarrow\Phi'$.
+!!!
+
+% \textbf{Итерация рекурсии}. Пусть $T$~--- узел $\tuple{C,\Phi}$ с детьми $\tuple{C_1, \Phi_1},\ldots,\tuple{C_n, \Phi_n}$, все $C_i \in \rules{P_i}$ из $\prog'$ и
+\textbf{Recursion step}. Let $T$ be a of node $\tuple{C,\Phi}$ with children $\tuple{C_1, \Phi_1},\ldots,\tuple{C_n, \Phi_n}$, all $C_i \in \ rules{P_i}$ from $\prog'$ and
+
+\begin{align*}
+  C &\equiv \phi \land a(R_1)(\overline{y}_1) \land \ldots \land a(R_m)(\overline{y}_m) \land \neg a(R)(\overline{y}) \land P_1(\overline{x}_1) \land \ldots \land P_n(\overline{x}_n) \rightarrow R(\overline{y})\\
+  \Phi &\equiv \phi \land a(R_1)(\overline{y}_1) \land \ldots \land a(R_m)(\overline{y}_m) \land \neg a(R)(\overline{y}) \land \Phi_1(\overline{x}_1) \land \ldots \land \Phi_n(\overline{x}_n).
+  \end{align*}
+% Благодаря итерации рекурсии у нас уже есть соответствующие им узлы $\tuple{C_1', \Phi_1'},\ldots,\tuple{C_n', \Phi_n'}$, поэтому определим
+Due to the iteration of the recursion, we already have the corresponding nodes $\tuple{C_1', \Phi_1'},\ldots,\tuple{C_n', \Phi_n'}$, so define:
+\begin{align*}
+C' &\equiv \phi\land R_1(\overline{y}_1) \land \ldots \land R_m(\overline{y}_m) \land P_1(\overline{x}_1) \land \ldots \land P_n(\overline{x}_n) \rightarrow R(\overline{y})\\
+\Phi' &\equiv \phi \land a(R_1)(\overline{y}_1) \land \ldots \land a(R_m)(\overline{y}_m) \land \Phi_1'(\overline{x}_1) \land \ldots \land \Phi_n'(\overline{x}_n).
+\end{align*}
+
+% Для каждого предиката $R_j$ добавим потомков: $\tuple{C_{n+j}', a(R_j)(\overline{y}_j)}$, где 
+
+For each predicate $R_j$, add children: $\tuple{C_{n+j}', a(R_j)(\overline{y}_j)}$, where
+$C_{n+j}'\equiv a(R_i)(\overline{y}_i)\rightarrow R_j(\overline{y}_j)$.
+% Для каждого $i$, $\hs\models\Phi_i\rightarrow\Phi_i'$ по индукции, поэтому для их конъюнкции имеем $\hs\models\Phi\rightarrow\Phi'$.
+
+For each $i$, $\hs\models\Phi_i\rightarrow\Phi_i'$ by induction, so for their conjunction we have $\hs\models\Phi\rightarrow\Phi'$.
+
+% В конце концов рекурсия придёт к корню дерева $T$, некоторой вершине $\tuple{C, \Phi}$, где $C$~--- запрос из системы $\prog'$.
+% Для него рекурсивно построено дерево $T'$ с корнем $\tuple{C', \Phi'}$. Также по индукции имеем: $\hs\models\Phi\rightarrow\Phi'$. Поскольку $\Phi$ является выполнимой $\signature$-формулой, то $\Phi'$ тоже.
+% Таким образом, $T'$ является деревом опровержения системы $\prog''$.
+Eventually the recursion will come to the root of the tree $T$, some vertex $\tuple{C, \Phi}$, where $C$ is a query from the system $\prog'$.
+A tree $T'$ with root $\tuple{C', \Phi'}$ is recursively built for it. Also by induction we have $\hs\models\Phi\rightarrow\Phi'$. Since $\Phi$ is a satisfiable $\signature$-formula, so is $\Phi'$.
+Thus, $T'$ is the refutation tree of the $\prog''$ system.
+
+\begin{proposition}
+% Приведённая процедура \textsc{RecoverCex} является линейной по числу узлов входного дерева опровержения.
+The procedure \textsc{RecoverCex} is linear in the number of nodes in the input refutation tree.
+\end{proposition}
+
+\subsection{Aprroach instantiation within \pdr{}}\label{sec:beyond-cegar}
+
+% Приведённый алгоритм позволяет выводить комбинированные инварианты в классе $\elemclass{}\uplus\regclass{}$, т.е. индуктивные инварианты, выразимые формулами вида
+% $\phi(\overline{x})\,\lor\,\overline{x}\!\in\!L$,
+% где $\phi$~--- формула первого порядка над АТД, а $L$~--- язык деревьев.
+% Реализация подхода в рамках \pdr{} как сложной инстанциации \cegar{} может быть обобщена для автоматического вывода инвариантов в полном бескванторном фрагменте $\regelemclass{}$, состоящем из формул следующего вида:
+The above algorithm allows inferring combined invariants in the class $\elemclass{}\uplus\regclass{}$, i.e. inductive invariants expressible by formulas of the form
+$\phi(\overline{x})\,\lor\,\overline{x}\!\in\!L$,
+where $\phi$ is a first-order formula over an ADT and $L$ is a tree language.
+The implementation of the \pdr{} approach as a complex instantiation of \cegar{} can be generalized for the automatic inference of invariants in the full quantifier-free fragment $\regelemclass{}$, consisting of formulas of the following form:
+\begin{align}\label{eq:inv-general-form}
+    \bigwedge_i(\phi_i(\overline{x})\,\lor\,\overline{x}\!\in\!L_i).
+\end{align}
+
+% \pdr{} представляет абстрактное состояние в виде конъюнкции формул (называемых \emph{леммами}). Другими словами, в процедуре $\substituteLemmas(\prog, a)$ (см. раздел~\ref{sec:subst_lemmas}) функция $a$ отображает каждый неинтерпретированный символ $P$ в некоторую конъюнкцию $\bigwedge_i \phi_i$. Обобщение подхода получается путём замены в этой процедуре применений неинтерпретированного предикатного символа $P$ на \emph{конъюнкции дизъюнкций} $\bigwedge_i (\phi_i(\overline{t})\lor L_i(\overline{t}))$ с новыми предикатными символами $L_i$. Таким образом, будут выводиться индуктивные инварианты вида~\ref{eq:inv-general-form} выше.
+
+\pdr{} represents an abstract state as a conjunction of formulas (called \emph{lemmas}). In other words, in the procedure $\substituteLemmas(\prog, a)$ (see section~\ref{sec:subst_lemmas}), the function $a$ maps each uninterpreted symbol $P$ to some conjunction $\bigwedge_i \phi_i$. A generalization of the approach is obtained by replacing in this procedure the uninterpreted predicate symbol $P$ with \emph{disjunction conjunction} $\bigwedge_i (\phi_i(\overline{t})\lor L_i(\overline{t}))$ with new predicate symbols $L_i$. Thus, inductive invariants of the form~\ref{eq:inv-general-form} above will be inferred.
+
+\section{Conclusion}
+% Предложенный класс комбинированных инвариантов, построенный на регулярных инвариантах, позволяет выражать как классические символьные инварианты, так и сложные рекурсивные отношения.
+% Тем самым, предложенный класс инвариантов является достаточно выразительным для практики.
+% Кроме того, для него предложен эффективный метод вывода инвариантов, позволяющий путём небольшой модификации переиспользовать существующие эффективные алгоритмы вывода инвариантов для комбинируемых классов.
+% В следующей главе на теоретическом уровне сопоставлены существующие и предложенные классов индуктивных инвариантов.
+The proposed class of combined invariants, built on regular invariants, allows one to express both classical symbolic invariants and complex recursive relations.
+Thus, the proposed class of invariants is expressive enough for practice.
+Additionally, an efficient method for inferring invariants has been proposed for it, which allows the reuse of existing efficient invariant inference algorithms for combined classes with a minor modification.
+In the next chapter, existing and proposed classes of inductive invariants are theoretically compared.

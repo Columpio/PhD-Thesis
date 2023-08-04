@@ -1,0 +1,496 @@
+\chapter{Коллаборативный вывод комбинированных инвариантов}\label{ch:cici}
+
+В данной главе предложен метод вывода комбинированных инвариантов. 
+Комбинированными инвариантами (раздел~\cref{sec:cici/combinedInvs}) мы называем  индуктивные инварианты программ, выраженные в расширении языка ограничений предикатами принадлежности терма языку из произвольного класса инвариантов.
+Метод, представленный в разделе~\cref{sec:cici/inference}, позволяет модифицировать любой алгоритм вывода инвариантов в языке ограничений, основанный на направляемом контрпримерами уточнении абстракций (\cegar{}),  таким образом, чтобы этот алгоритм эффективно выводил комбинированные инварианты. Модификация этого метода  заключается в коллаборативном взаимообмене информацией с алгоритмом вывода инвариантов в классе, с которым производится комбинация (эта идея описана в  разделе~\cref{sec:cici/idea}).
+
+\section{Идея коллаборативного вывода}\label{sec:cici/idea}
+Для простоты изложения ключевая идея коллаборативного вывода представлена как модификации подхода \cegar{} для систем переходов. Как будет показано в следующем разделе, системы дизъюнктов Хорна и программы на произвольных языках программирования являются частным случаем систем переходов.
+
+\subsection{\cegar{} для систем переходов}\label{sec:cici/origCEGAR}
+Пусть $\tuple{\states, \csubseteq, \cbot, \ctop, \ccap, \ccup, \cneg}$~--- это полная булева решётка, представляющая множества состояний программы. 
+
+\begin{define}
+\emph{Система переходов (программа)} является тройкой $TS = \tuple{\states, \init, \thepost}$, где  $\init \in \states$~--- это начальные состояния, а функция $\thepost : \states \mapsto \states$ называется \emph{функцией перехода} и  имеет  следующие свойства:
+\begin{itemize}
+    \item $\thepost$ монотонна, т.е. из $s_1 \csubseteq s_2$ следует $\post{s_1} \csubseteq \post{s_2}$;
+    \item $\thepost$ аддитивна, т.е. $\post{s_1 \ccup s_2} = \post{s_1}\ccup\post{s_2}$;
+    \item $\post{\cbot}=\init$.
+\end{itemize}
+\end{define}
+
+\begin{define}
+    Состояния $s\in\states$ называются \emph{достижимыми} из множества состояний $s'\in\states$, если существует такое $n\geq 0$, что $s = \thepost^n(s')$.
+\end{define}
+
+\begin{define}\label{defn:ind-invariant}
+\emph{Проблема безопасности} является парой, включающей программу $TS$ и некоторое свойство $\property \in \states$.
+Программа называется \emph{безопасной} относительно этого свойства, если для всех~$n$ выполняется $\thepost^n(\init) \csubseteq \property$, иначе она называется \emph{небезопасной}.
+
+Безопасность может быть доказана при помощи \emph{(безопасного) индуктивного инварианта} $I \in \states$, для которого должно выполняться следующее:
+\[ \init \csubseteq I, \quad
+    \post{I} \csubseteq I, \quad
+    I \csubseteq \property. \]
+\end{define}
+
+Так как все индуктивные инварианты по определению являются неподвижными точками функции перехода $\thepost$, то часто при поиске индуктивного инварианта будут рассматриваться именно неподвижные точки.
+
+\begin{theorem}[см.~\cite{Floyd1993}]
+Программа безопасна тогда и только тогда, когда она имеет безопасный индуктивный инвариант.
+\end{theorem}
+
+Для того, чтобы \emph{автоматически выводить} индуктивные инварианты, обычно фиксируется некоторый \emph{класс инвариантов} $\invClass \subseteq \states$.
+% , который является эффективно представимым, например, класс множеств, представимых полиэдрами, или класс множеств, определимых эффективно-пропозициональным (EPR) фрагментом FOL.
+\emph{Верификатор}~--- это алгоритм, который по проблеме безопасности возвращает инвариант в классе инвариантов $\invClass$ в том случае, если программа безопасна, или контрпример в противном случае.
+Класс инвариантов $\invClass$ называется \emph{доменом} верификатора. Верификатор может не завершаться, например, в том случае, когда программа безопасна, но в его домене нет инварианта, доказывающего безопасность.
+
+\begin{define}
+Полную решётку $\abstrDomain = \tuple{\theAbstrDomain, \asubseteq, \abot, \atop, \acap, \acup}$ будем называть абстрактным доменом, а её элементы~--- абстрактными состояниями.
+
+\emph{Связка Галуа} (Galois connection) или \emph{абстракция}~--- это пара отображений $\tuple{\alpha,\gamma}$ между частично упорядоченными множествами $\tuple{\states, \csubseteq}$ и $\tuple{\abstrDomain, \asubseteq}$, для которых выполнено следующее:
+\begin{align*}
+  \alpha &: \states \mapsto \abstrDomain, \qquad \gamma :\abstrDomain \mapsto \states,\\
+  \forall x \in \states\ &\forall y \in \abstrDomain\ \alpha\left(x\right) \asubseteq y \Leftrightarrow x \csubseteq \gamma\left(y\right).
+  \end{align*}
+\end{define}
+
+Абстрактный домен вместе со связкой Галуа однозначно определяет класс инвариантов $\{ \gamma(a)\mid a \in \abstrDomain \}$, который также будет обозначаться как $\abstrDomain$.
+В дальнейшем подразумевается, что проверки вида $\gamma(a) \csubseteq \property$ вычислимы.
+
+\begin{define}
+\emph{Абстрактная функция перехода} $\theapost : \abstrDomain \mapsto \abstrDomain$ <<поднимает>> функцию перехода в абстрактный домен, т.е. для всех $a\in\abstrDomain$ справедливо следующее:
+\[\alpha(\post{\gamma(a)})\asubseteq\apost{a}.\]
+\end{define}
+
+Представленная ниже  классическая теорема~\cite{10.1145/512950.512973} показывает, как абстракции могут быть применены для верификации.
+
+\begin{theorem}
+Пусть дана программа $TS=\tuple{\states, \init, \thepost}$ и свойство $\property$. Тогда $\gamma(a)$ является индуктивным инвариантом $\tuple{TS, \property}$, если существует элемент $a \in \abstrDomain$, такой, что выполнено
+$
+   \alpha(\init)\asubseteq a,\quad
+    \apost{a} \asubseteq a,\quad
+    \gamma(a)\csubseteq \property.
+$
+\end{theorem}
+
+\begin{algorithm2e}[t]
+	\KwIn{программа $TS$ и свойство $\property$.}
+	\KwOut{$SAFE$ и индуктивный инвариант\\\quad или $UNSAFE$ и контрпример.}
+	\BlankLine
+    $\tuple{\alpha, \gamma}\leftarrow \textsc{Initial}()$\;
+	\While{true}{
+	    $cex, A \leftarrow \textsc{ModelCheck}(TS, \property, \tuple{\alpha, \gamma})$\;
+	    \If{$cex$ пуст}{
+	        \Return{$SAFE(A)$}
+	    } \If{\textsc{IsFeasible}(cex)}{
+	        \Return{$UNSAFE(cex)$}
+	    }
+        $\tuple{\alpha, \gamma} \leftarrow \textsc{Refine}(\tuple{\alpha, \gamma}, cex)$\;
+	}
+\caption{Подход \cegar{} для систем переходов}
+\label{code:oldcegar}
+\end{algorithm2e}
+
+% Классическим подходом к проверке является Counter-Example Guided Abstraction Refinement (\cegar{})~\cite{cegar}.
+Псевдокод подхода \cegar{} для систем переходов представлен на листинге~\ref{code:oldcegar}.
+Алгоритм начинается с построения начальной абстракции $\tuple{\alpha, \gamma}$, например, с помощью тривиальных отображений $\alpha(s) = \abot$ и $\gamma(a) = \ctop$.
+Далее при помощи абстракции процедура \textsc{ModelCheck} строит по программе конечную последовательность
+абстрактных состояний $\overline{a}=\tuple{a_{0},\ldots,a_n}$ таких, что:
+\begin{align}\label{prop:cegar-inv}
+    a_0 = \alpha(\init)\quad\text{ и }\quad
+    a_{i+1} = a_i \acup \apost{a_i}  \quad\forall i \in\{0,\ldots,n-1\}.
+\end{align}
+Если для какого-то $i$ имеем $\gamma(a_i) \not\csubseteq \property$, то возвращается \emph{абстрактный контрпример} $cex$ либо в паре с $A=\cbot$ (если $i=0$), либо в паре с $A=\gamma(a_{i-1})$, при чём $\gamma(a_{i-1}) \csubseteq \property$.
+Если для всех $i$ справедливо $\gamma(a_i) \csubseteq \property$, и на некотором шаге выполняется $\apost{a_n} \asubseteq a_n$, то $\gamma(a_n)$ является индуктивным инвариантом, и поэтому \textsc{ModelCheck} возвращает пустой $cex$ и при этом $A=\gamma(a_n)$.
+Понятие абстрактного контрпримера определяется каждой конкретной реализацией \cegar{}. Таким образом, возвращаемое из процедуры \textsc{ModelCheck} значение удовлетворяет следующему свойству:
+\begin{align}\label{prop:cegar-inv-A}
+    A=\cbot\quad\text{ или }\quad\init \subseteq A \subseteq \property.
+\end{align}
+
+Если процедура \textsc{ModelCheck} вернула пустой абстрактный контрпример, то программа безопасна и \cegar{} возвращает $\gamma(a_n)$ в качестве индуктивного инварианта. В противном случае необходима проверка того, соответствует ли абстрактному контрпримеру какой-либо конкретный контрпример в исходной программе (процедура \textsc{IsFeasible}).
+Если это так, то \cegar{} останавливается и возвращает этот контрпример, а иначе переходит к итеративному уточнению абстракции $\tuple{\alpha,\gamma}$ для исключения контрпримера $cex$ (процедура \textsc{Refine}).
+
+\subsection{Коллаборативный вывод путём модификации \cegar{}}
+В данном разделе предложен подход к коллаборативному выводу комбинированных инвариантов.
+Подход основан на коллаборации двух алгоритмов вывода инвариантов и является асимметричным в следующем смысле.
+Во-первых, требуется, чтобы один из алгоритмов был экземпляром \cegar{}, другой же может быть произвольным.
+Во-вторых,  всем процессом управляет основной \cegar{}-цикл,  многократно вызывая второй алгоритм.
+
+Предлагаемый подход назван \ourCEGAR{}, поскольку процесс <<коллаборации>> можно рассматривать как алгоритм \cegar{}, дополненный вызовами некоторого оракула $\oracle$. Пусть доменами верификаторов являются классы $\abstrDomain$ и $\blackBoxDomain$ соответственно. \ourCEGAR{} позволяет строить инварианты в классе, являющемся теоретико-множественным объединением этих классов.
+
+\begin{define}\label{def:combined-class}
+Для классов состояний $\abstrDomain\subseteq\states$ и $\blackBoxDomain\subseteq\states$ \emph{комбинированный класс} состояний определяется следующим образом:
+$$\abstrDomain \uplus \blackBoxDomain \eqdef \{ A \ccup B \mid A\in\abstrDomain, B\in\blackBoxDomain \}.$$
+
+\emph{Комбинированным (индуктивным) инвариантом} над $\abstrDomain$ и $\blackBoxDomain$ называется индуктивный инвариант в классе $\abstrDomain \uplus \blackBoxDomain$.
+\end{define}
+
+При помощи комбинированных инвариантов можно верифицировать больше программ, чем верификаторами для комбинируемых абстрактных доменов по отдельности.
+% Инвариант может существовать в $\abstrDomain \uplus \blackBoxDomain$, даже если он не существует в $\abstrDomain$ и $\blackBoxDomain$. 
+Коллаборативный подход объединяет сильные стороны верификаторов для отдельных классов и способен сходиться на многих задачах, где отдельные верификаторы не будут завершаться.
+
+\begin{example}[$ForkJoin$]\label{ex:fork-join-chcs}
+Рассмотрим трансформацию, которая преобразует параллельные программы следующим образом. 
+На любом шаге трансформация может недетерминированно устранить все потоковые операции, объединив все потоки с главным ($Join$) и перейти к последовательному исполнению ($Seq$).
+Если программа заканчивается последовательным кодом, то трансформация вставляет порождение новых потоков ($Fork$), за которым следуют произвольные преобразования потоков.
+Если в каком-то фрагменте заданной программы встречается объединение потоков после порождения новых, то этот фрагмент не изменяется.
+
+Эта трансформация может быть представлена в виде функциональной программы. Для её описания не нужно рассматривать базовые конструкции языка программирования кроме тех, которые связаны с потоками, поэтому для представления программ может быть использован следующий алгебраический тип данных:
+$$ Prog ::= Seq\,|\,Fork(Prog)|\,Join(Prog). $$
+Например, терм \texttt{Fork(Join(Seq))} представляет программу, которая порождает новые потоки, затем в какой-то момент их объединяет, а затем работает только последовательно.
+
+Одним из свойств описанной трансформации является следующее: если исходная программа состоит из последовательности подряд идущих разветвлений и объединений потоков, то она никогда не может быть преобразована сама в себя.
+Это свойство вместе с самой трансформацией представлено функциональной программой на листинге~\ref{fig:ex-fork-join}.
+{\renewcommand{\figurename}{Листинг}
+\begin{figure}
+    \centering
+\begin{minted}[breaklines,escapeinside=@@,linenos,frame=single,framesep=10pt]{fsharp}
+type Prog = Seq | Fork of Prog | Join of Prog
+fun randomTransform() : Prog
+fun nondet() : bool
+
+fun tr(p : Prog) : Prog =
+    match nondet(), p with
+    | false, Seq -> Fork(randomTransform())
+    | false, Fork(Join(p')) -> Fork(Join(tr(p')))
+    | _ -> Join(Seq)
+
+fun ok(p : Prog) : bool =
+    match p with
+    | Seq -> true
+    | Fork(Join(p')) -> ok(p')
+    | _ -> false
+
+(* для произвольной программы p : Prog *)
+assert (not ok(p) or tr(p) <> p)
+\end{minted}
+    \caption{Пример функциональной программы с алгебраическими типами данных}
+    \label{fig:ex-fork-join}
+\end{figure}}
+
+Функция \texttt{tr} выполняет описанную выше трансформацию над представлением программы алгебраическим типом данных $Prog$, в частности, вводит произвольные преобразования потоков, вызывая функцию \texttt{randomTransform}. Функция \texttt{ok} проверяет, что программа является последовательностью подряд идущих операций разветвления (\texttt{Fork}) и объединения (\texttt{Join}) потоков. Утверждение в конце кодирует свойство, которое необходимо проверить.
+
+Эта программа безопасна относительно заданного свойства, однако не имеет индуктивных инвариантов, выразимых в классах \elemclass{} или \regclass{} для функций  \texttt{ok}  и  \texttt{tr}.
+Вместе с тем у неё есть комбинированные инварианты в $\elemclass{}\uplus\regclass{}$.
+Так, для любых программ $p, t : Prog$ функция $\texttt{ok}(p)$ возвращает \texttt{true}, если справедливо следующее утверждение:
+\begin{align}\label{eq:for-join-ok-inv}
+    p \in \evenInv{}.
+\end{align}
+При условии, что  $\texttt{tr}(p) = t$, следующая формула представляет собой индуктивный инвариант для функции \texttt{tr}:
+\begin{align}\label{eq:fork-join-tr-inv}
+    \neg(p = t) \lor t \not\in \evenInv{},
+\end{align}
+где $t \not\in \evenInv{}$ означает, что АТД-терм $t$ \emph{не} содержится в языке $\evenInv{}$ следующего автомата над деревьями:
+% \begin{figure}[h]
+\vspace*{-2mm}\forkJoinExample{}\vspace*{-3mm}
+% \end{figure}
+\end{example}
+
+\begin{algorithm2e}[t!]
+	\KwData{верификатор $\oracle$ над доменом $\blackBoxDomain$.}
+	\KwIn{программа $TS$ и свойство $\property$.}
+	\KwOut{$SAFE$ и комбинированный инвариант в $\abstrDomain\uplus\blackBoxDomain$\\или $UNSAFE$ и контрпример $cex$.}
+	\BlankLine
+    $\tuple{\alpha, \gamma}\leftarrow \textsc{Initial}()$\;
+    $A\leftarrow\cbot$\;
+	\While{true}{
+	    \textbf{асинхронно вызвать} $\RunBlackBox\left(TS, \property, \tuple{\alpha, \gamma}, A\right)$\label{line:call-bb}\;
+	    $cex, A \leftarrow \textsc{ModelCheck}(TS, \property, \tuple{\alpha, \gamma})$\;
+	    \If{$cex$ пуст}{
+	        \Return{$SAFE(A)$}
+	    } \If{\textsc{IsFeasible}(cex)}{
+	        \Return{$UNSAFE(cex)$}
+	    }
+        $\tuple{\alpha, \gamma} \leftarrow \textsc{Refine}(\tuple{\alpha, \gamma}, cex)$\;
+	}
+\caption{\ourCEGAR{}}
+\label{code:cegar}
+\end{algorithm2e}
+
+\paragraph{Описание алгоритма \textbf{\ourCEGAR{}}.}
+Предлагаемый коллаборативный подход представлен на листинге~\ref{code:cegar}. Алгоритм работает аналогично классическому \cegar{}, представленному в разделе ~\ref{sec:cici/origCEGAR}, но дополнительно в начале каждой итерации он асинхронно опрашивает коллаборирующий верификатор $\oracle$ путём вызова процедуры \RunBlackBox{} (строка~\ref{line:call-bb}). Вызовы делаются асинхронно, чтобы предотвратить зацикливание алгоритма.
+
+\begin{algorithm2e}[t!]
+	\KwData{Верификатор $\oracle$ над доменом $\blackBoxDomain$.}
+	\KwIn{Программа $TS = \tuple{\states, \init, \thepost}$, свойство $\property$, абстракция $\tuple{\alpha, \gamma}$, множество состояний $A$, такое что $A=\cbot$ или $\init \subseteq A \subseteq \property$.}
+% \KwOut{$SAFE$ с комбинированным инвариантом}
+	\BlankLine
+	$TS' \leftarrow \tuple{\states, \post{A}\csetminus A, \lambda B. \left(\post{B}\csetminus A\right)}$\;
+	$B, cex \leftarrow \oracle\left( TS', \property \right)$\label{line:oracle-call}\;
+	\If{$cex$ пуст}{
+	    \Halt{$SAFE(A\ccup B)$}\label{line:halt-combined-safe}\;
+	}
+	$\widehat{cex} \leftarrow \textsc{RecoverCex}\left(TS, \property, \tuple{\alpha, \gamma}, A, cex\right)$\label{line:recover-cex}\;
+	$\tuple{\alpha, \gamma}\leftarrow \textsc{Refine}(\tuple{\alpha, \gamma}, \widehat{cex})$\label{line:overwrite-abstraction}\;
+\caption{Процедура \RunBlackBox{}.}
+\label{code:runblackbox}
+\end{algorithm2e}
+
+Процедура {\textbf{\RunBlackBox}} представлена на листинге~\ref{code:runblackbox}. По исходной проблеме безопасности, текущей абстракции и множеству состояний $A = \gamma(a)$ для некоторого $a\in\abstrDomain$ она строит новую \emph{остаточную} систему переходов:
+\[TS' = \tuple{\states,\init',\thepost'} = \tuple{\states, \post{A}\csetminus A,\; \lambda B. \left(\post{B}\csetminus A\right)}.\]
+Затем безопасность остаточной системы проверяется коллаборирующим верификатором $\oracle$.
+На листинге $A\csetminus B$ является сокращением для $A \ccap\cneg B$.
+Процедура \RunBlackBox{} перезаписывает абстракцию, используемую в \cegar{} (стр.~\ref{line:overwrite-abstraction}): абстракция $\tuple{\alpha, \gamma}$ является глобальной и разделяется между двумя процедурами.
+
+Остаточная система устроена следующим образом.
+Её состояния в исходной системе достижимы из состояний, нарушающих индуктивность $A$.
+В частности, её начальные состояния $\init'$~--- это $\post{A} \setminus A$, т.е. образ неиндуктивных состояний. Состояния, достижимые за один шаг в остаточной системе  $\thepost'(\init') = \post{\post{A} \setminus A} \setminus A$~--- это $\thepost$-образ неиндуктивных состояний.
+
+Основная идея алгоритма \ourCEGAR{} заключается в том, чтобы использовать дополнительный верификатор $\oracle$ для \emph{ослабления} неиндуктивного множества состояний $A$ до некоторой неподвижной точки в комбинированном классе.
+Если второй верификатор найдёт индуктивный инвариант остаточной системы, т.е. некую индуктивную аппроксимацию $B$ неиндуктивных состояний, то $A \ccup B$ будет индуктивным инвариантом исходной системы.
+Иными словами, путём построения остаточной системы алгоритм берёт безопасную, но неиндуктивную часть текущего кандидата в инварианты и передаёт её сотрудничающему верификатору, чтобы он дополнил её до неподвижной точки, т.е. индуктивного инварианта.
+
+Современные подходы к выводу индуктивных инвариантов программ, такие как \pdr{} (который можно рассматривать как усложнённый вариант \cegar{}), монотонно \emph{усиливают} кандидат в инварианты $A$ до тех пор, пока он не станет индуктивным.
+Из-за этого проблемой таких подходов является выбор стратегии усиления~\cite{krishnan2020global}: из-за слишком резкого усиления могут быть пропущены нужные неподвижные точки, в то время как из-за медленного усиления алгоритм может сходиться к неподвижной точке слишком долго или вовсе расходиться.
+
+Так как предлагаемый подход не является монотонным, он позволяет строить инварианты, невыводимые верификаторами по отдельности. Кроме того, он (эвристически) может ускорить построение инварианта даже в том случае, если один из верификаторов может вывести его самостоятельно (эта гипотеза проверена в разделе~\ref{sec:evaluation/performance}). Вероятность пропуска неподвижных точек из-за слишком резкого усиления уменьшается: даже если первый верификатор чрезмерно усиливает кандидата в инварианты, второй верификатор всё равно может обнаружить более слабую неподвижную точку.
+
+Таким образом, если второй верификатор $\oracle$ останавливается и возвращает индуктивный инвариант $B$, то \RunBlackBox{} возвращает комбинированный инвариант $A\ccup B$. Если $\oracle$ возвращает конкретный контрпример $cex$ к остаточной системе, то \RunBlackBox{} строит по нему абстрактный контрпример $\widehat{cex}$ к исходной системе и далее действует как обычный \cegar{}, уточняя домен с помощью $\widehat{cex}$.
+
+Заметим, что множеств состояний $A$ и $B$ самих по себе недостаточно для доказательства безопасности исходной системы переходов. Другими словами, коллаборация осуществляется путём делегирования более \emph{простых} проблем верификатору $\oracle$, решение которых даёт только \emph{часть} ответа на исходную задачу.
+
+\begin{lemma}\label{thm:runblackbox-safe}
+Если процедура $\RunBlackBox\left(TS, \property, \tuple{\alpha, \gamma}, a\right)$ останавливается с результатом $SAFE(A \ccup B)$ (стр.~\ref{line:halt-combined-safe}), то $A \ccup B$ является комбинированным инвариантом проблемы $\tuple{TS, \property}$.
+\end{lemma}
+\begin{proof}
+Докажем, что $A \ccup B$ является индуктивным инвариантом, показав, что для него выполняются все три признака индуктивных инвариантов из определения~\ref{defn:ind-invariant}: в этом множестве содержатся все начальные состояния, оно сохраняет отношение перехода и оно является подмножеством  свойства.
+
+\textit{Начальные состояния.}
+Из инварианта~\eqref{prop:cegar-inv-A} алгоритма \cegar{} получаем следующие случаи. Либо $\init\csubseteq A\csubseteq A\ccup B$, что и требовалось доказать. Либо $A=\cbot$, и тогда по определению $\post{\cbot}$, $\init=\post{\cbot}\csetminus \cbot=\post{A}\csetminus A \csubseteq B\csubseteq A \ccup B$.
+
+\textit{Сохранение отношения перехода.}
+В силу корректности верификатора $\oracle$ имеем, что множество $B$ является индуктивным инвариантом $\left( \tuple{\states, \init', \thepost'}, \property \right)$, т.е. $\post{A}\csetminus A\csubseteq B$ (определение $\init'$) и $\post{B}\csetminus A \csubseteq B$ (определение $\thepost'$).
+Поэтому $\left(\post{A}\ccup \post{B}\right)\csetminus A\csubseteq B$, из чего следует $\post{A}\ccup \post{B}\csubseteq A\ccup B$, поэтому, так как функция $\thepost$ аддитивна, имеем $\post{A\ccup B} \csubseteq A\ccup B$.
+
+\textit{Подмножество свойства.}
+Справедливость $A \csubseteq \property$ следует из инварианта~\eqref{prop:cegar-inv-A} алгоритма \cegar{} и $B \subseteq \property$ по предположению корректности алгоритма $\oracle$. Следовательно, имеем $A\ccup B\csubseteq \property$.
+\end{proof}
+
+Контрпримерами для остаточной системы являются трассы, которые нарушают индуктивность текущего кандидата в инварианты $A$. \emph{Конкретный} контрпример к безопасности остаточной системы ($cex$ на стр.~\ref{line:oracle-call} с листинга~\ref{code:runblackbox}) соответствует некоторому \emph{абстрактному} контрпримеру исходной системы.
+Поэтому \ourCEGAR{} параметризован процедурой \textsc{RecoverCex}, которая восстанавливает абстрактный контрпример к исходной системе по контрпримеру к остаточной системе (стр.~\ref{line:recover-cex}).
+В следующем разделе~\ref{sec:cici/inference} предложена такая процедура для программ, представленных системами дизъюнктов Хорна, и контрпримеров, представленных деревьями опровержений.
+
+Процедура \textsc{RecoverCex} должна удовлетворять следующему ограничению.
+
+\begin{restrict}\label{thm:recovercex-sound}
+$\textsc{RecoverCex}\left(TS, \property, \tuple{\alpha, \gamma}, a, cex\right)$
+возвращает абстрактный контрпример к системе переходов $\tuple{TS, \property}$ относительно абстракции $\tuple{\alpha, \gamma}$.
+\end{restrict}
+
+\begin{theorem}
+Если верификатор $\oracle$ корректен, то верификатор \ourCEGAR{} тоже корректен.
+\end{theorem}
+\begin{proof}
+Справедливость этой теоремы непосредственно следует из корректности исходного \cegar{}~\cite{cegar}, леммы~\ref{thm:runblackbox-safe} и ограничения~\ref{thm:recovercex-sound}.
+\end{proof}
+
+\begin{theorem}
+Если верно, что либо \cegar{}, либо верификатор $\oracle$ завершаются на системе $\tuple{TS,\property}$, то \ourCEGAR{} также завершается на этой же системе.
+\end{theorem}
+\begin{proof}
+Если верификатор $\oracle$ завершается, то завершается и первый вызов процедуры $\RunBlackBox\left(TS, \property, \tuple{\alpha, \gamma}, \cbot\right)$, так как $\init' = \post{\cbot}\csetminus \cbot = \init$ и $\thepost' = \lambda B. (\post{B}\csetminus \cbot) = \thepost$.
+Если \cegar{} завершается, то завершается и \ourCEGAR{}, так как вызов \RunBlackBox{} является асинхронным.
+\end{proof}
+
+\section{Коллаборативный вывод инвариантов}\label{sec:cici/inference}
+
+В данном разделе весь подход в целом представлен как инстанциация алгоритма \ourCEGAR{} из прошлого раздела для систем дизъюнктов Хорна над АТД. 
+
+Итоговый подход обладает следующими двумя свойствами.
+Во-первых, он позволяет выводить индуктивные инварианты, выраженные в языке первого порядка над АТД, обогащённом ограничениями на принадлежность термов языкам деревьев $\overline{x}\in L$.
+Во-вторых, подход позволяет расширить Хорн-решатели запросами к решателям для логики первого порядка, например, основанным на насыщении~\cite{kovacs2013first}, а также инструментам поиска конечных моделей~\cite{claessen2003new,reynolds2013finite}.
+
+Прежде всего, определим, как будет выражаться класс комбинированных инвариантов.
+
+\subsection{Комбинированные инварианты}\label{sec:cici/combinedInvs}
+\begin{define}
+Для каждого языка деревьев $\formallang\subseteq\huniv{\sigma_1}\times\dots\times\huniv{\sigma_m}$ определим предикатный символ принадлежности языку ``$\in\!\formallang$'' с арностью $\sigma_1\times\dots\times\sigma_m$. \emph{Ограничение принадлежности}~--- это атомарная формула с предикатным символом принадлежности языку.
+Его семантика определяется расширением семантики Эрбрана $\hs$ следующим образом:
+$\hs(\in\formallang)= \formallang.$
+Язык ограничений АТД, расширенный такими атомами, называется \emph{языком первого порядка с ограничениями принадлежности}. Этот язык задаёт класс инвариантов обозначаемый $\regelemclass{}$ и абстрактный домен функций из предикатов $\relations$ в формулы языка с поэлементными операциями.
+\end{define}
+
+\begin{example}\label{exmp:running-example}
+Функциональная программа из примера~\ref{ex:fork-join-chcs} соответствует следующей системе дизъюнктов Хорна:
+\begin{align*}
+p = Seq &\rightarrow ok(p)\\
+p' = Fork(Join(p)) \land ok(p) &\rightarrow ok(p')\\
+p = Seq \land t = Fork(p') &\rightarrow tr(p, t)\\
+t = Join(Seq) &\rightarrow tr(p, t)\\
+p' = Fork(Join(p)) \land t' = Fork(Join(t)) \land tr(p, t) &\rightarrow tr(p', t')\\
+ok(p) \land tr(p, p) &\rightarrow \bot
+\end{align*}
+
+Она безопасна, но не имеет ни \regclass{}, ни \elemclass{} инвариантов.
+Однако, у неё есть следующий \regelemclass{} инвариант:
+$$ok(p) \Leftrightarrow p \in \evenInv{},\quad tr(p, t) \Leftrightarrow \neg(p = t) \lor t \in \overline{\evenInv{}},$$
+где $\evenInv{}$~--- это язык деревьев, задаваемый автоматом из примера~\ref{ex:fork-join-chcs},
+а $\overline{\evenInv{}}$ является его дополнением.
+\end{example}
+
+\subsection{Система дизъюнктов Хорна как система переходов}
+
+Определим полную булеву решетку конкретных состояний $\tuple{\states, \csubseteq, \cbot, \ctop, \ccap, \ccup, \cneg}$. Определим $\states$ как множество всех отображений из символов $ P\in\relations$ в подмножества $\huniv{P}$. Определим также следующие операции.
+\begin{align*}
+  s_1 \csubseteq s_2 &\Leftrightarrow \forall P\in\relations\quad s_1(P)\subseteq s_2(P) &     s_1 \ccap s_2 &\eqdef \{P\mapsto s_1(P)\cap s_2(P) \mid P\in \relations \}\\
+  \cbot&\eqdef \{P\mapsto\emptyset \mid P\in \relations \}& s_1 \ccup s_2 &\eqdef \{P\mapsto s_1(P)\cup s_2(P) \mid P\in \relations \}\\
+  \ctop&\eqdef \{P\mapsto \huniv{P} \mid P\in \relations \}&  \cneg s &\eqdef \{P\mapsto \huniv{P} \setminus s(P) \mid P\in \relations \}
+\end{align*}
+
+Система дизъюнктов Хорна $\prog$ задаёт систему переходов $\tuple{\states, \init, \thepost}$:
+\begin{align*}
+    \init&\eqdef\post{\cbot}\\
+    \post{s}(P)&\eqdef\left\{\overline{t} \mid
+\left(B \rightarrow P(\overline{t})\right) \text{--- замкнутый экземпляр некоторого } C\in\prog,
+s \models B \right\}.
+\end{align*}
+
+Без потери общности предположим, что система дизъюнктов Хорна $\prog$ имеет единственный предикат в запросе $Q$, т.е. далее будем рассматривать только системы, полученные следующим образом:
+$$ \prog' \eqdef \rules{\prog}\cup\left\{ \body{C}(\overline{x})\rightarrow Q(\overline{x})\mid C \text{ является запросом }\prog\right\}\cup\{Q(\overline{x})\rightarrow\bot\}.$$
+Система дизъюнктов определяет свойство для системы переходов как: $\property(Q)\eqdef\bot$ и для каждого $P\in\relations$, $\property(P)\eqdef\top$.
+
+\begin{proposition}
+Система дизъюнктов Хорна $\prog$ выполнима, если соответствующая система переходов
+$\tuple{\states, \init, \thepost}$ безопасна относительно $\property$.
+\end{proposition}
+
+\subsection{Порождение остаточной системы}\label{sec:subst_lemmas}
+
+Процедура \RunBlackBox{} начинает с построения остаточной системы $\tuple{\post{A}\ccap \cneg A, \lambda B. \left(\post{B}\ccap \cneg A\right)},$ которая передаётся коллаборирующему верификатору.
+Процедура $\substituteLemmas$, представленная на  листинге~\ref{code:residual-chc}, строит систему, эквивалентную такой остаточной системе, преобразуя исходную систему дизъюнктов Хорна $\prog$ в два шага.
+Она принимает на вход исходную систему дизъюнктов $\prog$, элемент абстрактного домена $a$ и функцию из предикатных символов в формулы языка \regelemclass{}.
+
+\begin{algorithm2e}[h]
+	\KwIn{Cистема дизъюнктов Хорна $\prog$, функция из предикатных символов в формулы $a$.}
+	\KwOut{Остаточная Хорн-система $\prog'$.}
+	\BlankLine
+
+    $\Phi \gets \prog\text{ с атомами }P(\overline{t})\text{ заменёнными на }a(P)(\overline{t})\lor P(\overline{t})$\label{line:subst-residual}\;
+    \Return $КНФ(\Phi)$\label{line:cnf}\;
+
+\caption{Алгоритм построения остаточной Хорн-системы \substituteLemmas{}.}
+\label{code:residual-chc}
+\end{algorithm2e}
+
+
+Процедура заменяет каждый атом $P(t_1,\ldots,t_m)$ в головах и телах Хорн-системы дизъюнкцией $a(P)(t_1,\ldots,t_m)\lor P(t_1,\ldots,t_m)$ (стр.~\ref{line:subst-residual}), и затем приводит его в КНФ. Например, дизъюнкт 
+$$P(x)\land \phi(x, x')\rightarrow P(x')$$ 
+сначала превратится в формулу
+$$ (a(P)(x) \lor P(x)) \land \phi(x, x') \rightarrow (a(P)(x') \lor P(x')), $$
+которая после преобразования в КНФ (стр.~\ref{line:cnf}) будет разбита на дизъюнкты:
+\begin{align*}
+  a(P)(x) \land \phi(x, x') \land \neg a(P)(x') &\rightarrow P(x')\\%\label{clause:tr-init}\\
+  P(x) \land \phi(x, x') \land \neg a(P)(x') &\rightarrow P(x').%\label{clause:tr-trans}
+\end{align*}
+Таким образом, в результате преобразования в КНФ мы получаем систему дизъюнктов, которая семантически соответствует остаточной системе из прошлого раздела.
+
+% \begin{figure}[t]
+% \begin{align*}
+% \forall p. \big( p = Seq &\rightarrow ok(p) \big) \land\\
+% \forall p, p'. \big( p' = Fork(Join(p)) \land ok(p) &\rightarrow ok(p') \big) \land\\
+% \forall p, t. \big( p = Seq \land t = Fork(p) &\rightarrow \left(\neg(p = t) \lor \neg(t = Seq) \lor L^{tr}(p, t)\right) \big) \land\\
+% \forall p, t. \big( t = Join(Seq) &\rightarrow \left(\neg(p = t) \lor \neg(t = Seq) \lor L^{tr}(p, t)\right) \big) \land\\
+% \forall p, p', t, t'. \big( p' = Fork(Join(p)) \land t' = Fork(Join(t)) \land \left(\neg(p = t) \lor \neg(t = Seq) \lor L^{tr}(p, t)\right) &\rightarrow \left(\neg(p' = t') \lor \neg(t' = Seq) \lor L^{tr}(p', t')\right) \big) \land\\
+% \forall p. \big( ok(p) \land \left(\neg(p = p)  \lor \neg(p = Seq) \lor L^{tr}(p, p)\right) &\rightarrow \bot \big)
+% \end{align*}
+% \begin{align*}
+% p = Seq &\rightarrow\left(p = Seq \lor ok(p)\right)&\\
+% p' = Fork(Join(p)) \land \left(p = Seq \lor ok(p)\right) &\rightarrow\left(p' = Seq \lor ok(p')\right)&\\
+% p = Seq \land t = Fork(p') &\rightarrow\left(\neg(p = t) \lor t = Join(Seq) \lor tr(p, t)\right)&\\
+% t = Join(Seq) &\rightarrow\left(\neg(p = t) \lor t = Join(Seq) \lor tr(p, t)\right)&\\
+% p' = Fork(Join(p)) \land t' = Fork(Join(t)) &\land \left(\neg(p = t) \lor t = Join(Seq) \lor tr(p, t)\right) \rightarrow&\\
+% &\rightarrow\left(\neg(p' = t') \lor t' = Join(Seq) \lor tr(p', t')\right)&\\
+% \left(p = Seq \lor ok(p)\right) &\land \left(\neg(p = p)  \lor p = Join(Seq) \lor tr(p, p)\right) \rightarrow \bot
+% \end{align*}
+% \caption{Example of applying transformation \substituteLemmas{}.}
+%     \label{fig:exmp-transformed}
+% \end{figure}
+
+\begin{example}
+Возьмём абстрактное состояние $a(tr)(p, t) \equiv \neg(p = t) \lor t = Join(Seq)$, $a(ok)(p) \equiv p = Seq$ и систему из примера~\ref{exmp:running-example}. Процедура \substituteLemmas{} сначала даст следующую  формулу:
+\begin{align*}
+  p = Seq &\rightarrow\big(p = Seq \lor ok(p)\big)&\\
+  p' = Fork(Join(p)) \land \big(p = Seq \lor ok(p)\big) &\rightarrow\big(p' = Seq \lor ok(p')\big)&\\
+  p = Seq \land t = Fork(p') &\rightarrow\big(\neg(p = t) \lor t = Join(Seq) \lor tr(p, t)\big)&\\
+  t = Join(Seq) &\rightarrow\big(\neg(p = t) \lor t = Join(Seq) \lor tr(p, t)\big)&\\
+  p' = Fork(Join(p)) \land t' = Fork(Join(t)) &\land&\\
+  \land\big(\neg(p = t) \lor t = Join(Seq) \lor tr(p, t)\big)
+  &\rightarrow\big(\neg(p' = t') \lor t' = Join(Seq) \lor tr(p', t')\big)&\\
+  \big(p = Seq \lor ok(p)\big) \land \big(\neg(p = p)  &\lor p = Join(Seq) \lor tr(p, p)\big) \rightarrow \bot,
+  \end{align*}
+% в \autoref{fig:exmp-transformed}.
+Эта формула может быть упрощена до следующей системы дизъюнктов:
+\begin{align*}
+  p = Fork(Join(Seq)) &\rightarrow ok(p)\\
+  p' = Fork(Join(p)) \land ok(p) &\rightarrow ok(p')\\
+  t = Fork(Join(Join(Seq))) &\rightarrow tr(p, t)\\
+  p' = Fork(Join(p)) \land t' = Fork(Join(t)) \land p' = t'\land tr(p, t) &\rightarrow tr(p', t')\\
+  \big(p = Seq \lor ok(p)\big) \land \big(p = Join(Seq) \lor tr(p, p)\big) &\rightarrow \bot.
+  \end{align*}
+\end{example}
+
+\subsection{\ourCEGAR{} для дизъюнктов: восстановление контрпримеров}\label{sec:recover-cex}
+
+В данном разделе представлена процедура построения абстрактного контрпримера исходной системы по конкретному контрпримеру для остаточной системы, получаемой как $\prog'=\substituteLemmas(\prog, a)$. Иными словами, представлена инстанциация процедуры \textsc{RecoverCex} из листинга~\ref{code:runblackbox}.
+
+\paragraph{Абстрактные контрпримеры.}
+Определим абстрактный контрпример к системе дизъюнктов Хорна как дерево опровержений, некоторые листья которого могут быть абстрактными состояниями.
+Для формально определения введём трансформацию дизъюнктов $\simplifiedSubstituteLemmas{\prog, a}$, которая для каждого предиката $P \in \relations$ добавляет к системе $\prog$ новые дизъюнкты $ a(P)(\overline{x}) \rightarrow P(\overline{x}) $.
+
+\begin{define}
+\emph{Абстрактный контрпример} для Хорн-системы $\prog$ относительно абстрактного состояния $a$ является  деревом опровержений Хорн-системы $\simplifiedSubstituteLemmas{\prog, a}$.
+\end{define}
+
+Пусть $T$~--- это дерево опровержений $\prog' = \substituteLemmas(\prog, a)$.
+Далее приведена рекурсивная процедура построения дерева опровержений $T'$ для $\prog'' = \simplifiedSubstituteLemmas{\prog, a}$ по дереву $T$.
+
+\textbf{База рекурсии}. Пусть $T$ является листом $\tuple{C, \Phi}$, где $C \in \prog'$. Поскольку $\Phi=\body{C}$~--- формула без предикатов, то $C$ имеет следующий вид:
+$$ \phi\land a(P_1)(\overline{x}_1)\land\ldots\land a(P_n)(\overline{x}_n)\land \neg a(P)(\overline{x})\rightarrow P(\overline{x}).$$
+Построим $T'$ как вершину $\tuple{C', \Phi'}$, где $C'$ определим как
+$
+      \phi\land P_1(\overline{x}_1)\land\ldots\land P_n(\overline{x}_n) \rightarrow P(\overline{x})\quad\text{ и }\quad \Phi' \equiv \phi \land a(P_1)(\overline{x}_1) \land 
+\ldots \land a(P_n)(\overline{x}_n)
+$
+с $n$ дочерними листьями $\tuple{C_i', a(P_i)(\overline{x}_i)}$, где $C_i'\equiv a(P_i)(\overline{x}_i)\rightarrow P_i(\overline{x}_i)$. Определение дерева опровержения для $T'$ тривиально выполняется. Заметим, что $\hs\models\Phi\rightarrow\Phi'$.
+
+\textbf{Итерация рекурсии}. Пусть $T$~--- это узел $\tuple{C,\Phi}$ с детьми $\tuple{C_1, \Phi_1},\ldots,\tuple{C_n, \Phi_n}$, все $C_i \in \rules{P_i}$ из $\prog'$ и
+\begin{align*}
+  C &\equiv \phi \land a(R_1)(\overline{y}_1) \land \ldots \land a(R_m)(\overline{y}_m) \land \neg a(R)(\overline{y}) \land P_1(\overline{x}_1) \land \ldots \land P_n(\overline{x}_n) \rightarrow R(\overline{y})\\
+  \Phi &\equiv \phi \land a(R_1)(\overline{y}_1) \land \ldots \land a(R_m)(\overline{y}_m) \land \neg a(R)(\overline{y}) \land \Phi_1(\overline{x}_1) \land \ldots \land \Phi_n(\overline{x}_n).
+  \end{align*}
+Благодаря итерации рекурсии у нас уже есть соответствующие им узлы $\tuple{C_1', \Phi_1'},\ldots,\tuple{C_n', \Phi_n'}$. Поэтому определим следующее:
+\begin{align*}
+C' &\equiv \phi\land R_1(\overline{y}_1) \land \ldots \land R_m(\overline{y}_m) \land P_1(\overline{x}_1) \land \ldots \land P_n(\overline{x}_n) \rightarrow R(\overline{y})\\
+\Phi' &\equiv \phi \land a(R_1)(\overline{y}_1) \land \ldots \land a(R_m)(\overline{y}_m) \land \Phi_1'(\overline{x}_1) \land \ldots \land \Phi_n'(\overline{x}_n).
+\end{align*}
+
+Для каждого предиката $R_j$ добавим следующих потомков~--- $\tuple{C_{n+j}', a(R_j)(\overline{y}_j)}$, где 
+$C_{n+j}'\equiv a(R_i)(\overline{y}_i)\rightarrow R_j(\overline{y}_j)$.
+
+Для каждого $i$ имеем $\hs\models\Phi_i\rightarrow\Phi_i'$ по индукции, поэтому для их конъюнкции имеем $\hs\models\Phi\rightarrow\Phi'$.
+
+В конце концов рекурсия придёт к корню дерева $T$, некоторой вершине $\tuple{C, \Phi}$, где $C$~--- это запрос из системы $\prog'$.
+Для него рекурсивно построено дерево $T'$ с корнем $\tuple{C', \Phi'}$. Также по индукции имеем: $\hs\models\Phi\rightarrow\Phi'$. Поскольку $\Phi$ является выполнимой $\signature$-формулой, то $\Phi'$ тоже.
+Таким образом, $T'$ является деревом опровержения системы $\prog''$.
+
+\begin{proposition}
+Приведённая процедура \textsc{RecoverCex} является линейной по числу узлов входного дерева опровержения.
+\end{proposition}
+
+\subsection{Инстанцирование подхода в рамках \pdr{}}\label{sec:beyond-cegar}
+
+Приведённый алгоритм позволяет выводить комбинированные инварианты в классе $\elemclass{}\uplus\regclass{}$, т.е. индуктивные инварианты, выразимые формулами вида
+$\phi(\overline{x})\,\lor\,\overline{x}\!\in\!L$,
+где $\phi$~--- формула первого порядка над АТД, а $L$~--- язык деревьев.
+Реализация подхода в рамках \pdr{} как сложной инстанциации \cegar{} может быть обобщена для автоматического вывода инвариантов в полном бескванторном фрагменте $\regelemclass{}$, состоящем из формул следующего вида:
+\begin{align}\label{eq:inv-general-form}
+    \bigwedge_i(\phi_i(\overline{x})\,\lor\,\overline{x}\!\in\!L_i).
+\end{align}
+
+\pdr{} представляет абстрактное состояние в виде конъюнкции формул (называемых \emph{леммами}). Другими словами, в процедуре $\substituteLemmas(\prog, a)$ (см. раздел~\ref{sec:subst_lemmas}) функция $a$ отображает каждый неинтерпретированный символ $P$ в некоторую конъюнкцию $\bigwedge_i \phi_i$. Обобщение подхода получается путём замены в этой процедуре применений неинтерпретированного предикатного символа $P$ на \emph{конъюнкции дизъюнкций} $\bigwedge_i (\phi_i(\overline{t})\lor L_i(\overline{t}))$ с новыми предикатными символами $L_i$. Таким образом, будут выводиться индуктивные инварианты вида~\ref{eq:inv-general-form} выше.
+
+\section{Выводы}
+Предложенный класс комбинированных инвариантов, построенный на регулярных инвариантах, позволяет выражать как классические символьные инварианты, так и сложные рекурсивные отношения.
+Тем самым, предложенный класс инвариантов является достаточно выразительным и может использовать на  практике.
+Кроме того, для него предложен эффективный метод вывода инвариантов, позволяющий путём небольшой модификации повторно использовать существующие эффективные алгоритмы вывода инвариантов для комбинируемых классов.
+В следующей главе на теоретическом уровне сопоставлены существующие и предложенные классов индуктивных инвариантов.

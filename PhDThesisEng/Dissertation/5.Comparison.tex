@@ -1,0 +1,374 @@
+\chapter{Theoretical Comparison of Inductive Invariant Classes}\label{ch:comparison}
+
+% В данной главе приведено теоретическое сопоставление существующих и предложенных классов индуктивных инвариантов для программ с алгебраическими типами данных.
+% Рассмотрены только те классы, известные из  литературы, для которых существуют полностью автоматические методы вывода инвариантов: элементарные инварианты (\elemclass{}, выводятся с помощью инструментов \spacer{}~\cite{komuravelli2016smt} и \hoice{}~\cite{10.1007/978-3-030-02768-1_8}), элементарные инварианты с ограничениями размера термов (\sizeelemclass{}, выводятся с помощью инструмента \eldarica{}~\cite{8603013}), регулярные инварианты (\regclass{}, выводятся с помощью инструмента \rchc{}~\cite{haude2020}, а также методом из главы~\cref{ch:fmf}), синхронные регулярные инварианты (\syncRegFlatClass{}, \syncRegFullClass{}, выводятся с помощью инструмента \rchc{}~\cite{haude2020}, а также методом из главы~\cref{ch:SyncReg}) и комбинированные инварианты (\regelemclass{}, выводятся методом из главы~\cref{ch:cici}).
+This chapter provides a theoretical comparison of existing and proposed classes of inductive invariants for programs with algebraic data types.
+We consider only those classes known from the literature for which there are fully automatic invariant inference methods: elementary invariants (\elemclass{}, inferred by \spacer{}~\cite{komuravelli2016smt} and \hoice{}~\cite{10.1007/978-3-030-02768-1_8}), elementary invariants with term size constraints (\sizeelemclass{}, inferred by \eldarica{}~\cite{8603013}), regular invariants (\regclass{}, inferred by \rchc{}~\cite{haude2020}, as well as the method from Chapter~\cref{ch:fmf}), synchronous regular invariants (\syncRegFlatClass{}, \syncRegFullClass{}, inferred by \rchc{}~\cite{haude2020}, as well as by the method from Chapter~\cref{ch:SyncReg}) and combined invariants (\regelemclass{}, inferred by the method from Chapter~\cref{ch:cici}).
+
+
+
+% Сопоставление выполнено на базе свойств, которые являются ключевыми для классов инвариантов: замкнутость относительно булевых операций,  разрешимость задачи принадлежности кортежа термов инварианту, разрешимость  проверки инварианта на пустоту (раздел~\cref{sec:comparison/boolean}),  выразительная сила (раздел~\cref{sec:comparison/expressivity}).
+% Результаты теоретического сравнения приведены в таблицах~\cref{tab:boolClasses} и~\cref{tab:invClasses}.
+The comparison is based on the key properties of invariant classes: closure with respect to Boolean operations, decidability of the term membership problem, decidability of checking an invariant for emptiness (Section~\cref{sec:comparison/boolean}), and expressive power (Section~\cref{sec:comparison/expressivity}).
+The results of the theoretical comparison are shown in Tables~\cref{tab:boolClasses} and~\cref{tab:invClasses}.
+
+
+\begin{table} [htbp]
+    \centering
+    \begin{threeparttable}% выравнивание подписи по границам таблицы
+        \caption{Theoretical comparison of inductive invariant classes}\label{tab:boolClasses}%
+        \begin{tabular}{| m{41mm} || c | c | c | c | c | c |}
+            \hline
+            \hline
+            \diagbox[width=45mm]{Property}{Class} & \elemclass{} & \sizeelemclass{} & \regclass{} & \syncRegFlatClass{} & \syncRegFullClass{} & \regelemclass{} \\
+            \hline
+            Closed under $\cap$       & Yes & Yes & Yes\tnote{1} & Yes\tnote{2} & Yes\tnote{2} & Yes \\
+            Closed under $\cup$       & Yes & Yes & Yes\tnote{1} & Yes\tnote{2} & Yes\tnote{2} & Yes \\
+            Closed under $\setminus$  & Yes & Yes & Yes\tnote{1} & Yes\tnote{2} & Yes\tnote{2} & Yes \\
+            $\overline{t} \in I$ is decidable          & Yes\tnote{3} & Yes\tnote{4} & Yes\tnote{5} & Yes\tnote{7} & Yes\tnote{9} & Yes\tnote{10} \\
+            $I = \emptyset$  is decidable  & Yes\tnote{3} & Yes\tnote{4} & Yes\tnote{6} & Yes\tnote{8} & Yes\tnote{9} & Yes\tnote{10}\\
+            Recursive relations are expressible & No & Partially & Yes & Yes & Yes & Yes \\
+            Synchronous relations are expressible & Yes & Yes & No & Partially & Yes & Yes \\
+            \hline
+            \hline
+        \end{tabular}
+\setlength{\multicolsep}{0cm}
+\begin{multicols}{2}
+        \begin{tablenotes}
+            \item [1] see~\cite[property~3.2.9]{tata}
+            \item [2] see~Section~\cref{sec:SyncReg/boolean}
+            \item [3] see~\cite{oppen1980reasoning}
+            \item [4] see~\cite{hojjat2017deciding}
+            \item [5] see~\cite[Section~3.2.1 and Th.~1.7.2]{tata}
+            \item [6] see~\cite[Section~3.2.1 and Th.~1.7.4]{tata}
+            \item [7] see~\cite[Def.~3.2.1 and Th.~1.7.2]{tata}
+            \item [8] see~\cite[Def.~3.2.1 and Th.~1.7.4]{tata}
+            \item [9] see~Section~\cref{sec:SyncReg/decidability}
+            \item [10] see~\cite[следствие~2]{comon1994equational}
+            \end{tablenotes}
+\end{multicols}          
+    \end{threeparttable}
+\end{table}
+
+% \section{Замкнутость классов относительно булевых операций и разрешимость операций}\label{sec:comparison/boolean}
+
+% Свойства замкнутости и разрешимости для рассмотренных классов сведены в таблицу~\cref{tab:boolClasses}. Сноска в каждой ячейке таблица отсылает к соответствующей теореме; отсутствие сноски свидетельствует об очевидности утверждаемого в ячейке факта. Например, замкнутость классов \elemclass{}, \sizeelemclass{} и \regelemclass{} относительно булевых операций очевидна, т.к. они синтаксически строятся как языки первого порядка с соответствующими операциями.
+\section{Closure of Classes with Respect to Boolean Operations and Decidability of Operations}\label{sec:comparison/boolean}
+
+The properties of closure and decidability for the considered classes are summarized in Table~\cref{tab:boolClasses}. A footnote in each cell of the table refers to the corresponding theorem; the absence of a footnote indicates the obviousness of the fact asserted in the cell. For example, the closure of the classes \elemclass{}, \sizeelemclass{}, and \regelemclass{} with respect to Boolean operations is clear, as they are syntactically constructed as first-order languages with the corresponding operations.
+
+
+\section{Expressibility in Invariant Classes}\label{sec:comparison/expressivity}
+
+\begin{table} [htbp]
+\centering
+\begin{threeparttable}% выравнивание подписи по границам таблицы
+\caption{Theoretical comparison of inductive invariant classes expressivity}\label{tab:invClasses}%
+\begin{tabular}{| m{24mm} || x{25mm} | x{25mm} | x{15mm} | c | c | c |}
+    \hline
+    \hline
+    Class & \elemclass{} & \sizeelemclass{} & \regclass{} & \syncRegFlatClass{} & \syncRegFullClass{} & \regelemclass{} \\
+    \hline
+    \elemclass{} & $\emptyset$ & $\emptyset$ & \exLR{}\tnote{1,4,5} & \exLR{}\tnote{1,5} & \exLR{}\tnote{1} & $\emptyset$\\
+    \sizeelemclass{} & $\infty$ & $\emptyset$ & \exLR{}\tnote{1,4,5} & \exLR{}\tnote{1,5} & \exLR{}\tnote{1} & \exLt{}\tnote{3} \\
+    \regclass{} & \exEvenLeft{}\tnote{2} & \exEvenLeft{}\tnote{2} & $\emptyset$ & $\emptyset$\tnote{4} & $\emptyset$\tnote{4,5} & $\emptyset$\\
+    \syncRegFlatClass{} & \exEvenLeft{}\tnote{2,7} & \exEvenLeft{}\tnote{2,4} & $\infty$\tnote{4} & $\emptyset$ & $\emptyset$\tnote{5} & \exLt{}\tnote{3}\\
+    \syncRegFullClass{} & \exEvenLeft{}\tnote{2,4,5} & \exEvenLeft{}\tnote{2,4,5} & $\infty$\tnote{4,5} & $\infty$\tnote{5} & $\emptyset$ & \exLt{}\tnote{3,5}\\
+    \regelemclass{} & $\infty$ & \exEvenLeft{}\tnote{2} & $\infty$ & \exLR{}\tnote{1,5} & \exLR{}\tnote{1} & $\emptyset$\\
+    \hline
+    \hline
+\end{tabular}
+\setlength{\multicolsep}{0cm}
+\begin{multicols}{2}
+\begin{tablenotes}
+    \item [1] $\exLR{}\in\elemclass{} \setminus \syncRegFullClass{}$ (Lemma~\ref{lemm:lr-not-in-reg-full})
+    \item [2] $\exEvenLeft{} \in \regclass{} \setminus \sizeelemclass{}$ (Th.~\ref{thm:exEvenLeft})
+    \item [3] see Th.~\ref{thm:exLt}
+    \item [4] $\regclass{}\subseteq\syncRegFlatClass{}$~\cite[property~3.2.6]{tata}
+    \item [5] $\syncRegFlatClass{}\subseteq\syncRegFullClass{}$~\cite[Th.~11]{haude2020}
+\end{tablenotes}
+\end{multicols}
+\end{threeparttable}
+\end{table}
+
+\invariantreprclasses{\label{fig:Representations-new}}
+
+% Результаты сравнения выразительности классов инвариантов представлены в таблице~\cref{tab:invClasses}.
+% Поскольку некоторые классы построены как синтаксические расширения других классов (например, \syncRegFlatClass{} и \syncRegFullClass{} как расширяют \regclass{}), а некоторые классы синтаксически различаются очень сильно (например, \regclass{} и \elemclass{}), взаимосвязи между представляемыми ими множествами не очевидны.
+% Разграничить классы инвариантов важно для проведения анализа алгоритмов вывода инвариантов, в частности, для понимания границ их применимости. Если инварианты проблем какого-то вида не лежат в классе инвариантов, выводимых данным алгоритмом, то этот алгоритм не будет завершаться на проблемах данного вида.
+% Поэтому эти взаимосвязи представлены в таблице.
+The results of comparing the expressiveness of invariant classes are presented in Table~\cref{tab:invClasses}.
+Since some classes are built as syntactic extensions of other classes (for example, \syncRegFlatClass{} and \syncRegFullClass{} both extend \regclass{}), and some classes are syntactically very different (for example, \regclass{} and \elemclass{}), the relationships between the sets they represent are not obvious.
+It is important to distinguish between classes of invariants for the analysis of invariant inference algorithms, in particular, for understanding the limits of their applicability. If the invariants of problems of some kind do not lie in the class of invariants inferred by the given algorithm, then this algorithm will not terminate on problems of this kind. Therefore, these relationships are presented in the table.
+
+% Для класса $A$ в строке и класса $B$ в столбце в соответствующей им ячейке находится сноска, а также либо символ $\emptyset$, либо $\infty$, или название некоторой системы дизъюнктов из данной работы.
+% Каждую ячейку следует читать как ответ на вопрос: <<Что находится в классе $A\setminus B$?>> Если в ячейке находится $\emptyset$, значит $A\setminus B = \emptyset$. Если в ячейке находится $\infty$, значит $B \subseteq A$. Наконец, если в ячейке находится название системы $\prog$, значит, классы $A$ и $B$ несравнимы, т.е. $\prog \in A \setminus B \neq \emptyset$ и при этом $B \setminus A \neq \emptyset$.
+% Сноска отсылает к соответствующей теореме, представленной в данной  работе. Отсутствие сноски означает очевидность приводимого факта.
+% Например, в ячейке $\sizeelemclass{}\setminus\elemclass{}$ находится $\infty$ без сноски, т.к. класс $\sizeelemclass{}$ является синтаксическим расширением класса $\elemclass{}$, следовательно, включает, как минимум, те же инварианты.
+For class $A$ in the row and class $B$ in the column, the corresponding cell contains a footnote, and either the symbol $\emptyset$, or $\infty$, or the name of a certain clause system from this work.
+Each cell should be read as an answer to the question: ``What is in class $A\setminus B$?'' If the cell contains $\emptyset$, then $A\setminus B = \emptyset$. If the cell contains $\infty$, then $B \subseteq A$. Finally, if the cell contains the name of a system $\prog$, then the classes $A$ and $B$ are incomparable, i.e. $\prog \in A \setminus B \neq \emptyset$ and $B \setminus A \neq \emptyset$.
+The footnote refers to the corresponding theorem presented in this thesis. The absence of a footnote indicates the obviousness of the stated fact.
+For example, the cell $\sizeelemclass{}\setminus\elemclass{}$ contains $\infty$ without a footnote, because the $\sizeelemclass{}$ class is a syntactic extension of the $\elemclass{}$ class, and therefore includes at least the same invariants.
+
+% На рисунке~\cref{fig:Representations-new} для удобства отдельно представлены связи включения между классами инвариантов. Ребро, ведущее из класса $A$ в класс $B$ с меткой $\prog$ означает, что $A\subsetneq B$ и $\prog\in B \setminus A$.
+
+In Figure~\cref{fig:Representations-new}, inclusion relations between invariant classes are presented separately for convenience. An edge from class $A$ to class $B$ labeled $\prog$ means that $A\subsetneq B$ and $\prog\in B \setminus A$.
+
+
+\subsection{Inexpressibility in synchronous languages}\label{sec:comparison/undef-in-sync}
+
+\begin{example}[\exNode{}]\label{ex:node}
+    % Рассмотрим следующее множество термов над алгебраическим типом бинарных деревьев $Tree ::= left\,|\,node(Tree, Tree)$:
+    Consider the following set of terms over the  binary tree algebraic type $Tree ::= left\,|\,node(Tree, Tree)$:
+    $$ \exNode{} \eqdef \big\{ \tuple{Node(y, z), y, z} \mid y, z\in\groundTerms{} \big\}. $$
+\end{example}
+
+% Этот пример позволяет разделить классы синхронных регулярных инвариантов с полной и стандартной свёртками, как показывает следующая лемма.
+This example allows us to separate classes of synchronous regular invariants with full and standard convolution, as the next lemma shows.
+\begin{lemma}\label{lemm:node-not-in-reg-flat}
+    
+% Существуют синхронные регулярные инварианты с полной свёрткой, которые невыразимы при помощи только стандартной свёртки, т.е. $\exNode{}\in\syncRegFullClass{}\setminus\syncRegFlatClass{}$.
+There are synchronous regular invariants with full convolution that are inexpressible using only standard convolution, i.e. $\exNode{}\in\syncRegFullClass{}\setminus\syncRegFlatClass{}$.
+\end{lemma}
+\begin{proof}
+    % $\exNode{}\in\syncRegFullClass{}$, что следует из примера~\ref{ex:node-in-reg-full} и теоремы~\ref{theorem:anyPatternClosure} для языка равенства двух термов $L$.
+    % Справедливость $\exNode{}\not\in\syncRegFlatClass{}$ показана в~\cite[упр.~3.2]{tata} применением леммы о <<накачке>> для языков автоматов над деревьями к языку $\exNode{}$.
+    $\exNode{}\in\syncRegFullClass{}$ follows from application of Theorem~\ref{theorem:anyPatternClosure} to a language of equality of two terms and a linear template $\tuple{Node(y, z), y, z}$.
+The validity of $\exNode{}\not\in\syncRegFlatClass{}$ is shown in~\cite[Ex.~3.2]{tata} by applying the pumping lemma for tree automata languages to $\exNode{}$ .
+\end{proof}
+
+\begin{example}[\exLR{}]\label{ex:lr}
+    % Рассмотрим следующее множество термов над алгебраическим типом бинарных деревьев $Tree ::= left\,|\,node(Tree, Tree)$:
+     Consider the following set of terms over the  binary tree algebraic type $Tree ::= left\,|\,node(Tree, Tree)$:
+    $$ \exLR{} \eqdef \big\{ x \mid \exists t\ .\ x = node(t, t) \big\}. $$
+\end{example}
+
+% Это множество лежит в классе элементарных инвариантов, однако не может быть выражено никаким синхронным автоматов над деревьями даже с полной синхронизацией, как показывает следующая лемма.
+This set lies in the class of elementary invariants, but cannot be expressed by any synchronous tree automata even with complete synchronization, as the next lemma shows.
+\begin{lemma}\label{lemm:lr-not-in-reg-full}
+% Существуют элементарные инварианты, которые не являются инвариантами, выразимыми регулярно с полной синхронизацией, т.е. 
+There are elementary invariants that are not invariants expressible regularly with full synchronization, i.e.,
+     $\exLR{}\not\in\syncRegFullClass{}$.
+\end{lemma}
+\begin{proof}
+    % В~\cite[упр.~1.4]{tata} применением леммы о <<накачке>> к языку $\exLR{}$ показано, что $\exLR{}\not\in\regclass{}$. По лемме~\ref{lemma:reg-full-one-is-reg}, из этого следует $\exLR{}\not\in\syncRegFullClass{}$.
+    In~\cite[Ex.~1.4]{tata}, applying the pumping lemma to $\exLR{}$, it is shown that $\exLR{}\not\in\regclass{}$. By Lemma~\ref{lemma:reg-full-one-is-reg}, this implies $\exLR{}\not\in\syncRegFullClass{}$.
+\end{proof}
+
+\subsection{Inexpressibility in combined languages}
+\begin{theorem}\label{thm:exLt}
+  $\exLt{} \in \sizeelemclass{}$, $\exLt{}\in\syncRegFlatClass{}$, $\exLt{}\not\in\regelemclass{}$
+\end{theorem}
+\begin{proof}
+    % Множество $\exLt{}$ выражается следующей \sizeelemclass{}-формулой:  $$\phi(x, y) \eqdef \sizename(x) < \sizename(y).$$
+    The set $\exLt{}$ is expressed by the following \sizeelemclass{}-formula: $$\phi(x, y) \eqdef \sizename(x) < \sizename(y).$$
+
+    % Тот факт, что $\exLt{}\in\syncRegFlatClass{}$, был показан в примере~\ref{ex:lt}.
+    The fact that $\exLt{}\in\syncRegFlatClass{}$ was shown in Example~\ref{ex:lt}.
+
+    % Покажем теперь, что $\exLt{}$ не лежит в классе $\regelemclass{}$. Заметим, что алгебраический тип целых чисел Пеано изоморфмен натуральным числам (с нулём). Кроме того, формулы, представляющие множества из класса $\regelemclass{}$, изоморфны формулам в сигнатуре расширенной арифметики Пресбургера без сложения и порядка. Рассмотрим эту сигнатуру $\signature = \tuple{\sorts, \fsymbs, \psymbs}$, где есть: единственный сорт натуральных чисел ($\sorts = \{\mathbb{N}\}$), константа $0$ и единственный функциональный символ следования~$s$ ($s(x)$ интерпретируется как $x + 1$, $\fsymbs=\{0, s\}$), предикатные символы равенства и делимости на все константы ($c \mid x$ интерпретируется как $x$ делится на $c$, $\psymbs=\{=\}\cup\{c \mid \_ , c \in \mathbb{N}\}$). Поскольку множество $lt$ представляет отношение строгого порядка, для доказательства исходного утверждения необходимо показать, что стандартное отношение порядка на натуральных числах невыразимо в теории стандартной модели $\mathcal{N}$ сигнатуры~$\signature$.
+    Let us now show that $\exLt{}$ does not belong to $\regelemclass{}$. Note that the algebraic type of Peano integers is isomorphic to natural numbers (with zero). In addition, formulas representing sets from $\regelemclass{}$ are isomorphic to formulas in the signature of extended Presburger arithmetic without addition and order. Consider the signature $\signature = \tuple{\sorts, \fsymbs, \psymbs}$, which includes the following elements: a unique sort for natural numbers ($\sorts = \{\mathbb{N}\}$), a constant $0$, and a unique successor function symbol $s$, where $s(x)$ is interpreted as $x + 1$, $\fsymbs=\{0, s\}$, as well as predicate symbols of equality and divisibility for all constants ($c \mid x$ is interpreted as $x$ is divisible by $c$, $\psymbs=\{=\}\cup\{c \mid \_ , c \in \mathbb{N}\}$). Since the set $lt$ represents a strict order relation, to prove the original statement it is necessary to show that the standard order relation on natural numbers is inexpressible in the theory of the standard model $\mathcal{N}$ of signature~$\signature$.
+
+    % Докажем это утверждение, расширив доказательство~\cite[Section~2]{kossak2023undefinability} для арифметики с аналогичной сигнатурой без предикатов делимости.
+    % Рассмотрим модель $\mathcal{M} = (\mathbb{N}\cup\mathbb{N}^*, s, c\mid\_)$, где множество $\mathbb{N}^*$ определено как множество символов $\{n^* \mid n \in\mathbb{N}\}$; $c \mid n$ и $c \mid n^*$ выполняются только когда $c$ делит $n$; функция следования определена следующим образом.
+    Let us prove this assertion by extending the proof from~\cite[Sec.~2]{kossak2023undefinability} for an arithmetic with a similar signature without divisibility predicates.
+Consider the model $\mathcal{M} = (\mathbb{N}\cup\mathbb{N}^*, s, c\mid\_)$, where $\mathbb{N}^*$ is defined as the set of symbols $\{n^* \mid n \in\mathbb{N}\}$; $c \mid n$ and $c \mid n^*$ hold only when $c$ divides $n$; the following function is defined as follows.
+    \begin{align*}
+        s(n) &\eqdef n + 1\\
+        s(n^*) &\eqdef (n + 1)^*
+    \end{align*}
+    
+    % Модель $\mathcal{M}$ является элементарным расширением модели $\mathcal{N}$, поэтому если некоторая формула $\psi(x, y)$ определяет порядок на $\mathcal{N}$, она определяет и порядок на~$\mathcal{M}$. Заметим, что следующее отображение $\sigma$ является автоморфизмом модели~$\mathcal{M}$:
+    Model $\mathcal{M}$ is an elementary extension of model $\mathcal{N}$, so if some formula $\psi(x, y)$ defines an order on $\mathcal{N}$, it defines an order on~ $\mathcal{M}$. Note that the following mapping $\sigma$ is an automorphism of model~$\mathcal{M}$:
+    \begin{align*}
+        \sigma(n) &\eqdef n^*\\
+        \sigma(n^*) &\eqdef n.
+    \end{align*}
+    
+    % Из того факта, что $\sigma$~--- автоморфизм модели $\mathcal{M}$, следует, что для любых $x, y \in \mathbb{N}\cup\mathbb{N}^*$ верно, что $\mathcal{M}\models \psi(x, y) \Leftrightarrow \mathcal{M}\models \psi(\sigma(x), \sigma(y))$. Поскольку формула $\psi$ по предположению выражает порядок, без ограничений общности, допустим, что $\mathcal{M}\models \psi(0, 0^*)$, но тогда, применив автоморфизм $\sigma$, получим, что $\mathcal{M}\models \psi(0^*, 0)$, что противоречит аксиомам порядка. Следовательно, никакая формула данной сигнатуры не может представлять порядок. Из этого следует, что $\exLt{}$ не лежит в классе $\regelemclass{}$.
+    From the fact that $\sigma$ is an automorphism of the model $\mathcal{M}$, it follows that for any $x, y \in \mathbb{N}\cup\mathbb{N}^*$, it is true that $\mathcal{M}\models \psi(x, y) \Leftrightarrow \mathcal{M}\models \psi(\sigma(x), \sigma(y))$. Since the formula $\psi$ is assumed to express order, without loss of generality, assume that $\mathcal{M}\models \psi(0, 0^*)$. However, by applying the automorphism $\sigma$, we get that $\mathcal{M}\models \psi(0^*, 0)$, which contradicts the axioms of order. Therefore, no formula of a given signature can represent order. It follows from this that $\exLt{}$ does not lie in $\regelemclass{}$.
+\end{proof}
+
+
+
+
+\subsection{Inexpressibility in elementary languages}
+% В данном разделе представлены леммы о <<накачке>> для языков первого порядка: языка ограничений и языка ограничений, расширенного ограничениями на размер термов.
+This section presents pumping lemmas for first-order languages: the constraint language and the constraint language extended with term size constraints.
+
+% Первые леммы о <<накачке>> возникли в теории формальных языков в связи с конечными автоматами и контекстно-свободными грамматиками.
+% В общем виде любая лемма о <<накачке>> должна показывать, что для всех языков в некотором классе (например, регулярных или контекстно-свободных языков) любое достаточно большое слово может быть <<накачано>>. Иными словами, некоторые части слова могут быть неограниченно увеличены, и <<накачанное>> слово при этом останется в языке. Леммы о <<накачке>> полезны для доказательства невыразимости инварианта в некотором классе: предположив, что инвариант принадлежит классу, можно применить специализированную лемму о <<накачке>> для этого класса и получить некоторый <<накачанный>> элемент. Если он не может лежать в инварианте, то получено противоречие, следовательно, инвариант невыразим в данном классе.
+
+The first pumping lemmas arose in the theory of formal languages in connection with finite automata and context-free grammars.
+In general, any pumping lemma must show that for all languages in some class (e.g., regular or context-free languages), any sufficiently large word can be ``pumped''. In other words, some parts of the word can be enlarged indefinitely, and the pumped word will remain in the language. Pumping lemmas are useful for proving the inexpressibility of an invariant in some class: assuming that the invariant belongs to a class, you can apply a specialized pumping lemma for this class and get some pumped element. If it cannot lie in the invariant, then a contradiction has been obtained; therefore, the invariant is inexpressible in the given class.
+
+% Для формулировки лемм о <<накачке>> в начале определим следующее расширение $\elemextclass{}$ языка ограничений, которое допускает устранение кванторов.
+% Для каждого АТД $ \tuple{\sigma, C} $ и каждого конструктора $ f \in C $, имеющего арность $ \sigma_1 \times \dots \times \sigma_n \rightarrow \sigma $ для некоторых сортов $ \sigma_1, \ldots, \sigma_n $, введём \emph{селекторы} $ g_i \in S $ с арностью $ \sigma \rightarrow \sigma_i $ для каждого $ i \leq n $ со стандартной семантикой, заданной так: $ g_i (f (t_1, \ldots, t_n)) \eqdef t_i $.
+To formulate pumping lemmas, we first define the following extension $\elemextclass{}$ of the constraint language, which allows elimination of quantifiers.
+For every ADT $ \tuple{\sigma, C}$ and every constructor $ f \in C $ of arity $ \sigma_1 \times \dots \times \sigma_n \rightarrow \sigma $ for some sorts of $ \sigma_1, \ldots , \sigma_n $, introduce \emph{selectors} $ g_i \in S $ of arity $ \sigma \rightarrow \sigma_i $ for each $ i \leq n $ with standard semantics given as follows: $ g_i (f (t_1, \ ldots, t_n)) \eqdef t_i $.
+
+\begin{theorem}[see~\cite{oppen1980reasoning}]
+    % Всякая $\elemclass{}$-формула эквивалентна некоторой бескванторной $\elemextclass{}$-формуле.
+    Any $\elemclass{}$-formula is equivalent to some quantifier-free $\elemextclass{}$-formula.
+\end{theorem}
+
+% Дадим несколько вспомогательных определений.
+Let us give some auxiliary definitions.
+
+\begin{define}
+% Высоту замкнутого терма определим  индуктивно следующим образом:
+We define the height of a closed term inductively as follows:
+\begin{align*}
+    \height{c} & \eqdef 1, \\
+    \height{c (t_1, \ldots, t_n)} & \eqdef 1 + \max_{i = 1} ^ n \big (\height{t_i} \big).
+\end{align*}
+\end{define}
+
+% Будем называть \emph{путём}  следующую последовательность селекторов (возможно пустую)~--- для $ S_n: \sigma_n \rightarrow \sigma_{n-1}, \ldots, S_1: \sigma_1 \rightarrow \sigma_0 $ путь определяется как $ s \eqdef S_1 \ldots S_n $. Для термов $ t $ сорта $ \sigma_n $ пусть $ \subterm{t}{s} \eqdef S_1 (\ldots (S_n (t)) \ldots) $.
+% Для замкнутых термов $ g $ переопределим $ \subterm{g}{s} $ как вычисленный подтерм $ g $ в $ s $.
+% В дальнейшем пути будем обозначать прописными буквами $ p, q, r, s $.
+We will call a \emph{path} the following sequence of selectors, possibly empty. For $ S_n: \sigma_n \rightarrow \sigma_{n-1}, \ldots, S_1: \sigma_1 \rightarrow \sigma_0 $, the path is defined as $ s \eqdef S_1 \ldots S_n $. For terms $ t $ of sort $ \sigma_n $, let $ \subterm{t}{s} \eqdef S_1 (\ldots (S_n (t)) \ldots) $.
+For closed terms $ g $, we redefine $ \subterm{g}{s}$ as a computed subterm of $g$ in $s$.
+In what follows, paths will be denoted by cursive letters $ p, q, r, s $.
+
+
+% Мы говорим, что два пути $ p $ и $ q $ \emph{перекрываются}, если один из них является суффиксом другого.
+% Для попарно неперекрывающихся путей $ p_1, \ldots, p_n $ с помощью записи  $ t [p_1 \leftarrow u_1, \ldots, p_n \leftarrow u_n] $ будем понимать  терм, полученный одновременной заменой  в $ t $ подтермов $ \subterm{t}{p_i} $ на термы $ u_i $. Для конечной последовательности попарно различных путей $ P = (p_1, \ldots, p_n) $ и некоторого множества термов $ U = (u_1, \ldots, u_n) $ мы переопределяем обозначения и пишем $ t [P \leftarrow U] $ вместо $ t [p_1 \leftarrow u_1, \ldots, p_n \leftarrow u_n] $, а также $ t [P \leftarrow t] $ вместо $ t [p_1 \leftarrow t, \ldots, p_n \leftarrow t ] $.
+We say that two paths $ p $ and $ q $ \emph{overlap} if one of them is a suffix of the other.
+For pairwise non-overlapping paths $ p_1, \ldots, p_n $, we will understand the notation $ t [p_1 \leftarrow u_1, \ldots, p_n \leftarrow u_n] $ to mean the term obtained by simultaneously replacing subterms $ \subterm{t}{p_i} $ in $ t $ with terms $ u_i $. For a finite sequence of pairwise distinct paths $ P = (p_1, \ldots, p_n) $ and some set of terms $ U = (u_1, \ldots, u_n) $ we redefine the notation and write $ t [P \leftarrow U] $ instead of $ t [p_1 \leftarrow u_1, \ldots, p_n \leftarrow u_n]$, and also $ t [P \leftarrow t]$ instead of $ t [p_1 \leftarrow t, \ldots, p_n \leftarrow t ]$.
+
+% Теперь определим множество путей, которое будет <<накачиваться>>.
+Now let us define a set of paths that will be pumped.
+\begin{define}
+% Терм $ t $ является \emph{листовым термом} сорта $ \sigma $,
+% если это конструктор без параметров,
+% или $ t = c (t_1, \ldots, t_n) $, где все $ t_i $ являются листовыми термами, а $ t $ не содержит никаких собственных подтермов сорта $ \sigma $. Для замкнутого терма $ g $ и сорта $ \sigma $ мы определяем $ \leafpos{\sigma}{g} \eqdef \{p \mid \subterm{g}{p} \text{~--- листовой терм сорта } \sigma \} $.
+A term $ t $ is a \emph{leaf term} of sort $ \sigma $, if it is a parameterless constructor,
+or $ t = c (t_1, \ldots, t_n) $, where all $ t_i $ are leaf terms and $ t $ does not contain any proper sub-terms of sort $ \sigma $. For a closed term $ g $ and sort $ \sigma $ we define $ \leafpos{\sigma}{g} \eqdef \{p \mid \subterm{g}{p} \text{ is a leaf term of sort } \sigma\}$.
+\end{define}
+
+\defPumpLemmaElem{}
+\begin{proof}
+% Доказательство приведено в работе~\cite{10.1145/3453483.3454055}.
+The proof is given in~\cite{10.1145/3453483.3454055}.
+\end{proof}
+
+% Фактически, лемма~\ref{lemm:pump-elem} утверждает, что для достаточно больших кортежей термов можно взять любой из самых глубоких подтермов, заменить их на \emph{произвольный} терм $ t $ и \emph{всё ещё} получить кортеж термов из данного языка.
+% Yesнная лемма формализует тот факт, что язык ограничений над теорией АТД может описывать только равенства и неравенства между подтермами ограниченной глубины: если пойти достаточно глубоко и заменить листовые термы произвольными термами, то начальный и результирующий термы будут \emph{неотличимы} формулой языка первого порядка.
+In fact, Lemma~\ref{lemm:pump-elem} states that for sufficiently large tuples of terms one can take any of the deepest subterms, replace them with \emph{arbitrary} terms $ t $ and \emph{still} get a tuple of terms from the given language.
+This lemma formalizes the fact that a constraint language over an ADT theory can only describe equalities and inequalities between subterms of bounded depth: if you go deep enough and replace leaf terms with arbitrary terms, then the initial and resulting terms are \emph{indistinguishable} by a first-order language formula.
+
+\begin{theorem}
+% Существуют регулярные, но неэлементарные инварианты, т.е. $\regclass{} \setminus \elemclass{} \neq \emptyset$.
+There are regular but non-elementary invariants, i.e. $\regclass{} \setminus \elemclass{} \neq \emptyset$.
+\end{theorem}
+\begin{proof}
+    % Рассмотрим  систему дизъюнктов Хорна над алгебраическим типом целых чисел Пеано  \natDef{}, которая проверяет чётность чисел и утверждает, что никакие два соседних числа не могут быть чётными:
+    Consider the Horn clause system over the algebraic type of Peano integers \natDef{}, which checks the parity of numbers and states that no two neighboring numbers can be even:
+    \begin{align*}
+        x = Z &\rightarrow ev(x)\\
+        ev(y) \land x = S(S(y)) &\rightarrow ev(x)\\
+        ev(x) \land ev(y) \land x = S(y) &\rightarrow \bot
+    \end{align*}
+
+    % Система из этого примера имеет единственный индуктивный инвариант~--- множество $ E = \{ S^n(Z) \mid n \geq 0 \} $. Это можно доказать от противного: если расширить это множество некоторым нечетным числом $ E \cup \{S ^{2n + 1} (Z) \} \subseteq E '$, то будет нарушено условие запроса при $ x = S ^{2n} (Z) $ и $ y = S ^{2n + 1} (Z) $.
+    % Таким образом, множество $E$ оказывается единственным безопасным индуктивным инвариантом этой системы.
+    The system in this example has a single inductive invariant~--- the set $ E = \{ S^n(Z) \mid n \geq 0 \} $. This can be proved by contradiction: if this set is extended by some odd number $ E \cup \{S ^{2n + 1} (Z) \} \subseteq E '$, then the query condition will be violated for $ x = S ^{2n } (Z) $ and $ y = S ^{2n + 1} (Z) $.
+Thus, the set $E$ turns out to be the only safe inductive invariant of this system.
+
+    % Легко видеть, что множество $E$ выразимо следующим автоматом над деревьями (и следовательно, система имеет индуктивный инвариант в классе \regclass{}):
+    It is easy to see that the set $E$ is expressible by the following tree automaton (and hence the system has an inductive invariant in \regclass{}):
+    \exampleTwo{}
+
+    % Докажем, что множество $E$ невыразимо формулой языка ограничений.
+    % Предположим, что множество $E$ элементарно. Возьмём постоянную $ K> 0 $ из леммы~\ref{lemm:pump-elem}. Пусть $ g \equiv S ^{2K} (Z) \in E, \sigma = Nat, p = S ^{2K} $. Yesлее, $ \bigcup_j \leafpos{\sigma}{g_j} = \leafpos{\sigma}{g} = \{p \} $, поэтому $ P = \{p \} $. Тогда по лемме~\ref{lemm:pump-elem} найдётся такое $ N \geq 0 $, что если взять $ t \equiv S ^{2N + 1} (Z) $, то $ g [P \leftarrow t] \equiv S ^{2K} (S ^{2N + 1} (Z)) \in E $. Следовательно, множеству $E$ принадлежит нечётное число, что противоречит определению этого множества чётных чисел.
+    Let us prove that the set $E$ is inexpressible by a constraint language formula.
+Assume that the set $E$ is elementary. Take the constant $ K> 0 $ from Lemma~\ref{lemm:pump-elem}. Let $ g \equiv S ^{2K} (Z) \in E, \sigma = Nat, p = S ^{2K} $. Further, $ \bigcup_j \leafpos{\sigma}{g_j} = \leafpos{\sigma}{g} = \{p\}$, so $P = \{p\}$. Then, by Lemma~\ref{lemm:pump-elem}, there exists $ N \geq 0 $ such that if we set $ t \equiv S ^{2N + 1} (Z) $, then $ g [P \leftarrow t] \equiv S ^{2K} (S ^{2N + 1} (Z)) \in E $. Therefore, the set $E$ contains an odd number, which contradicts the definition of this set of even numbers.
+\end{proof}
+
+% Сформулируем аналогичную лемму для языка первого порядка с ограничениями на размер терма. Для этого рассмотрим соответствующее расширение селекторами \sizeelemextclass{}, которое допускает устранение кванторов.
+Next, we formulate a similar lemma for a first-order language with term size constraints. For this purpose, consider the corresponding extension with selectors \sizeelemextclass{}, which allows for quantifier elimination.
+
+\begin{theorem}[see~\cite{zhang2004decision}]
+    % Всякая $\sizeelemclass{}$-формула эквивалентна некоторой бескванторной $\sizeelemextclass{}$-формуле.
+    Any $\sizeelemclass{}$-formula is equivalent to some quantifier-free $\sizeelemextclass{}$-formula.
+\end{theorem}
+
+\begin{define}
+% Заимствуя обозначения из работы~\cite{hojjat2017deciding}, обозначим $ \termsOfSize{\sigma}{k} = \{t \text{ имеет сорт } \sigma \mid \sizename(t) = k \} $.
+% Для каждого  $ \sigma $, являющегося АТД-сортом,  определим множество размеров термов $ \sizesOfSort{\sigma} = \{\sizename(t) \mid t \in \huniv{\sigma} \} $.
+% \emph{Линейное множество}~--- это множество вида $ \{\mathbf{v} + \sum_{i = 1} ^ n k_i \mathbf{v_i} \mid k_i \in \mathbb{N} _0 \}$, где все $\mathbf{v}$  и $\mathbf{v_i}$ являются  векторами над $ \mathbb{N} _0 = \mathbb{N} \cup \{0 \} $.
+% 
+Borrowing notation from~\cite{hojjat2017deciding}, we denote $ \termsOfSize{\sigma}{k} = \{t \text{ has sort } \sigma \mid \sizename(t) = k \} $.
+For each $ \sigma $ that is an ADT sort, we define the set of term sizes $ \sizesOfSort{\sigma} = \{\sizename(t) \mid t \in \huniv{\sigma} \} $.
+A \emph{linear set} is a set of the form $ \{\mathbf{v} + \sum_{i = 1} ^ n k_i \mathbf{v_i} \mid k_i \in \mathbb{N} _0 \}$, where all $\mathbf{v}$ and $\mathbf{v_i}$ are vectors over $ \mathbb{N} _0 = \mathbb{N} \cup \{0 \} $.
+
+\end{define}
+
+\begin{define}
+% АТД-сорт $ \sigma $ называется \emph{расширяющимся}, если для каждого натурального числа $ n $ существует граница $ b (\sigma, n) \geq 0 $ такая, что для каждого $ b '\geq b (\sigma , n) $, если $ \termsOfSize{\sigma}{b '} \neq \emptyset $, то $ \sizeofSet{\termsOfSize{\sigma}{b'}} \geq n $.
+% Сигнатура АТД называется расширяющейся, если все её сорта расширяющиеся.
+An ADT sort $ \sigma $ is called \emph{expanding} if for every natural number $ n $ there exists a bound $ b (\sigma, n) \geq 0 $ such that for every $ b '\geq b (\sigma , n) $, if $ \termsOfSize{\sigma}{b '} \neq \emptyset $, then $ \sizeofSet{\termsOfSize{\sigma}{b'}} \geq n $
+An ADT signature is said to be expanding if all of its sorts are expanding.
+\end{define}
+
+\defPumpLemmaSizeElem{}
+\begin{proof}
+% Доказательство приведено в работе~\cite{10.1145/3453483.3454055}.
+The proof is given in~\cite{10.1145/3453483.3454055}.
+\end{proof}
+
+% Основная идея леммы~\ref{lemm:pump-sizeelem} в том, что имея язык из класса \sizeelemclass{}, достаточно большой терм $ g $ из него и достаточно большой путь $ p $, можно заменить $ \subterm{g}{p} $ произвольным термом $ t $ (ограниченным только размером, который должен находиться в некотором линейном бесконечном множестве $ T $), и вновь получить терм из этого же языка. Yesнный факт, в свою очередь, означает, что в каждом бесконечном языке из класса \sizeelemclass{} существуют подтермы, которые неотличимы его формулами.
+
+The core idea of Lemma~\ref{lemm:pump-sizeelem} is that having a language from the \sizeelemclass{} class, a sufficiently large term $ g $ from it, and a sufficiently large path $ p $, one can replace $ \subterm{g} {p} $ by an arbitrary term $ t $ (limited only by the size, which must be in some linear infinite set $ T $), and again get the term from the same language. This fact, in turn, means that in each infinite language from the \sizeelemclass{} class there are subterms that are indistinguishable by its formulas.
+
+\begin{example}[\exEvenLeft{}]\label{ex:even}
+    % Рассмотрим систему дизъюнктов Хорна над алгебраическим типом бинарных деревьев $Tree ::= left\,|\,node(Tree, Tree)$, которая проверяет, является ли  количество узлов в самой левой ветви дерева чётным.
+    Consider the Horn clause system over the binary tree algebraic type $Tree ::= left\,|\,node(Tree, Tree)$, which checks whether the number of nodes in the leftmost branch of the tree is even.
+\begin{align*}
+    x = leaf & \rightarrow even(x) \\
+     x = node (node (x ', y), z) \land even(x') & \rightarrow even(x) \\
+     even(x) \land even(node (x, y)) & \rightarrow \bot
+\end{align*}
+
+    % Как показано ниже, у этой системы не существует инварианта, выразимого элементарно даже с ограничениями на размер термов.
+    As shown below, this system does not have an invariant that can be expressed elementarily even with term size constraints.
+\end{example}
+
+\begin{theorem}\label{thm:exEvenLeft}
+% Существуют регулярные инварианты, которые не являются инвариантами, выразимыми элементарно с ограничениями на размер термов, т.е. $\exEvenLeft{} \in \regclass{} \setminus \sizeelemclass{}$.
+There are regular invariants that are not elementary invariants with term size constraints, i.e. $\exEvenLeft{} \in \regclass{} \setminus \sizeelemclass{}$.
+
+\end{theorem}
+\begin{proof}
+    % Инвариант системы \exEvenLeft{} выражает следующий автомат $\Automaton{s_0, s_1}{s_0}$ с правилами перехода $ \autTrans $, описываемыми следующим образом.
+    The system invariant \exEvenLeft{} expresses the following automaton $\Automaton{s_0, s_1}{s_0}$ with the transition rules $ \autTrans $ described as follows.
+\begin{align*}
+leaf & \mapsto s_0 \\
+node (s_0, s_0) & \mapsto s_1 \\
+node (s_0, s_1) & \mapsto s_1 \\
+node (s_1, s_0) & \mapsto s_0 \\
+node (s_1, s_1) & \mapsto s_0
+\end{align*}
+
+  %   Используя лемму о <<накачке>>, мы можем доказать, что инвариант \exEvenLeft{} не лежит в классе \sizeelemclass{}.
+  %   Во-первых, очевидно, что сорт $ \mathit{Tree} $ является расширяющимся. Предположим, что \exEvenLeft{} находится в классе \sizeelemclass{} и имеет инвариант $ \formallang{} $.
+  %   Возьмём $ K> 0 $ из леммы~\ref{lemm:pump-sizeelem}. Пусть $ g \in \formallang{} $ будет полным двоичным деревом высоты $ 2K $, $ \sigma = \mathit{Tree}, p = \mathit{Left} ^{2K} $.
+  %   Возьмём бесконечное линейное множество $ T $ из леммы.
+  %   Мы можем найти некоторый $ n \in T, n> 2 $ и $ t = node (leaf, t ') $ для некоторого $ t' $ такие, что $ \sizename{} (t) = n $.
+  %   По лемме~\ref{lemm:pump-sizeelem} существует последовательность путей $ P $ и последовательность термов $ U $, и ни один из элементов в $ P $ не является суффиксом $ p $;
+	 % также должно быть верно, что $ g [p \leftarrow t, P \leftarrow U] \in \formallang{} $, поэтому крайний левый путь в дереве должен иметь чётную длину. Однако по крайнему левому пути $ p = \mathit{Left} ^{2K} $ лежит терм $ node (leaf, t ') $, поэтому путь до крайнего левого листа дерева имеет длину $ 2K - 1 + 2 = 2К + 1 $, нечётное число. Итак, имеем противоречие с тем, что путь до крайнего левого листа в каждом терме множества \exEvenLeft{} имеет чётную длину, а значит \exEvenLeft{} не лежит в классе \sizeelemclass{}.
+  Using the pumping lemma, we can prove that the \exEvenLeft{} invariant does not lie in the \sizeelemclass{} class.
+First, it is obvious that the sort $ \mathit{Tree} $ is expanding. Suppose \exEvenLeft{} is in the class \sizeelemclass{} and has the $\formallang{}$ invariant.
+Take $ K> 0 $ from Lemma~\ref{lemm:pump-sizeelem}. Let $ g \in \formallang{}$ be a complete binary tree of height $2K$, $\sigma = \mathit{Tree}, p = \mathit{Left} ^{2K}$.
+Take the infinite linear set $ T $ from the lemma.
+We can find some $n \in T, n > 2$ and $t = node(leaf, t')$ for some $t'$ such that $\sizename{}(t) = n$.
+By Lemma~\ref{lemm:pump-sizeelem} there is a sequence of paths $ P $ and a sequence of terms $ U $, and none of the elements in $ P $ is a suffix of $ p $;
+	 it must also be true that $ g [p \leftarrow t, P \leftarrow U] \in \formallang{} $, so the leftmost path in the tree must have an even length. However, the leftmost path $p = \mathit{Left} ^{2K}$ contains the term $node(leaf, t')$, so the path to the leftmost leaf of the tree is $2K - 1 + 2 = 2K + 1$ , which is an odd number. So, we have a contradiction with the fact that the path to the leftmost leaf in each term of the set \exEvenLeft{} has an even length, which means that \exEvenLeft{} does not lie in the \sizeelemclass{} class.
+\end{proof}
+
+\section{Conclusion}
+% Среди всех классов инвариантов программ, для которых существуют эффективные процедуры автоматического вывода инвариантов, наиболее выразительными являются классы \syncRegFullClass{} и \regelemclass{}. Они позволяют как выражать сложные рекурсивные отношения, так и синхронные отношения. В частности, оба эти класса включают в себя классические символьные инварианты, следовательно, они расширяют применимость автоматического вывода инвариантов на практике. Однако из-за высокой выразительной силы автоматическое построение инвариантов в этих классах может быть затруднено в виду роста сложности примитивных операций.
+% В следующей главе приведено сравнение эффективности существующих и предложенных методов вывода инвариантов для рассмотренных классов.
+Among all classes of program invariants for which effective automatic invariant inference procedures exist, the most expressive ones are \syncRegFullClass{} and \regelemclass{}. They allow both complex recursive relationships and synchronous relationships to be expressed. In particular, both of these classes include classical symbolic invariants, therefore, they extend the applicability of the automatic invariant inference in practice. However, due to the high expressive power, the automatic construction of invariants in these classes can be difficult due to the growing complexity of primitive operations.
+The next chapter compares the effectiveness of existing and proposed methods of invariant inference for the considered classes.

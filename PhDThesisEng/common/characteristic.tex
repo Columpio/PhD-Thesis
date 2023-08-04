@@ -1,0 +1,295 @@
+{\actuality}
+% Программные системы охватывают всё больше сфер деятельности человека, и всё острее встаёт вопрос корректности программного обеспечения.
+% Область формальных методов традиционно занимается вопросами качества программ. С 90-х годов XX века в этой области начинается новая страница~--- появление бинарных диаграмм решений, а затем символьной проверки моделей на основе эффективных SAT-решателей позволило верифицировать системы с \(10^{120}\) возможными состояниями программы~\cite{10.1007/3-540-61474-5_93}. Благодаря SAT-революции всё меньше статических анализаторов создаётся <<с нуля>>, всё чаще они  надстраиваются над стеком верификации: SAT-решатели для логики высказываний, построенные на них SMT-решатели для теорий логики первого порядка, и далее~--- Хорн-решатели для вывода индуктивных инвариантов.
+% Новые подходы к статическому анализу дают индустрии много плодов.
+% Так, например, в 2008 году около трети всех детектируемых ошибок при разработке Windows 7 находил инструмент SAGE~\cite{10.1145/2090147.2094081}, основанный на символьном исполнении и активно использующий SMT-решатель для проверки достижимости ветвей исполнения программ.
+With software systems becoming increasingly ubiquitous and integrated into various aspects of human life, the issue of software reliability grows more critical.
+The problem of programs quality is traditionally handled by the field of formal methods. Starting from the 1990s, a new chapter began in this field with the emergence of binary decision diagrams and symbolic model checking based on efficient SAT solvers. This advancement enabled the verification of systems with up to \(10^{120}\) possible program states~\cite{10.1007/3-540-61474-5_93}. The SAT revolution has led to a decline in the development of static analyzers from scratch. Instead, they are increasingly constructed atop a verification stack, consisting of SAT solvers for propositional logic, SMT solvers built upon them for first-order logic theories, and ultimately, Horn solvers for inductive invariant inference.
+New approaches to static analysis yield many benefits for the industry.
+For instance, in the development of Windows 7 in 2008, approximately one-third of all identified errors were discovered by SAGE~\cite{10.1145/2090147.2094081}, a tool that relies on symbolic execution and extensively uses an SMT solver to check the reachability of program execution branches.
+
+%  В формальных методах большое значение имеют типы данных, так как для них требуются подходящие формализации, позволяющие  учитывать типы данных  при верификации программ. Однако большинство исследований здесь направлено на поддержку  <<классических>> типов данных, таких как целые числа и массивы. Менее исследованными оказываются новые,  набирающие популярность, типы данных, например, \emph{алгебраические типы данных (АТД)}\footnote{В зависимости от подхода их также называют \emph{абстрактными типами данных}, \emph{индуктивными типами данных} и \emph{рекурсивными типами данных}.}.
+% Они строятся рекурсивно, при помощи объединения и декартового перемножения типов. Используя АТД, можно описывать  односвязные списки,  бинарные деревья и другие сложные структуры данных.  АТД активно используются в функциональных языках, таких как \haskell{} и \ocaml{},  являясь альтернативой структурой перечислениям и объединениям из языков \clanguage{} и \cplusplus{}. Алгебраические типы данных всё чаще включают в современные языки программирования, используемые в индустрии, например, в языки \rust{} и \scala{}, а также в языки самовыполняющихся контрактов, например, в \solidity{}~\cite{8327565}. Так, например, Twitter использует язык \scala{} для большинства своих серверных приложений~\cite{10.1145/1900160.1900170}, Dropbox~--- язык \rust{} для управления потоками данных~\cite{dropboxRust}, и в обоих случая активно используются алгебраические типы данных.
+Data types are of great importance in formal methods because suitable formalizations are required to take into account data types in program verification. However, most of the research is aimed at supporting ``classical'' data types, such as integers and arrays. Less researched are the emerging, becoming more popular data types, such as \emph{algebraic data types (ADT)}\footnote{Depending on the context, they are also referred to as \emph{abstract data types}, \emph{inductive data types} and \emph{recursive data types}.}.
+They are constructed recursively, by union and Cartesian product of types. With ADTs one can build linked lists, binary trees, and other complex data structures. ADTs are actively employed in functional languages such as \haskell{} and \ocaml{}, being an alternative structure to enumerations and unions from \clanguage{} and \cplusplus{}. Furthermore, ADTs are increasingly adapted in modern programming languages used in the industry, for example, in \rust{} and \scala{}, as well as in the languages of smart contracts, for example, in \solidity{}~\cite{8327565}. For example, Twitter uses \scala{} for most of its server applications~\cite{10.1145/1900160.1900170}, while Dropbox uses \rust{} for managing data flows~\cite{dropboxRust}, and in both cases algebraic data types are actively employed.
+
+% Таким образом становится насущной задача обеспечении корректности программ, использующих  АТД.
+% Эта задача может быть формализована, а её решение~--- частично автоматизировано в рамках дедуктивной верификации на основе логики Флойда-Хоара~\cite{Floyd1993,10.1145/363235.363259} или уточняющих типов (refinement types)~\cite{713327}, как, например, в системах \flux{}~\cite{https://doi.org/10.48550/arxiv.2207.04034} для языка \rust{} и \leon{}~\cite{10.1007/978-3-642-23702-7_23} для языка \scala{}.
+% Однако такие подходы  требуют от пользователя предоставления \emph{индуктивных инвариантов} для доказательства корректности программы, формулировка которых на практике является крайне трудоёмкой задачей. Системы верификации, основанные на самостоятельных языках программирования и поддерживающие АТД, такие как, \dafny{}~\cite{10.1007/978-3-642-17511-4_20}, \whyThree{}~\cite{10.1007/978-3-642-37036-6_8}, \viper{}~\cite{10.1007/978-3-662-49122-5_2}, \fstar{}~\cite{10.1145/2914770.2837655}, сталкиваются с той же проблемой.
+% Также следует отметить, что алгебраические типы данных лежат в основе многочисленных интерактивных систем проверки доказательств (interactive theorem prover, ITP), таких как \coq{}~\cite{barras1999coq}, \idris{}~\cite{brady_2013}, \agda{}~\cite{10.1145/3341691}, \lean{}~\cite{10.1007/978-3-030-79876-5_37}.
+% Методы автоматизации индукции в таких системах, как правило, ограничены синтаксическим перебором, а потому в процессе доказательства пользователь вынужден осуществлять трудоёмкую деятельность  по формулировке точной индукционной гипотезы, что тождественно проблеме вывода индуктивных инвариантов.
+Thus, verifying the correctness of programs that use ADTs becomes an urgent task.
+This task can be formalized, and its solution partially automated within the framework of deductive verification based on Floyd-Hoare logic~\cite{Floyd1993,10.1145/363235.363259} or refinement types~\cite{713327}, as, for example, in \flux{} system~\cite{https://doi.org/10.48550/arxiv.2207.04034} for \rust{} and \leon{} system~\cite{10.1007/978-3-642-23702-7_23} for \scala{}.
+However, such approaches require the user to provide \emph{inductive invariants} to prove the correctness of the program, and formulating them in practice is an extremely laborious task. Verification systems based on independent programming languages and supporting ADT, such as, \dafny{}~\cite{10.1007/978-3-642-17511-4_20}, \whyThree{}~\cite{10.1007/978-3-642-37036-6_8}, \viper{}~\cite{10.1007/978-3-662-49122-5_2}, \fstar{}~ \cite{10.1145/2914770.2837655}, face the same problem.
+It should also be noted that algebraic data types underlie numerous interactive theorem provers (ITPs), such as \coq{}~\cite{barras1999coq}, \idris{}~\cite{brady_2013}, \agda{}~\cite{10.1145/3341691}, \lean{}~\cite{10.1007/978-3-030-79876-5_37}.
+Methods for automating induction in such systems are typically limited to syntactic enumeration, and therefore, during the proof process, the user is forced to carry out a laborious activity of formulating a sophisticated induction hypothesis, which is as hard as to infer an inductive invariant.
+
+% Таким образом эти задачи сводятся к задаче автоматического вывода индуктивных инвариантов программ с алгебраическими типами данных. В общем виде она может быть сформулирована при помощи систем \emph{дизъюнктов Хорна с ограничениями} (constrained Horn clauses, CHCs)~--- логических формул специального вида, которые позволяют точно моделировать работу программы~\cite{MAKOWSKY1987266}.
+Thus, these problems are reduced to the problem of automatic inductive invariant inference of programs with algebraic data types. In general, the problem can be formulated using \emph{constrained Horn clauses (CHCs)}~--- a special type of logical formulae that allows to simulate program's operation precisely~\cite{MAKOWSKY1987266}.
+
+% Поскольку задача автоматического вывода индуктивных инвариантов сводится к задаче поиска модели для системы дизъюнктов Хорна с ограничениями, инструменты автоматического поиска таких моделей (т. н. <<Хорн-решатели>>) могут быть применены в различных контекстах верификации программ~\cite{10.1145/2254064.2254112,Bjorner2015}.
+% Так, например, инструмент \rustHorn{}~\cite{10.1145/3462205} использует Хорн-решатели для верификации \rust{}-программ, а инструмент \solCMC{}~\cite{10.1007/978-3-031-13185-1_16} применяется для верификации самовыполняющихся контрактов на языке \solidity{}.
+Since the problem of automatic inductive invariant inference reduces to the problem of finding a model for a system of constrained Horn clauses, tools for automatic search of such models (so-called Horn solvers) can be applied in various contexts of program verification~\cite{10.1145/2254064.2254112, Bjorner2015}.
+For instance, \rustHorn{}~\cite{10.1145/3462205} utilizes Horn solvers for verifying \rust{} programs, while \solCMC{}~\cite{10.1007/978-3-031-13185-1_16} is employed for verifying \solidity{} smart contracts.
+
+% Существуют эффективные Хорн-решатели, поддерживающие АТД, такие как \spacer{}~\cite{komuravelli2016smt} и его приемник \racer{}~\cite{10.1145/3498722}, а также \eldarica{}~\cite{8603013}, \hoice{}~\cite{10.1007/978-3-030-02768-1_8}, \rchc{}~\cite{haude2020}, \vericat{}~\cite{de_angelis_proietti_fioravanti_pettorossi_2022}.
+% Среди Хорн-решателей проводятся ежегодные международные соревнования \chccomp{}~\cite{De_Angelis_2022}, где отдельная секция посвящена решению систем дизъюнктов Хорна с алгебраическими типами данных.
+There are efficient Horn solvers with ADT support, such as \spacer{}~\cite{komuravelli2016smt} and its descendant \racer{}~\cite{10.1145/3498722}, as well as \eldarica{}~\cite{8603013}, \hoice{}~\cite{10.1007/978-3-030-02768-1_8}, \rchc{}~\cite{haude2020}, \vericat{}~\cite{de_angelis_proietti_fioravanti_pettorossi_2022}.
+Annual international competitions \chccomp{}~\cite{De_Angelis_2022} are held among Horn solvers, where a separate section is devoted to solving Horn clause systems with algebraic data types.
+
+% Решение выполнимой системы дизъюнктов Хорна классически представляется в виде т.н. \emph{символьной модели} (symbolic model)~\cite{Bjorner2015}, т.е. модели, выраженной при помощи формул логики первого порядка в языке ограничений системы дизъюнктов.
+% Поэтому класс всех индуктивных инвариантов, выразимых с помощью языка ограничений, будем называем \emph{классическими символьными инвариантами}.
+% Так, например, все Хорн-решатели, участвовавшие в соревнованиях \chccomp{} за последние два года, строят классические символьные инварианты.
+
+The solution to a satisfiable system of Horn clauses is typically represented in the form of a \emph{symbolic model}~\cite{Bjorner2015}, which is a model expressed using first-order logic formulas in the constraint language of the Horn clause system.
+Therefore, the class of all inductive invariants definable in the constraint language I will call \emph{(classical) symbolic invariants}.
+For example, all Horn solvers which participated in the \chccomp{} competition over the past two years build classical symbolic invariants.
+
+% Проблема символьных инвариантов в контексте алгебраических типов данных заключается в том, что язык ограничений АТД \emph{не позволяет выразить индуктивные инварианты большинства программ, востребованных на практике}.
+% А если у безопасной программы нет индуктивных инвариантов, выразимых на языке ограничений, ни один алгоритм вывода индуктивных инвариантов на этом языке не сможет построить для неё индуктивный инвариант. 
+% Это приводит к тому, что \emph{Хорн-решатели, строящие классические символьные инварианты, не завершаются на большинстве систем с алгебраическими типами данных}.
+The problem with symbolic invariants in the context of algebraic data types is that the constraint language of ADTs \emph{does not allow expressing most of the inductive invariants required to verify practical programs}.
+And if a safe program does not have any inductive invariant that is definable in the constraint language, no algorithm for inductive invariant inference in this language will be able to construct an inductive invariant for it.
+This leads to the fact that \emph{Horn solvers that build classical symbolic invariants do not terminate on most systems with algebraic data types}.
+
+% Термы алгебраических типов имеют \emph{рекурсивную структуру}. Например, бинарное дерево~--- это либо лист, либо вершина с двумя потомками, которые тоже являются бинарными деревьями.
+% Поэтому основная причина, по которой язык ограничений АТД не позволяет выразить индуктивные инварианты многих программ, состоит в том, что он не позволяет выражать \emph{рекурсивные отношения} над термами алгебраических типов.
+Terms of algebraic data types have a \emph{recursive structure}. For example, a binary tree is either a leaf or a vertex with two descendants, which are also binary trees.
+Hence, the primary reason why the ADT constraint language is unable to express inductive invariants for many programs is its limitation in expressing recursive relations over terms of algebraic types.
+
+% {\progress} Проблема невыразимости языка ограничений хорошо известна в научном сообществе, предпринималось несколько попыток решить эту проблему.
+{\progress} The issue of inexpressiveness of the constraint language is well-known within the scientific community, and several attempts have been made to address this problem.
+
+
+% Так в 2018 году Ф.~Рюммером (P.~Ruemmer, Швеция) в рамках Хорн-решателя \eldarica{}~\cite{8603013} было предложено выводить индуктивные инварианты в языке ограничений, расширенном функцией размера, подсчитывающей число конструкторов в терме. Однако проблемой этого  подхода является то, что любое расширение языка ограничений требует существенной переработки всей процедуры вывода индуктивных инвариантов.
+% Также в 2022 году в рамках Хорн-решателя \racer{} (H.~Govind, A.~Gurfinkel, США)~\cite{10.1145/3498722} было предложено расширить язык ограничений катаморфизмами~--- рекурсивными функциями некоторого простого вида. Однако в этом случае от пользователя требуется заранее задавать катаморфизмы, которые будут использованы для построения индуктивного инварианта, поэтому этот подход нельзя назвать вполне автоматическим.
+% Общей проблемой этих двух подходов является то, что любое расширение языка ограничений требует существенной переработки всей процедуры вывода индуктивных инвариантов.
+In 2018, P.~Ruemmer (Sweden) proposed a method for inductive invariant inference in an extension of the constraint language with a size function that counts the number of constructors in a term. This extension was developed within the Horn solver \eldarica{}~\cite{8603013}. However, the problem with this approach is that any extension of the constraint language requires a substantial reworking of the entire procedure for inductive invariant inference.
+In 2022, an extension of the constraint language with catamorphisms was proposed as part of the \racer{} Horn solver (H.~Govind, A.~Gurfinkel, USA)~\cite{10.1145/3498722}. Catamorphisms are recursive functions of a simple form. However, their approach requires the user to specify the catamorphisms that will be used to build the inductive invariant \emph{in advance}, so this approach is not completely automatic.
+
+% C 2018 года ведётся отдельная линия исследований (E.~De~Angelis, F.~Fioravant, A.~Pettorossi, Италия)~\cite{10.1093/logcom/exab090,pettorossi_proietti_2022,10.1007/978-3-030-51074-9_6,angelis_fioravanti_pettorossi_proietti_2018}, которая посвящена  методам устранения алгебраических типов из системы дизъюнктов путём сведения её к системе над более простой теорией, например, над линейной арифметикой. Такой подход реализован в  инструменте \vericat{}~\cite{de_angelis_proietti_fioravanti_pettorossi_2022}. Ограничением подобных подходов является невозможность восстановления индуктивного инварианта исходной системы из индуктивного инварианта более простой системы.
+Since 2018, a separate line of research has been pursued by E.~De~Angelis, F.~Fioravant, and A.~Pettorossi in Italy~\cite{10.1093/logcom/exab090,pettorossi_proietti_2022,10.1007/978-3-030-51074-9_6,angelis_fioravanti_pettorossi_proietti_2018}. Their line of work focuses on methods for eliminating algebraic types from Horn systems by reducing them to systems based on simpler theories, such as linear arithmetic. This approach is implemented in \vericat{}~\cite{de_angelis_proietti_fioravanti_pettorossi_2022}. A limitation of these methods is the inability to recover the original system's inductive invariant from the inductive invariant of a simpler system.
+
+
+% В 2020 году в рамках инструмента \rchc{} (T.~Haudebourg, Франция)~\cite{haude2020} было предложено выражать индуктивные инварианты программ над АТД при помощи \emph{автоматов над деревьями}~\cite{tata}. Однако из-за сложностей с представлением кортежей термов автоматами, предложенный класс инвариантов не включает в себя классические символьные инварианты, поэтому подход часто оказывается неприменимым для простейших программ, где такие инварианты легко находятся классическими методами.
+In 2020, it was suggested and implemented in the \rchc{} Horn solver (T.~Haudebourg, France)~\cite{haude2020} to express inductive invariants of programs over ADTs using \emph{tree automata}~\cite{tata}. However, due to the problems with representing tuples of terms using tree automata, the proposed class of invariants does not include classical symbolic invariants. As a result, this approach is often inapplicable for the simplest programs, where inductive invariants can be easily found by traditional methods.
+
+% {\aim} данной работы является предложение новых классов индуктивных инвариантов для программ с алгебраическими типами данных и создание для них методов автоматического вывода.
+% Для  реализации этой цели были сформулированы следующие {\tasks}.
+{\aim} of this thesis is to propose new classes of inductive invariants for programs with algebraic data types and to develop automatic inference methods for them.
+To achieve this goal, we have posed the following {\tasks}.
+\begin{enumerate}[beginpenalty=10000] % https://tex.stackexchange.com/a/476052/104425
+%   \item Предложить новые классы индуктивных инвариантов программ с алгебраическими типами данных, позволяющие выражать рекурсивные отношения и включающие классические символьные инварианты.
+%   \item Создать методы автоматического вывода индуктивных инвариантов в новых классах.
+%   \item Выполнить пилотную программную реализацию предложенных методов.
+%   \item Провести экспериментальное сопоставление реализованного инструмента с существующими на представительном  тестовом наборе.
+\item Create new classes of inductive invariants of programs with algebraic data types that can express recursive relations and include classical symbolic invariants.
+\item Create methods for automatic inductive invariant inference in new classes.
+\item Develop a prototype software implementation of the proposed methods.
+\item Conduct an experimental comparison of the implemented tool against existing alternatives using a representative benchmark.
+\end{enumerate}
+
+{\methods}
+% Методология исследования заключается в проектировании применимых на практике  классов индуктивных инвариантов совместно с разработкой  соответствующих алгоритмов, активно используя существующие результаты этой области.
+% В работе используется  логика первого порядка, а также базовые концепции теории автоматов и формальных языков, включая автоматы над деревьями, синхронные автоматы, язык автомата, лемму о <<накачке>>.
+% Пилотная программная реализация теоретических результатов выполнена на языке \fsharp{}, а также частично на языке \cplusplus{} в рамках кодовой базы Хорн-решателя \racer{} (входит в SMT-решатель \zprover{}).
+The research methodology involves designing classes of inductive invariants that are applicable in practice and developing corresponding algorithms while leveraging existing results in the field.
+In the study, first-order logic is utilized, along with fundamental concepts from automata theory and formal languages, including tree automata, synchronous automata, automaton languages, and the pumping lemma.
+The prototype implementation of the theoretical results was performed in the \fsharp{} language, as well as partially in \cplusplus{} within the code base of the \racer{} Horn solver (included in the \zprover{} SMT solver).
+
+{\defpositions}
+% В папке Documents можно ознакомиться с решением совета из Томского~ГУ (в~файле \verb+Def_positions.pdf+), где обоснованно даются рекомендации по~формулировкам защищаемых положений.
+\begin{enumerate}[beginpenalty=10000] % https://tex.stackexchange.com/a/476052/104425
+  % \item Предложен эффективный метод автоматического вывода индуктивных инвариантов, основанных на автоматах над деревьями, при этом данные инварианты позволяют выражать рекурсивные отношения в большем количестве реальных программ; метод базируется на поиске конечных моделей.
+  % \item Предложен  метод автоматического вывода индуктивных инвариантов, основанный на трансформации программы и поиске конечных моделей, в сложном для автоматического вывода инвариантов классе, основанном на синхронных автоматах над деревьями; этот класс инвариантов позволяет  выражать рекурсивные отношения и обобщает классические символьные инварианты.
+  % \item Предложен класс индуктивных инвариантов, основанный на булевой комбинации классических инвариантов и  автоматов над деревьями, который, с одной стороны, позволяет выражать рекурсивные отношения в реальных программах, а, с другой стороны, позволяет эффективно выводить индуктивные инварианты; также предложен эффективный метод совместного вывода индуктивных инвариантов в этом классе посредством вывода инвариантов в подклассах.
+  % \item Проведено теоретическое сравнение существующих и предложенных в рамках диссертации классов индуктивных инвариантов; в том числе сформулированы и доказаны леммы о <<накачке>> для языка ограничений и для языка ограничений расширенного функцией размера терма.
+  % \item Выполнена пилотная программная реализация предложенных методов на языке \fsharp{} в рамках инструмента \ringen{}; инструмент сопоставлен с существующими методами на общепринятом тестовом наборе задач верификации функциональных программ <<Tons of Inductive Problems>>: реализация наилучшего из предложенных методов смогла за отведённое время решить в 3.35 раза больше задач, чем наилучший из существующих инструментов.
+  \item We propose an effective method for automatic inductive invariant inference using tree automata, which can express recursive relations in a larger number of real programs. This method is based on the finite model finding.
+  \item We present a method for automatic inductive invariant inference through program transformation and finite model finding within a difficult for automatic invariant inference class. This class, based on synchronous tree automata, can express recursive relations and generalizes classical symbolic invariants.
+  \item We propose a class of inductive invariants based on a Boolean combination of classical invariants and tree automata, which can express recursive relations in real programs and yet has an efficient inference procedure. Furthermore, we suggest an effective method for collaborative inductive invariant inference within this class by inferring invariants in subclasses.
+  \item A theoretical comparison is conducted between the existing and proposed classes of inductive invariants. This comparison includes formulating and proving pumping lemmas for both the constraint language and the constraint language extended by the term size function.
+  \item A pilot software implementation of the proposed methods in the \fsharp{} language was conducted within the \ringen{} tool. This implementation was then compared to existing methods using the widely accepted ``Tons of Inductive Problems'' benchmark of functional program verification tasks. The best of the proposed methods was able to solve 3.74 times more tasks than the best performing implementation of the existing tools within the time limit.
+\end{enumerate}
+
+% {\novelty{} полученных результатов состоит в следующем.}
+{\novelty{} of the obtained results is as follows.}
+\begin{enumerate}[beginpenalty=10000] % https://tex.stackexchange.com/a/476052/104425
+  % \item Впервые предложен класс индуктивных инвариантов, основанный на булевой комбинации классов классических и основанных на автоматах над деревьями инвариантов.
+  % \item Впервые предложен алгоритм вывода индуктивных инвариантов для программ с алгебраическими типами данных, основанный на поиске конечных моделей.
+  % \item Предложен новый алгоритм совместного вывода индуктивных инвариантов в комбинации классов инвариантов на базе имеющихся методов вывода инвариантов для отдельных классов.
+  % \item Впервые введены и доказаны леммы о <<накачке>> для языков первого порядка в сигнатуре теории алгебраических типов данных.
+  \item For the first time, a class of inductive invariants based on the Boolean combination of classes of classical invariants and invariants based on tree automata has been proposed.
+  \item For the first time, a finite model finding based algorithm for inductive invariant inference for programs with algebraic data types is proposed.
+  \item A new algorithm for collaborative inference of combined inductive invariants based on off-the-shelf methods for inferring invariants for separate classes has been proposed.
+   \item For the first time, pumping lemmas for first-order languages in the signature of the theory of algebraic data types have been introduced and proven.
+\end{enumerate}
+
+{\influenceTh}
+% Диссертационное исследование предлагает новые подходы к выводу индуктивных инвариантов программ. Поскольку эти подходы ортогональны существующим, они могут быть перенесены на программы над другими теориями, например, над теорией массивов, а также могут усилить уже существующие подходы к выводу индуктивных инвариантов. Также важным теоретическим вкладом является адаптация лемм о <<накачке>> к языкам первого порядка: эти леммы открывают путь к фундаментальному исследованию проблемы невыразимости индуктивных инвариантов в языках первого порядка и проектированию новых классов индуктивных инвариантов программ.
+The thesis offers new approaches for the inductive invariant inference. Since these approaches are orthogonal to the existing ones, they can be applied to programs over other theories, such as the theory of arrays, and can also strengthen already existing approaches for inductive invariant inference. Another significant theoretical contribution is the adaptation of pumping lemmas to first-order languages: these lemmas pave the way to a fundamental study of the undefinability of inductive invariants in first-order languages and the design of new classes of inductive invariants.
+
+{\influencePr}
+% Предложенные методы могут быть применены при создании  статических анализаторов для языков с алгебраическими типами данных: поскольку индуктивные инварианты аппроксимируют циклы и функции, они позволяют анализатору корректно <<срезать>> целые классы недостижимых состояний программы и не <<увязать>> в циклах и рекурсии.
+% Например, предложенные методы могут быть полезны в разработке верификаторов и генераторов тестовых покрытий для таких языков, как \rust{}, \scala{}, \solidity{}, \haskell{} и \ocaml{}.
+% Поскольку для предложенных методов была выполнена пилотная программная реализация, полученный Хорн-решатель также может быть использован в качестве <<ядра>> статического анализатора, например, для языка \rust{} при помощи фреймворка \rustHorn{}.
+The proposed methods can be applied in the development of static analyzers for languages with algebraic data types. Since inductive invariants approximate loops and functions, they allow the analyzer to correctly ``cut off'' entire spaces of unreachable program states and avoid getting ``stuck'' in loops and recursion.
+For example, the proposed methods can be useful in the development of verifiers and test coverage generators for languages such as \rust{}, \scala{}, \solidity{}, \haskell{} and \ocaml{}.
+Since the proposed methods were implemented in the pilot software, the resulting Horn solver can also be used as the ``core'' of a static analyzer, for example, for the \rust{} language using the \rustHorn{} framework.
+
+
+% {\reliability} полученных результатов обеспечивается компьютерными экспериментами на публичных общепринятых тестовых наборах и формальными доказательствами.
+% Полученные в диссертации результаты согласуются с результатами других авторов в области вывода индуктивных инвариантов.
+
+{\reliability} of the obtained results is ensured by computer experiments on publicly accepted benchmark and formal proofs.
+The results obtained in the thesis are consistent with the results of other authors in the field of inductive invariant inference.
+
+
+{\probation}
+% Основные результаты работы докладывались на следующих научных конференциях и семинарах:
+% международном семинаре HCVS 2021 (28 марта 2021, Люксембург),
+% семинаре Huawei (18-19 ноября 2021, Санкт-Петербург),
+% ежегодном внутреннем семинаре JetBrains Research (18 декабря 2021, Санкт-Петербург),
+% конференции PLDI 2021 (23-25 июня 2021, Канада),
+% внутреннем семинаре Венского технического университета (3 июня 2022, Австрия).
+The main results of the work were reported at the following scientific conferences and seminars:
+HCVS 2021 International Workshop (March 28, 2021, Luxembourg),
+Huawei Workshop (November 18-19, 2021, St. Petersburg),
+JetBrains Research Annual Internal Workshop (December 18, 2021, St. Petersburg),
+PLDI 2021 conference (June 23-25, 2021, Canada),
+Internal seminar of the Vienna Technical University (June 3, 2022, Austria),
+LPAR 2023 conference (June 4-9, 2023, Colombia).
+
+% Разработанный инструмент в 2021 и 2022 годах занял, соответственно, 2 и 1 место на международных соревнованиях \chccomp{} (секция по  выводу индуктивных инвариантов для программ с алгебраическими типами данных).
+In 2021 and 2022, the developed tool took respectively 2nd and 1st place in the international \chccomp{} competition, in the ADT track.
+
+
+\ifnumequal{\value{bibliosel}}{0}
+{%%% Встроенная реализация с загрузкой файла через движок bibtex8. (При желании, внутри можно использовать обычные ссылки, наподобие `\cite{vakbib1,vakbib2}`).
+    {\publications} Основные результаты по теме диссертации изложены
+    в~XX~печатных изданиях,
+    X из которых изданы в журналах, рекомендованных ВАК,
+    X "--- в тезисах докладов.
+}%
+{%%% Реализация пакетом biblatex через движок biber
+    \begin{refsection}[bl-author, bl-registered]
+        % Это refsection=1.
+        % Процитированные здесь работы:
+        %  * подсчитываются, для автоматического составления фразы "Основные результаты ..."
+        %  * попадают в авторскую библиографию, при usefootcite==0 и стиле `\insertbiblioauthor` или `\insertbiblioauthorgrouped`
+        %  * нумеруются там в зависимости от порядка команд `\printbibliography` в этом разделе.
+        %  * при использовании `\insertbiblioauthorgrouped`, порядок команд `\printbibliography` в нём должен быть тем же (см. biblio/biblatex.tex)
+        %
+        % Невидимый библиографический список для подсчёта количества публикаций:
+        \printbibliography[heading=nobibheading, section=1, env=countauthorvak,          keyword=biblioauthorvak]%
+        \printbibliography[heading=nobibheading, section=1, env=countauthorwos,          keyword=biblioauthorwos]%
+        \printbibliography[heading=nobibheading, section=1, env=countauthorscopus,       keyword=biblioauthorscopus]%
+        \printbibliography[heading=nobibheading, section=1, env=countauthorconf,         keyword=biblioauthorconf]%
+        \printbibliography[heading=nobibheading, section=1, env=countauthorother,        keyword=biblioauthorother]%
+        \printbibliography[heading=nobibheading, section=1, env=countregistered,         keyword=biblioregistered]%
+        \printbibliography[heading=nobibheading, section=1, env=countauthorpatent,       keyword=biblioauthorpatent]%
+        \printbibliography[heading=nobibheading, section=1, env=countauthorprogram,      keyword=biblioauthorprogram]%
+        \printbibliography[heading=nobibheading, section=1, env=countauthor,             keyword=biblioauthor]%
+        \printbibliography[heading=nobibheading, section=1, env=countauthorvakscopuswos, filter=vakscopuswos]%
+        \printbibliography[heading=nobibheading, section=1, env=countauthorscopuswos,    filter=scopuswos]%
+        %
+        \nocite{*}%
+        %
+        % {\publications} Основные результаты по теме диссертации изложены в~\arabic{citeauthor}~печатных изданиях,
+        % \arabic{citeauthorvak} из которых изданы в журналах, рекомендованных ВАК\sloppy%
+        % \ifnum \value{citeauthorscopuswos}>0%
+        %     , \arabic{citeauthorscopuswos} "--- в~периодических научных журналах, индексируемых Web of~Science и Scopus, одна из которых опубликована в тезисах конференции PLDI, имеющей ранг A*\sloppy%
+        {\publications} The main results of the thesis are presented in~\arabic{citeauthor}~publications,
+        \arabic{citeauthorvak} of which are published in journals recommended by the HAC\sloppy%
+        \ifnum \value{citeauthorscopuswos}>0%
+            , \arabic{citeauthorscopuswos} are published in periodical scientific journals indexed by Web of Science and Scopus, one of which is published in the PLDI conference proceedings, which has an A* rank, and one is published in the LPAR conference proceedings, which has an A rank\sloppy%
+        \fi%
+        \ifnum \value{citeauthorconf}>0%
+            , \arabic{citeauthorconf} "--- в~тезисах докладов.
+        \else%
+            .
+        \fi%
+        \ifnum \value{citeregistered}=1%
+            \ifnum \value{citeauthorpatent}=1%
+                Зарегистрирован \arabic{citeauthorpatent} патент.
+            \fi%
+            \ifnum \value{citeauthorprogram}=1%
+                Зарегистрирована \arabic{citeauthorprogram} программа для ЭВМ.
+            \fi%
+        \fi%
+        \ifnum \value{citeregistered}>1%
+            Зарегистрированы\ %
+            \ifnum \value{citeauthorpatent}>0%
+            \formbytotal{citeauthorpatent}{патент}{}{а}{}\sloppy%
+            \ifnum \value{citeauthorprogram}=0 . \else \ и~\fi%
+            \fi%
+            \ifnum \value{citeauthorprogram}>0%
+            \formbytotal{citeauthorprogram}{программ}{а}{ы}{} для ЭВМ.
+            \fi%
+        \fi%
+        % К публикациям, в которых излагаются основные научные результаты диссертации на соискание учёной
+        % степени, в рецензируемых изданиях приравниваются патенты на изобретения, патенты (свидетельства) на
+        % полезную модель, патенты на промышленный образец, патенты на селекционные достижения, свидетельства
+        % на программу для электронных вычислительных машин, базу данных, топологию интегральных микросхем,
+        % зарегистрированные в установленном порядке.(в ред. Постановления Правительства РФ от 21.04.2016 N 335)
+    \end{refsection}%
+    \begin{refsection}[bl-author, bl-registered]
+        % Это refsection=2.
+        % Процитированные здесь работы:
+        %  * попадают в авторскую библиографию, при usefootcite==0 и стиле `\insertbiblioauthorimportant`.
+        %  * ни на что не влияют в противном случае
+        % \nocite{vakbib2}%vak
+        % \nocite{patbib1}%patent
+        % \nocite{progbib1}%program
+        % \nocite{bib1}%other
+        % \nocite{confbib1}%conf
+    \end{refsection}%
+        %
+        % Всё, что вне этих двух refsection, это refsection=0,
+        %  * для диссертации - это нормальные ссылки, попадающие в обычную библиографию
+        %  * для автореферата:
+        %     * при usefootcite==0, ссылка корректно сработает только для источника из `external.bib`. Для своих работ~--- напечатает "[0]" (и даже Warning не вылезет).
+        %     * при usefootcite==1, ссылка сработает нормально. В авторской библиографии будут только процитированные в refsection=0 работы.
+}
+
+% При использовании пакета \verb!biblatex! будут подсчитаны все работы, добавленные
+% в файл \verb!biblio/author.bib!. Для правильного подсчёта работ в~различных
+% системах цитирования требуется использовать поля:
+% \begin{itemize}
+%         \item \texttt{authorvak} если публикация индексирована ВАК,
+%         \item \texttt{authorscopus} если публикация индексирована Scopus,
+%         \item \texttt{authorwos} если публикация индексирована Web of Science,
+%         \item \texttt{authorconf} для докладов конференций,
+%         \item \texttt{authorpatent} для патентов,
+%         \item \texttt{authorprogram} для зарегистрированных программ для ЭВМ,
+%         \item \texttt{authorother} для других публикаций.
+% \end{itemize}
+% Для подсчёта используются счётчики:
+% \begin{itemize}
+%         \item \texttt{citeauthorvak} для работ, индексируемых ВАК,
+%         \item \texttt{citeauthorscopus} для работ, индексируемых Scopus,
+%         \item \texttt{citeauthorwos} для работ, индексируемых Web of Science,
+%         \item \texttt{citeauthorvakscopuswos} для работ, индексируемых одной из трёх баз,
+%         \item \texttt{citeauthorscopuswos} для работ, индексируемых Scopus или Web of~Science,
+%         \item \texttt{citeauthorconf} для докладов на конференциях,
+%         \item \texttt{citeauthorother} для остальных работ,
+%         \item \texttt{citeauthorpatent} для патентов,
+%         \item \texttt{citeauthorprogram} для зарегистрированных программ для ЭВМ,
+%         \item \texttt{citeauthor} для суммарного количества работ.
+% \end{itemize}
+% Счётчик \texttt{citeexternal} используется для подсчёта процитированных публикаций;
+% \texttt{citeregistered} "--- для подсчёта суммарного количества патентов и программ для ЭВМ.
+
+% Для добавления в список публикаций автора работ, которые не были процитированы в
+% автореферате, требуется их~перечислить с использованием команды \verb!\nocite! в
+% \verb!Synopsis/content.tex!.
+
+% {\contribution} автора в совместных публикациях распределён следующим образом.
+% В статье~\cite{костюков2019автоматическое} автор выполнил  реализацию сведения поиска индуктивных инвариантов функций над сложными структурами данных к решению систем дизъюнктов Хорна, а также спроектировал  эксперименты с различными существующими Хорн-решателями; соавторы предложили саму идею и проработали её теоретические аспекты.
+% В работах~\cite{https://doi.org/10.48550/arxiv.2108.00225,10.1145/3453483.3454055} автор провёл теоретическое сопоставление классов индуктивных инвариантов, предложил и доказал леммы о <<накачке>> для языков первого порядка над АТД, реализовал предлагаемый подход, поставил эксперименты; соавторы участвовали в обсуждении основных идей статьи, выполняли обзор существующих решений.
+% В статье~\cite{мисонижник2022генерация} вклад автора заключается в формальном описании теории вычисления предусловий программ со сложными структурами данных; соавторы участвовали в обсуждении основных идей и реализовали подход.
+The author's {\contribution} in joint publications is distributed as follows.
+In the article~\cite{костюков2019автоматическое}, the author implemented a reduction of inductive invariant inference of functions over complex data structures to solving systems of Horn clauses. Additionally, the author designed experiments with existing Horn solvers. The co-authors proposed the idea and developed its theoretical aspects.
+In the works~\cite{https://doi.org/10.48550/arxiv.2108.00225,10.1145/3453483.3454055}, the author conducted a theoretical comparison of classes of inductive invariants, proposed and proved pumping lemmas for first-order languages over ADT, implemented the proposed approach, and conducted experiments. The co-authors participated in the discussion of the main ideas of the paper and performed a review of existing solutions.
+In the article~\cite{LPAR2023:Collaborative_Inference_of_Combined}, the author's contribution lies in proposing and formally justifying a collaborative approach to invariant inference, implementing and evaluating it. The co-authors participated in the discussion of the paper presentation and performed a review of existing solutions.
+In the article~\cite{мисонижник2022генерация}, the author's contribution lies in the formal description of the theory of computing preconditions for programs with complex data structures. The co-authors participated in the discussion of the main ideas and implemented the approach.

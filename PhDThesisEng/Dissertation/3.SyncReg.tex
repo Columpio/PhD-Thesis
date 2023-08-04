@@ -1,0 +1,516 @@
+\chapter{Synchronous Regular Invariant Inference}\label{ch:SyncReg}
+
+% В качестве расширения автоматов над деревьями, способного выражать синхронные отношения, часто применяют синхронные автоматы над деревьями.
+% Выразительная сила класса синхронных автоматов зависит от схемы свёртки термов, на которой этот класс построен.
+% В разделе~\cref{sec:SyncReg/syncAutomata} рассмотрен класс синхронных регулярных инвариантов, основанный на синхронных автоматах, построенных по произвольной схеме свёртки.
+% В частности, рассмотрены синхронные регулярные инварианты, основанные на полной свёртке, которые позволяют выражать большой класс синхронных отношений.
+% В разделе~\cref{sec:SyncReg/inference} предложен метод вывода синхронных регулярных инвариантов, основанный на трансформации системы дизъюнктов в декларативное описание автомата, задающего инвариант.
+As an extension of tree automata capable of expressing synchronous relations, synchronous tree automata are often used. The expressive power of the class of synchronous automata depends on the term convolution scheme on which this class is founded. Section~\cref{sec:SyncReg/syncAutomata} discusses the class of synchronous regular invariants built upon synchronous automata created using any arbitrary convolution scheme. In particular, synchronous regular invariants based on full convolution, which can express a wide class of synchronous relations, are considered. Section~\cref{sec:SyncReg/inference} proposes a method for inferring synchronous regular invariants, which is based on transforming a clause system into a declarative description of an automaton that defines the invariant.
+
+\section{Synchronous Regular Invariants}\label{sec:SyncReg/syncAutomata}
+
+% Синхронные автоматы над деревьями со стандартной~\cite{tata} и полной~\cite{haude2020} свёртками часто рассматриваются как естественное расширение классических автоматов над деревьями для выражения синхронных отношений, таких как равенство и неравенство термов.
+% В данном разделе определены автоматы над деревьями с произвольной свёрткой и доказаны их базовые свойства.
+Synchronous tree automata with standard~\cite{tata} and full~\cite{haude2020} convolutions are often viewed as a natural extension of classic tree automata for expressing synchronous relations, such as the equality and inequality of terms. In this section, we define tree automata with arbitrary convolution and prove their basic properties.
+
+\subsection{Synchronous tree automata}
+
+\begin{define}
+% Свёртка (convolution) термов~--- это вычислимая биективная функция из $\groundTerms^{\leq k}$ в $\groundTermsStar$ для некоторого $k\geq 1$.
+A term convolution is a computable bijective function from $\groundTerms^{\leq k}$ to $\groundTermsStar$ for some $k\geq 1$.
+\end{define}
+
+\begin{define}[см.~\cite{tata,haude2020}]
+  % Стандартная свёртка (standard convolution) $\flatConv$-термов определяется следующим образом:
+  The standard convolution of $\flatConv$-terms is defined as follows:
+  \begin{align*}
+      \flatConv\big(f_1(\overline{a}^1),\ldots, f_m(\overline{a}^m)\big) \eqdef \tuple{f_1,\ldots,f_m}
+      \big( \flatConv(\overline{a}^1_1,\ldots,\overline{a}^m_1),\flatConv(\overline{a}^1_2,\ldots,\overline{a}^m_2),\ldots
+ \big).
+  \end{align*}
+\end{define}
+
+\begin{example}
+    \begin{align*}
+        \flatConv\big(n(p, q), S(Z), T(u, v)\big) &= \tuple{n, S, T}\big(\flatConv(p, Z, u), \flatConv(q, v)\big)\\&= \tuple{n, S, T}\big(\tuple{p, Z, u}, \tuple{q, v}\big)
+    \end{align*}
+\end{example}
+
+\begin{define}[см.~\cite{haude2020}]
+  % Полная свёртка (full convolution) $\fullConv$-термов определяется следующим образом:
+  The full convolution of $\fullConv$-terms is defined as follows:
+  \begin{align*}
+      \fullConv\big(f_1(\overline{a}^1),\ldots, f_m(\overline{a}^m)\big) \eqdef \tuple{f_1,\ldots,f_m}
+      \big( \fullConv(\overline{b}) \mid \overline{b} \in (\overline{a}^1\times\ldots\times\overline{a}^m) \big).
+  \end{align*}
+\end{define}
+
+\begin{define}
+    % Множество кортежей термов $X$ называется \emph{$\conv$-свёрточным регулярным языком}, если существует автомат над деревьями $A$ такой, что $\langOf{A} = \{ \conv(\overline{t}) \mid \overline{t}\in X \} \eqdef \conv(X)$.
+    A set of term tuples $X$ is called a \emph{$\conv$-convolutional regular language} if there exists a tree automaton $A$ such that $\langOf{A} = { \conv(\overline{t}) \mid \overline{t}\in X } \eqdef \conv(X)$.
+
+    % Классом языков $\classOf{\conv}$ называется множество всех $\conv$-свёрточных регулярных языков. Обозначим посредством \syncRegFlatClass{} класс $\classOf{\flatConv}$ и \syncRegFullClass{}~--- класс $\classOf{\fullConv}$.
+    The class of languages $\classOf{\conv}$ is the set of all $\conv$-convolutional regular languages. We denote by \syncRegFlatClass{} the class $\classOf{\flatConv}$ and by \syncRegFullClass{} the class $\classOf{\fullConv}$.
+\end{define}
+
+\begin{lemma}\label{lemma:reg-full-one-is-reg}
+    % Пусть $L$~--- язык кортежей арности 1.
+    % Тогда справедливо, что $L\in\syncRegFullClass{} \Leftrightarrow L \in \regclass{}$.
+    Let $L$ be a language of tuples of arity 1.
+Then it holds that $L\in\syncRegFullClass{} \Leftrightarrow L \in \regclass{}$.
+\end{lemma}
+\begin{proof}
+    % По определению имеем, что
+    By definition, we have
+    $
+        \fullConv\big(f(\overline{a})\big)\eqdef \tuple{f}\big(\fullConv(\overline{b}) \mid b \in (\overline{a}) \big).
+    $
+    In other words,
+    $
+        \fullConv\big(f(a_1,\ldots,a_n)\big)\eqdef f\big(\fullConv(a_1),\ldots,\fullConv(a_n)\big).
+    $
+    Therefore, $\fullConv(t) = t$ for all terms $t$, and hence $\fullConv(L) = L$ и $L\in\syncRegFullClass{}$, $L = \fullConv(L) \in \regclass{}$.
+\end{proof}
+
+\begin{example}
+  % Рассмотрим сигнатуру $\fsymbs$ бинарных деревьев, имеющую два конструктора $Node$ и $Leaf$ (арность $2$ и $0$ соответственно).
+  % Рассмотрим автомат $A = \sautomaton{\top, \bot}{2}{\bot}$ с отношением перехода $\autTrans$:
+  Consider the binary tree signature $\fsymbs$ with two constructors $Node$ and $Leaf$ (of arity $2$ and $0$, respectively), and the automaton $A = \sautomaton{\top, \bot}{2}{\bot}$ with the transition relation $\autTrans$:
+    \begin{align*}
+        Leaf &\rightarrow \bot &\tuple{Node, Node}(\phi, \psi) &\rightarrow \phi \land \psi\\
+        Node(\phi, \psi) &\rightarrow \bot &\tuple{Node, Leaf}(\phi, \psi) &\rightarrow \bot\\
+        \tuple{Leaf, Leaf} &\rightarrow \top &\tuple{Leaf, Node}(\phi, \psi) &\rightarrow \bot,
+    \end{align*}
+  % где $\phi$ и $\psi$ проходят по множеству всех состояний. Этот автомат позволяет выразить отношение неравенства при помощи стандартной свёртки. Иными словами, $\langOf{A} = \{ \flatConv(x, y) \mid x, y \in \groundTerms, x \neq y \}$.
+  where $\phi$ and $\psi$ range over all possible states. This automaton expresses the inequality relation using standard convolution. In other words, $\langOf{A} = \{ \flatConv(x, y) \mid x, y \in \groundTerms, x \neq y \}$.
+\end{example}
+
+\begin{example}[\exLt{}]\label{ex:lt}
+  % Рассмотрим сигнатуру $\fsymbs$ натуральных чисел Пеано, имеющую два конструктора $Z$ и $S$ (арность $0$ и $1$ соответственно), и следующее множество, задающее порядок на этих числах:
+  Consider the signature $\fsymbs$ of Peano natural numbers, which has two constructors $Z$ and $S$ (arity $0$ and $1$, respectively), and the following set, which establishes an order on these numbers:
+    $$ \exLt{} \eqdef \Big\{ \big( S^n(Z), S^m(Z) \big) \mid n < m \Big\}. $$
+
+  % Возьмём автомат $A = \sautomaton{\bot, \top}{2}{\top}$ с отношением перехода $\autTrans$:
+  Consider automaton  $A = \sautomaton{\bot, \top}{2}{\top}$ с with transition relation $\autTrans$:
+    \begin{align*}
+        \tuple{Z, Z} &\rightarrow \bot &\tuple{Z, S}(\phi) &\rightarrow \top\\
+        Z &\rightarrow \bot &\tuple{S, Z}(\phi) &\rightarrow \bot\\
+        S(\phi) &\rightarrow \bot &\tuple{S, S}(\phi) &\rightarrow \phi,
+    \end{align*}
+  % где $\phi\in\{\top,\bot\}$ проходит по множеству всех состояний. Он позволяет выразить отношение порядка при помощи стандартной свёртки. Иными словами, $\langOf{A} = \{ \flatConv(S^n(Z), S^m(Z)) \mid n < m \}$.
+  where $\phi\in\{\top,\bot\}$ ranges over all possible states. This automaton expresses the order relation using standard convolution. In other words, $\langOf{A} = \{ \flatConv(S^n(Z), S^m(Z)) \mid n < m \}$.
+\end{example}
+
+\subsection{Closure under Boolean operations}\label{sec:SyncReg/boolean}
+% Автоматы со свёрткой замкнуты относительно всех булевых операций вне зависимости от свёртки. В сущности, доказательства и соответствующие конструкции для классических автоматов подходят и для автоматов со свёрткой.
+% В данном разделе будем обозначать с помощью $k$ размерность кортежей языков из $\classOf{\conv}$.
+Automata with convolution are closed under all boolean operations, regardless of the convolution. Essentially, the proofs and corresponding constructions for classical automata also apply to automata with convolution. In this section, we will denote by $k$ the dimension of the tuple languages from $\classOf{\conv}$.
+
+\begin{theorem}\label{automata_complement}
+% Класс языков $\classOf{\conv}$ с произвольной свёрткой $\conv$ замкнут относительно дополнения.
+The class of languages $\classOf{\conv}$ with arbitrary convolution $\conv$ is closed with respect to complement.
+\end{theorem}
+\begin{proof}
+% Пусть язык $L\in\classOf{\conv}$. Тогда без ограничения общности можно утверждать, что существует детерминированный автомат $A = \sautomatonGen{\autStates}{k}{\autFinStates}{\autTrans}$ такой, что $\langOf{A} = \conv(L)$. Рассмотрим автомат для языка дополнения $A^c = \sautomatonGen{\autStates}{k}{\autStates\setminus\autFinStates}{\autTrans}$. Верно, что $\langOf{A^c} = \overline{\langOf{A}} = \overline{\conv(L)} = \conv(\overline{L})$ (последнее следует из того, что $\conv$~--- биективная функция). Таким образом имеем, что $\overline{L}\in\classOf{\conv}$.
+Let language $L\in\classOf{\conv}$. Then without loss of generality we can say that there exists a deterministic automaton $A = \sautomatonGen{\autStates}{k}{\autFinStates}{\autTrans}$ such that $\langOf{A} = \conv(L)$. Consider the automaton for the complement language $A^c = \sautomatonGen{\autStates}{k}{\autStates\setminus\autFinStates}{\autTrans}$. It is true that $\langOf{A^c} = \overline{\langOf{A}} = \overline{\conv(L)} = \conv(\overline{L})$ (the latter follows from $\conv$ being a bijective function). Thus we have $\overline{L}\in\classOf{\conv}$.
+\end{proof}
+
+\begin{theorem}\label{theorem:automataIntersect}
+% Класс языков $\classOf{\conv}$ с произвольной свёрткой $\conv$ замкнут относительно пересечения.
+
+The class of languages $\classOf{\conv}$ with arbitrary convolution $\conv$ is closed with respect to intersection.
+\end{theorem}
+\begin{proof}
+% Возьмём $L_1, L_2 \in \syncRegFullClass{}$.
+Consider $L_1, L_2 \in \syncRegFullClass{}$.
+% Если это языки кортежей разных размерностей, то их пересечение пусто, и, очевидно, $\emptyset\in\classOf{\conv}$.
+% Иначе пусть их общая размерность $k$.
+Then we have deterministic automata
+% Тогда имеются детерминированные автоматы 
+$A = \sautomatonGen{\autStates^A}{k}{\autFinStates^A}{\autTrans^A}$ and $B = \sautomatonGen{\autStates^B}{k}{\autFinStates^B}{\autTrans^B}$ such that $\langOf{A} = L_1$ and $\langOf{A} = L_2$.
+Intersection of languages $L_1 \cap L_2$ is recognized by automata 
+$$C = \sautomatonGen{\autStates^A \times \autStates^B}{k}{\autFinStates^A \times \autFinStates^B}{\autTrans},$$
+where the transition relation $\autTrans$ is defined as follows:
+\begin{align*}
+        \autTrans\big(\overline{f}, (a_1, b_1) \dots (a_k, b_k)\big) = \big(\autTrans^A(\overline{f}, a_1, \ldots, a_k), \autTrans^B(\overline{f}, b_1, \ldots, b_k)\big).
+\end{align*}
+From the bijectivity of $\conv$ follows that $\langOf{C} = \langOf{A} \cap \langOf{B} = \conv(L_1)\cap\conv(L_2) = \conv(L_1\cap L_2)$, which means $L_1\cap L_2\in\classOf{\conv}$.
+\end{proof}
+
+
+\begin{theorem}
+% Класс языков $\classOf{\conv}$ с произвольной свёрткой $\conv$ замкнут относительно объединения.
+The class of languages $\classOf{\conv}$ with arbitrary convolution $\conv$ is closed with respect to union.
+\end{theorem}
+\begin{proof}
+% Данное утверждение напрямую следует из теорем~\ref{automata_complement} и~\ref{theorem:automataIntersect} и закона де Моргана, применённого к множествам $L_1$ и $L_2$: $L_1 \cup L_2 = (L_1^c \cap L_2^c)^c.$
+
+This statement directly follows from t
+Theorems~\ref{automata_complement} and~\ref{theorem:automataIntersect} and the De Morgan's law applied to the sets $L_1$ and $L_2$: $L_1 \cup L_2 = (L_1^c \cap L_2^c)^c.$
+\end{proof}
+
+
+
+\subsection{Decidability of the Problems of Emptiness and Term Membership}\label{sec:SyncReg/decidability}
+% Перенесём разрешающие процедуры для классических автоматов над деревьями на автоматы со свёрткой.
+Next, we will transfer the deciding procedures for classical automata to tree automata with convolution.
+
+\begin{theorem}\label{theorem:emptinessProblem}
+% Пусть $\conv$~--- произвольная свёртка и $X\in\classOf{\conv}$. Тогда
+% задача проверки пустоты множества $X$ разрешима.
+Let $\conv$ be an arbitrary convolution and $X\in\classOf{\conv}$. Then the problem of checking the emptiness of $X$is decidable.
+\end{theorem}
+\begin{proof}
+% Пусть $A$~--- автомат над деревьями такой, что $\langOf{A} = \conv(X)$, $X = \emptyset \Leftrightarrow \langOf{A} = \emptyset$. Пустоту языка классического автомата над деревьями позволяет проверить процедура из~\cite[теор.~1.7.4]{tata}, которая работает за линейное время от размера автомата.
+
+Let $A$ be a tree automaton such that $\langOf{A} = \conv(X)$, where $X = \emptyset$ if and only if $\langOf{A} = \emptyset$. The emptiness of the language of a classical tree automaton can be checked by a procedure described in~\cite[Theorem 1.7.4]{tata}, which runs in linear time with respect to the size of the automaton.
+\end{proof}
+
+\begin{theorem}
+% % Пусть $\conv$~--- произвольная свёртка и $X\in\classOf{\conv}$.
+% Задача принадлежности кортежа замкнутых термов множеству $X$ разрешима.
+Let $\conv$ be an arbitrary convolution and $X\in\classOf{\conv}$. The problem of membership of a tuple of closed terms to the set $X$ is decidable.
+\end{theorem}
+\begin{proof}
+    % Возьмём кортеж замкнутых термов $\overline{t}$ и $A$~--- автомат над деревьями такой, что $\langOf{A} = \conv(X)$. Тогда верно следующее:
+    Consider a tuple of closed terms $\overline{t}$ and a tree automaton $A$ such that $\langOf{A} = \conv(X)$. Then the following holds:
+    $$\overline{t}\in X \Leftrightarrow \conv(\overline{t})\in\conv(X) = \langOf{A}.$$
+    
+    % Следовательно, искомая процедура заключается в вычислении $\conv$ на кортеже $\overline{t}$ и проверке принадлежности результата языку автомата $A$ при помощи процедуры из~\cite[теор.~1.7.2]{tata}.
+    Therefore, the desired procedure consists of computing $\conv$ on the tuple $\overline{t}$ and checking whether the result belongs to the language of the automaton $A$ using the procedure described in~\cite[Theorem 1.7.2]{tata}.
+    
+\end{proof}
+
+\section{Invariant Inference via Declarative Description of the Invariant-Defining Automaton}\label{sec:SyncReg/inference}
+
+% В данном разделе предложена процедура $\Delta$, которая по системе дизъюнктов Хорна строит формулу первого порядка, декларативно описывающую индуктивный инвариант исходной системы.
+% Формула $\Delta(\prog{})факт $ имеет конечную модель тогда и только тогда, когда оригинальная система $\prog{}$ имеет индуктивный инвариант в классе \syncRegFullClass{}.
+% Это факт позволяет легко получить метод вывода синхронных регулярных инвариантов, заключающийся в применении произвольной процедуры поиска конечных моделей к результату применения процедуры $\Delta$ к системе дизъюнктов Хорна.
+% Для определения процедуры $\Delta$ вводится языковая семантика формул, позволяющая говорить о семантике языков формул, построенных из языков предикатов.
+In this section, the procedure $\Delta$ is proposed that constructs a first-order formula declaratively describing the inductive invariant of the original system, given a Horn clause system.
+The formula $\Delta(\prog{})$ has a finite model if and only if the original system $\prog{}$ has an inductive invariant in the \syncRegFullClass{} class.
+This fact allows for an easy method of inferring synchronous regular invariants, which involves applying any procedure for finding finite models to the result of applying the $\Delta$ procedure to the Horn clause system.
+To define the $\Delta$ procedure, we introduce a formula language semantics, allowing us to talk about the semantics of formula languages constructed from predicate languages.
+
+\subsection{Formula language semantics}
+% Формула $\Phi = \forall x_1 \dots \forall x_n.\phi(x_1, \dots, x_n)$ находится в сколемовской нормальной форме (СНФ), если $\phi$ является бескванторной формулой со свободными переменными $x_1, \dots, x_n$. Известно, что любая формула в языке первого порядка может быть приведена к сколемовской нормальной форме с помощью процедуры сколемизации.
+The formula $\Phi = \forall x_1 \dots \forall x_n.\phi(x_1, \dots, x_n)$ is in Skolem normal form (SNF) if $\phi$ is a quantifier-free formula with free variables $x_1, \dots, x_n$. It is known that any formula in first-order language can be converted to Skolem normal form using Skolemization.
+
+\begin{define}
+% Кортеж термов $\langle t_1, \dots, t_k \rangle$ называется $(n, k)$-шаблоном, если каждый его элемент $t_i$ зависит не более чем от $n$ переменных из общего набора переменных данного кортежа.
+A tuple of terms $\langle t_1, \dots, t_k \rangle$ is called an $(n, k)$-pattern if each of its elements $t_i$ depends on no more than $n$ variables from the common set of variables of this tuple.
+\end{define}
+
+\begin{define}
+% Будем называть шаблон \textit{линейным}, если каждая переменная входит не более чем в один терм кортежа, и в любой терм входит не более одного раза. В противном случае будем называть шаблон \textit{нелинейным}.
+
+A pattern will be called \textit{linear} if each variable appears in no more than one term of the tuple, and any term contains this variable no more than once. Otherwise, the pattern will be referred to as \textit{nonlinear}.
+\end{define}
+
+
+\begin{define}
+% Подстановкой замкнутых термов $u = \langle u_1, \dots, u_n \rangle$ в $(n, k)$-шаблон $t = \langle t_1, \dots, t_k \rangle$ назовем кортеж замкнутых термов, полученный подстановкой термов $u_i$ на место переменных $x_i$ для $i = 1, \dots, n$: 
+By substituting closed terms $u = \langle u_1, \dots, u_n \rangle$ into an $(n, k)$-pattern $t = \langle t_1, \dots, t_k \rangle$, we refer to a tuple of closed terms obtained by substituting terms $u_i$ in place of variables $x_i$ for $i = 1, \dots, n$
+\begin{center}
+    $t[u] = \langle t_1\{x_1 \leftarrow u_1, \dots, x_n \leftarrow u_n\}, \dots, t_k\{x_1 \leftarrow u_1, \dots, x_n \leftarrow u_n\} \rangle $.
+\end{center}
+\end{define}
+
+\begin{define}
+% \textit{Нижний остаток языка} $L$ по $(n, k)$-шаблону $t$~--- это $n$-арный язык $\quotient{L}{t} \eqdef \{ u \in \groundTerms{}^n \ | \ t[u] \in L \}$.
+The lower remainder of a language $L$ with respect to an $(n, k)$-pattern $t$ is defined as the $n$-ary language $\quotient{L}{t} \eqdef { u \in \groundTerms{}^n \ | \ t[u] \in L }$.
+\end{define}
+
+\begin{example}
+% Рассмотрим сигнатуру чисел Пеано, содержащую два функциональных символа $Z$ и $S$, имеющих арность 0 и 1 соответственно. 
+Consider the Peano number signature, which includes two functional symbols, $Z$ and $S$, with arities of 0 and 1, respectively.
+
+% Кортеж $\langle x_1, S(x_2), Z \rangle$ является линейным $(2,3)$-шаблоном.
+The tuple $\langle x_1, S(x_2), Z \rangle$ is a linear $(2,3)$-pattern.
+
+% Кортеж $\langle S(x_1), x_1 \rangle$ является нелинейным $(1,2)$-шаблоном.
+The tuple $\langle S(x_1), x_1 \rangle$ is a non-linear $(1,2)$-pattern.
+
+% Подстановка кортежа термов $u = \langle Z,\ S(Z) \rangle$ в $(2, 3)$-шаблон $t =\langle S(x_1),\ S(S(x_2),\ Z) \rangle$ является кортежем
+The substitution of of term tuple $u = \langle Z,\ S(Z) \rangle$ into a $(2,3)$-pattern $t =\langle S(x_1),\ S(S(x_2),\ Z) \rangle$ is the tuple
+$t[u] = \langle S(Z),\ S(S(S(Z))), Z \rangle$.
+\end{example}
+
+\begin{define}
+% Пусть каждому неинтерпретированному предикатному символу $p$ соответствует некоторый язык кортежей термов, обозначаемый $\interprets{L}{p}$. Язык равенства определён как $\interprets{L}{=} = \{(x,x) \ \mid \ x \in \groundTerms{}\}$. \textit{Языковой семантикой} формулы в СНФ $\forall x_1 \dots \forall x_n.\phi(x_1, \dots, x_n)$ назовём язык $\interprets{L}{\phi}$, определённый индуктивно следующим образом:
+Let each uninterpreted predicate symbol $p$ correspond to a language of term tuples, denoted as $\interprets{L}{p}$. The language of equality is defined as $\interprets{L}{=} = {(x,x) \mid x \in \groundTerms{}}$. The language semantics of a formula in SNF, $\forall x_1 \dots \forall x_n.\phi(x_1, \dots, x_n)$ refers to a language $\interprets{L}{\phi}$ defined inductively as follows:
+\begin{align*}
+    \interprets{L}{p(\overline{t})} &\eqdef\quotient{\interprets{L}{p}}{\overline{t}}\\
+    \interprets{L}{\neg \psi} &\eqdef \groundTerms{}^n \setminus \interprets{L}{\psi}\\
+    \interprets{L}{\psi_1 \land \psi_2} &\eqdef \interprets{L}{\psi_1}\cap\interprets{L}{\psi_2}\\
+    \interprets{L}{\psi_1 \lor \psi_2} &\eqdef \interprets{L}{\psi_1}\cup\interprets{L}{\psi_2}
+\end{align*}
+\end{define}
+
+\begin{define}
+% Формула в СНФ $\Phi = \forall x_1 \dots \forall x_n.\phi(x_1, \dots, x_n)$ \textit{выполнима} в языковой семантике ($L \models \Phi$), если $\interprets{L}{\neg \phi} = \emptyset$.
+The SNF formula $\Phi = \forall x_1 \dots \forall x_n.\phi(x_1, \dots, x_n)$ is satisfiable in language semantics ($L \models \Phi$) if $\interprets{L}{\neg \phi} = \emptyset$.
+\end{define}
+
+\begin{theorem}\label{theorem:semantics}
+% Формула в СНФ выполнима в языковой семантике тогда и только тогда, когда она выполнима в семантике Тарского. 
+A formula in SNF is satisfiable in language semantics if and only if it is satisfiable in Tarski's semantics.
+\end{theorem}
+\begin{proof}
+% Возьмём $\Phi = \forall x_1 \dots \forall x_n.\phi(x_1, \dots, x_n)$. По теореме Эрбрана формула $\Phi$ выполнима в семантике Тарского тогда и только тогда, когда у нее существует эрбрановская модель $\hs$.
+% Возьмём $\interprets{L}{p} = \interprets{\hs}{p}$ и построим доказательство индукцией по структуре формулы:
+Set $\Phi = \forall x_1 \dots \forall x_n.\phi(x_1, \dots, x_n)$. According to Herbrand's theorem, the formula $\Phi$ is satisfiable in Tarski's semantics if and only if it has a Herbrand model $\hs$.
+
+Let $\interprets{L}{p} = \interprets{\hs}{p}$, and we will construct a proof by induction on the structure of the formula:
+\begin{align*}
+    \hs\models p(\overline{t}) &\Leftrightarrow \text{for all }\overline{u}, \overline{t}[\overline{u}]\in\interprets{\hs}{p}
+    &&\Leftrightarrow \text{for all }\overline{u}, \overline{t}[\overline{u}]\in\interprets{L}{p}\\
+    &\Leftrightarrow \text{for all }\overline{u}, \overline{u}\in\quotient{\interprets{L}{p}}{\overline{t}}
+    &&\Leftrightarrow \text{for all }\overline{u}, \overline{u}\in\interprets{L}{p(\overline{t})}\\&\Leftrightarrow \interprets{L}{\neg p(\overline{t})} = \emptyset &&\Leftrightarrow L\models p(\overline{t})
+\end{align*}
+
+\begin{align*}
+    \hs\models \neg\psi &\Leftrightarrow \text{for all }\overline{u}, \hs\not\models \psi(\overline{u})
+    &&\Leftrightarrow \text{for all }\overline{u}, L\not\models \psi(\overline{u})\\
+    &\Leftrightarrow \text{for all }\overline{u}, \interprets{L}{\neg \psi(\overline{u})} \neq \emptyset
+    &&\Leftrightarrow \interprets{L}{\neg \psi} = \groundTerms{}^n\\
+    &\Leftrightarrow \interprets{L}{\neg \neg \psi} = \emptyset &&\Leftrightarrow L\models\neg \psi
+\end{align*}
+
+\begin{align*}
+    \hs\models \psi_1\land\psi_2 &\Leftrightarrow \hs\models \psi_1\text{ and }\hs\models\psi_2
+    &&\Leftrightarrow L\models \psi_1\text{ и }L\models\psi_2\\
+    &\Leftrightarrow \interprets{L}{\neg\psi_1} = \emptyset\text{ and }\interprets{L}{\neg\psi_2} = \emptyset\\
+    &\Leftrightarrow \interprets{L}{\psi_1} = \groundTerms{}^n\text{ and }\interprets{L}{\psi_2} = \groundTerms{}^n
+    &&\Leftrightarrow \interprets{L}{\psi_1\land\psi_2} = \groundTerms{}^n\\
+    &\Leftrightarrow \interprets{L}{\neg(\psi_1\land\psi_2)} = \emptyset &&\Leftrightarrow L\models \psi_1\land\psi_2
+\end{align*}
+
+% Для доказательства индукционного перехода можно воспользоваться законом Де Моргана для дизъюнкции.
+To prove the induction step, we can use De Morgan's law for disjunction.
+\end{proof}
+
+\begin{theorem}~\label{theorem:patternClosure}
+% Пусть $L\in\syncRegFullClass{}$~--- язык кортежей размера $n$. Тогда нижний остаток $\quotient{L}{t}$ относительно линейного шаблона $t =
+% \langle x_1, \dots, x_{i-1}, f(y_1,\dots,y_m), x_{i+1}, \dots x_n \rangle$ также принадлежит классу \syncRegFullClass{}.
+Let $L \in \syncRegFullClass{}$ be a language of tuples of size $n$. Then the lower remainder $\quotient{L}{t}$ with respect to the linear pattern $t =
+\langle x_1, \dots, x_{i-1}, f(y_1,\dots,y_m), x_{i+1}, \dots x_n \rangle$ also belongs to the class \syncRegFullClass{}.
+\end{theorem}
+\begin{proof}
+% Не ограничивая общности, рассмотрим шаблон $t = \langle f(y_1,\dots,y_m), x_2, \dots x_n \rangle$.
+% Пусть $\fullConv(L)=\langOf{A}$, где $A = \sautomatonGen{\autStates}{n}{\autFinStates}{\autTrans}$. Рассмотрим автомат $A' = \sautomatonGen{\autStates'}{n-1+m}{\autFinStates'}{\autTrans'}$, каждое состояние которого \textit{хранит} до $n-1$ функционального символа и до $m^n$ состояний автомата $A$, то есть $\autStates' = \Sigma^{\leq n-1} \times \autStates^{\leq m^n}$.
+Without loss of generality, consider the pattern $t = \langle f(y_1,\dots,y_m), x_2, \dots x_n \rangle$. Let $\fullConv(L)=\langOf{A}$, where $A = \sautomatonGen{\autStates}{n}{\autFinStates}{\autTrans}$. Consider the automaton $A' = \sautomatonGen{\autStates'}{n-1+m}{\autFinStates'}{\autTrans'}$, every state of which stores up to $n-1$ functional symbols and up to $m^n$ states of automaton $A$, that is, $\autStates' = \Sigma^{\leq n-1} \times \autStates^{\leq m^n}$.
+
+% Далее, определим автомат $A'$ таким образом, чтобы выполнялось следующее свойство:
+Next, we define automaton $A'$ in such a way that the following property holds:
+\begin{align}\label{inductionResult}
+    A'[\fullConv(\overline{u}, g_2(\overline{s}_2), \ldots, g_n(\overline{s}_n))] = \tuple{\tuple{g_2, \ldots, g_n}, \tuple{A[\fullConv(t)] \mid t \in \overline{u}\times \overline{s}_2\times\ldots\times\overline{s}_n}}.
+\end{align}
+
+% Определим конечные состояния автомата  $A'$ так:
+Define the finite states of automaton $A'$ as follows:
+$$\autFinStates' = \{\tuple{\tuple{f_2, \ldots, f_n}, \overline{q}} \mid \autTrans(\tuple{f, f_2, \ldots, f_n}, \overline{q}) \in \autFinStates\}.$$
+
+% Тогда по свойству~\ref{inductionResult} имеем следующее:
+Then by property~\ref{inductionResult} we have the following:
+\begin{align*}
+A'[\fullConv(\overline{u}, g_2(\overline{s}_2), \ldots, g_n(\overline{s}_n))] &\in \autFinStates' \Leftrightarrow\\
+\autTrans(\tuple{f, g_2, \ldots, g_n}, \tuple{A[\fullConv(t)] \mid t \in \overline{u}\times \overline{s}_2\times\ldots\times\overline{s}_n}) &\in \autFinStates \Leftrightarrow\\
+A[\fullConv(f(\overline{u}), g_2(\overline{s}_2), \ldots, g_n(\overline{s}_n))] \in \autFinStates.
+\end{align*}
+
+% Чтобы определить отношение перехода $\autTrans'$, рассмотрим раскрутку вычисления $A'$:
+To define the transition relation $\autTrans'$, examine the unfolding of the application of $A'$ automaton:
+\begin{align}\label{eq:sync-aut-unfold}
+    A'\left[\fullConv\left( f_1(\overline{t}_1),\ldots,f_m(\overline{t}_m),g_2(\overline{u}_2),\ldots,g_n(\overline{u}_n) \right)\right] =\autTrans'\left(\tuple{f_1,\ldots,f_m,g_2,\ldots,g_n}, \overline{a}'\right),
+\end{align}
+where
+{\scriptsize
+$$
+    \overline{a}' = \left( A'\left[\fullConv\left(\overline{t},\overline{h})\right)\right] \mid \left(\overline{t},\overline{h}\right) = \left(\overline{t},h_2(\overline{s}_2),\ldots,h_n(\overline{s}_n)\right)\in\left(\overline{t}_1\times\ldots\times\overline{t}_m\right)\times\left(\overline{u}_2\times\ldots\times\overline{u}_n\right) \right)=$$
+    $$= \left( \tuple{\tuple{h_2,\ldots,h_n}, \left( A\left[\fullConv\left( 
+\overline{b} \right)\right] \mid \overline{b}\in\overline{t}\times\overline{s}_2\times\ldots\times\overline{s}_n \right) } \mid \left(\overline{t},h_2(\overline{s}_2),\ldots,h_n(\overline{s}_n)\right)\in\left(\overline{t}_1\times\ldots\times\overline{t}_m\right)\times\left(\overline{u}_2\times\ldots\times\overline{u}_n\right) \right).$$
+}
+% Для того, чтобы выполнялось свойство~\ref{inductionResult}, левая часть равенства~\ref{eq:sync-aut-unfold} должна быть также равна следующей паре:
+In order to satisfy property~\ref{inductionResult}, the left-hand side of equation~\ref{eq:sync-aut-unfold} should also be equal to the following pair:
+$$ \tuple{\tuple{g_2,\ldots,g_n}, \left( A\left[\fullConv\left(f_i(\overline{t}_i),\overline{h}\right)\right] \mid \overline{h} = \left(h_2(\overline{s}_2),\ldots,h_n(\overline{s}_n)\right) \in \overline{u}_2\times\ldots\times\overline{u}_n \right)} $$
+% Второй элемент данной пары по определению равен следующему выражению:
+By definition, the second element of this pair is equal to the following expression:
+{\footnotesize
+$$\left( \autTrans\left( \tuple{f_i, h_2,\ldots,h_n},\left(A\left[\fullConv\left(\overline{b}\right)\right] \mid \overline{b}\in\overline{t}_i\times\overline{s}_2\times\ldots\times\overline{s}_n\right) \right) \mid \left(h_2(\overline{s}_2),\ldots,h_n(\overline{s}_n)\right) \in \overline{u}_2\times\ldots\times\overline{u}_n \right).$$
+}
+
+% Каждый элемент $A\left[\fullConv\left(\overline{b}\right)\right]$ в последнем выражении гарантированно присутствует среди аргументов отношения перехода $\autTrans'$ (обозначенных $\overline{a}'$), поэтому из приведённых равенств можно построить корректное определение $\autTrans'$, заменив все вхождения $A\left[\fullConv\left(\overline{b}\right)\right]$ в последнем выражении $\overline{a}'$ на свободные переменные состояний.
+
+% Для автомата $A'$ по построению верно, что $\langOf{A} = \fullConv(\quotient{L}{t})$.
+In the last expression, each element $A\left[\fullConv\left(\overline{b}\right)\right]$ is guaranteed to be present among the arguments of the transition relation $\autTrans'$ (denoted as $\overline{a}'$). Therefore, based on the given equalities, a valid definition for $\autTrans'$ can be constructed by replacing all occurrences of $A\left[\fullConv\left(\overline{b}\right)\right]$ in the last expression with the free variables of states.
+
+For the automaton $A'$ constructed in this manner, it holds that $\langOf{A} = \fullConv(\quotient{L}{t})$.
+\end{proof}
+
+\begin{theorem}\label{theorem:anyPatternClosure}
+    % Пусть $L\in\syncRegFullClass{}$, а кортеж $t$ является $(k,n)$-шаблоном. Тогда выполняется $\quotient{L}{t}\in\syncRegFullClass{}$.
+    Let $L\in\syncRegFullClass{}$, and tuple be a $(k,n)$-pattern. Then $\quotient{L}{t}\in\syncRegFullClass{}$ holds. 
+\end{theorem}
+\begin{proof}
+% Язык $\quotient{L}{t}$ можно линеаризовать, то есть представить в виде пересечения нижних остатков языка $L$ по линейным шаблонам и языков для равенств некоторых переменных.
+% Заключение теоремы следует из теоремы~\ref{theorem:patternClosure} о замкнутости \syncRegFullClass{} относительно нижних остатков по линейным шаблонам и теоремы~\ref{theorem:automataIntersect} о замкнутости этого класса относительно пересечений.
+The language $\quotient{L}{t}$ can be linearized, meaning it can be represented as the intersection of lower remainders of the language $L$ with respect to linear patterns and languages for the equalities of certain variables.
+The conclusion of the theorem follows from Theorem~\ref{theorem:patternClosure}, which states the closure of the \syncRegFullClass{} under lower remainders with respect to linear patterns, and Theorem~\ref{theorem:automataIntersect}, which states the closure of this class under intersections.
+\end{proof}
+
+\subsection{Algorithm for constructing declarative descriptions of invariants}
+% В данном разделе приведено описание алгоритма $\Delta$-трансформации системы дизъюнктов Хорна над АТД в формулу логики первого порядка над свободной теорией, по конечной модели которой можно построить синхронный регулярный инвариант исходной системы дизъюнктов.
+This section presents a description of the $\Delta$-transformation algorithm for a Horn clause system over ADTs into a first-order logic formula over the free theory, from whose finite model a synchronous regular invariant of the original clause system can be constructed.
+
+% Искомый алгоритм начинает с устранения ограничений из дизъюнктов при помощи алгоритма, представленного в разделе~\ref{sec:fmf/totalCorrectness}.
+The algorithm starts by eliminating constraints from clauses using the algorithm presented in Section~\ref{sec:fmf/totalCorrectness}.
+
+% Далее, по системе дизъюнктов Хорна $\prog$ с предикатами $\relations$ алгоритм $\Delta$ строит формулу языка первого порядка в сигнатуре $\signature'= \tuple{\sorts', \fsymbs', \psymbs'}$, где
+\begin{alignat*}{2}
+    \sorts' =&\{\autStates, \functions\}&&\\
+    \fsymbs' =&\{delta_X&&\mid X\in\relations\cup\prog \lor X\text{is an atom from }\prog\}\cup\fsymbs\cup\{prod_n \mid n\geq 1\}\cup\\
+    \cup &\{ delay_{n,m} &&\mid n, m\geq 1\}\\
+    \psymbs' = &\{Final_X&&\mid X\in\relations\cup\prog \lor X\text{is an atom from }\prog\}\cup\{Reach_C \mid C\in\prog\}\cup\{=\}.
+\end{alignat*}
+% Здесь введены сорт $\autStates$ для состояний автоматов и сорт $\functions$ для конструкторов АТД.
+% Функциональные символы $delta$ введены для отношений переходов автоматов, а предикатные символы $Reach$ и $Final$~--- для достижимых и конечных состояний, соответственно.
+% Для каждого предиката, атома и дизъюнкта строятся соответствующие автоматы.
+% Функциональный символ $prod_n$ арности $\autStates^n \mapsto \autStates$ позволяет строить состояния, являющиеся кортежами других состояний.
+% Функциональный символ $delay_{n,m}$ арности $\functions^n\times\autStates^m \mapsto \autStates$ позволяет строить состояния, являющиеся кортежами конструкторов и состояний.
+% Алгоритм $\Delta$ возвращает конъюнкцию из декларативных описаний синхронных автоматов для каждого дизъюнкта и для каждого атома, которые определены далее.
+Here, the sort $\autStates$ is introduced for automaton states and the sort $\functions$ for ADT constructors. The functional symbols $delta$ are introduced for the automaton transition relations, and the predicate symbols $Reach$ and $Final$ are introduced for the reachable and final states, respectively. For each predicate, atom, and clause, corresponding automata are built. The functional symbol $prod_n$ of arity $\autStates^n \mapsto \autStates$ allows for the construction of states that are tuples of other states. The functional symbol $delay_{n,m}$ of arity $\functions^n\times\autStates^m \mapsto \autStates$ allows for the construction of states that are tuples of constructors and states. The $\Delta$ algorithm returns a conjunction of declarative descriptions of synchronous automata for each clause and for each atom, which are defined below.
+
+% Пусть дан дизъюнкт $C$. По определению выполнимости в языковой семантике имеем $L\models C \Leftrightarrow \interprets{L}{\neg C} = \emptyset$.
+% Таким образом, декларативным описанием для дизъюнкта будет формула первого порядка, выражающая $\interprets{L}{\neg C} = \emptyset$.
+% Пусть $\neg C \Leftrightarrow A_1 \land \ldots \land A_{n-1} \land \neg A_n$, где $A_i$~--- атомарные формулы.
+% Пусть для каждого $A_i$ имеется декларативное описание соответствущего атому автомата с символами $\tuple{delta_{A_i}, Final_{A_i}}$.
+% Определим автомат для дизъюнкта $C$ с символами $\tuple{delta_C, Final_C}$ при помощи конструкции из доказательства теоремы~\ref{theorem:automataIntersect} о замкнутости автоматов относительно пересечения.
+% Декларативное описание для дизъюнкта является конъюнкцией универсальных замыканий по всем свободным переменным следующих четырёх формул:
+Let $C$ be a clause. By definition of satisfiability in language semantics we have $L\models C \Leftrightarrow \interprets{L}{\neg C} = \emptyset$.
+Thus, the declarative description for the clause will be a first-order formula expressing $\interprets{L}{\neg C} = \emptyset$.
+Let $\neg C \Leftrightarrow A_1 \land \ldots \land A_{n-1} \land \neg A_n$, where $A_i$ are atomic formulas.
+Let for each $A_i$ there be a declarative description of the corresponding atom automaton with symbols $\tuple{delta_{A_i}, Final_{A_i}}$.
+ For clause $C$, we define an automaton with symbols $\tuple{delta_C, Final_C}$ using the construction from the proof of Theorem~\ref{theorem:automataIntersect} on the closure of automata with respect to intersection.
+The declarative description for the clause is a conjunction of universal closures over all free variables of the following four formulas:
+\begin{align*}
+    &Final_C(q) \leftrightarrow Final_{A_1}(q_1) \land \ldots Final_{A_{n-1}}(q_{n-1}) \land \neg Final_{A_n}(q_n)\\
+    &delta_C(x_1, \ldots, x_k, prod(q^1_1, \ldots, q^n_1), \ldots, prod(q^1_l, \ldots, q^n_l)) = \\
+    &\qquad= prod(delta_{A_1}(x_1, \ldots, x_k, q^1_1, \ldots, q^1_l), \ldots, delta_{A_n}(x_1, \ldots, x_k, q^n_1, \ldots, q^n_l))\\
+    &Reach_C(q_1) \land \ldots \land Reach_C(q_l) \rightarrow Reach_C(delta_C(x_1, \ldots, x_k, q_1, \ldots, q_l))\\
+    &Final_C(q) \land Reach_C(q) \rightarrow \bot
+\end{align*}
+% Здесь все $x$ имеют сорт $\functions$, а все $q$~--- сорт $\autStates$.
+% Верхние индексы $j$ переменных состояний $q_i^j$ соответствуют порядковому номеру автомата атома $A_j$, в котором используется переменная состояния. Первые две формулы кодируют конструкцию произведения автоматов из теоремы~\ref{theorem:automataIntersect}.
+% Третья формула определяет множество состояний, достижимых автоматом для дизъюнкта. Последняя формула кодирует пустоту языка дизъюнкта (<<нет ни одного одновременно конечного и достижимого состояния>>).
+Here all $x$ have the sort $\functions$, and all $q$ have the sort $\autStates$.
+The upper indices $j$ of the state variables $q_i^j$ correspond to the ordinal number of the automaton of atom $A_j$, in which the state variable is used. The first two formulas encode the construction of the automata product from Theorem~\ref{theorem:automataIntersect}.
+The third formula defines the set of states reachable by the automaton for the clause. The last formula encodes the emptiness of the clause language ("there is no state that is both final and reachable").
+
+% Декларативное описание автомата для атома описано в доказательстве теорем~\ref{theorem:patternClosure} и~\ref{theorem:anyPatternClosure}.
+% Кортежи вида $\tuple{\tuple{f_2,\ldots,f_n}, \overline{q}}$, где $f$ имеет сорт $\functions$, а $q$~--- сорт $\autStates$, кодируются при помощи функциональных символов $delay$.
+
+Declarative description of the automaton for the atom is described in the proofs of Theorem~\ref{theorem:patternClosure} and~\ref{theorem:anyPatternClosure}.
+Tuples of the form $\tuple{\tuple{f_2,\ldots,f_n}, \overline{q}}$, where $f$ has the sort $\functions$ and $q$ has the sort $\autStates$, are encoded using the functional symbols $delay$.
+
+\subsection{Correctness and completeness}
+\begin{theorem}
+% У системы $\Delta(\prog{})$ существует конечная модель тогда и только тогда, когда у системы дизъюнктов Хорна $\prog{}$ существует решение, представленное полносверточными синхронными автоматами над деревьями.
+The system $\Delta(\prog{})$ has a finite model if and only if the Horn clause system $\prog{}$ has a solution represented by synchronous tree automata with full convolution.
+\end{theorem}
+\begin{proof}
+% Доказательство следует из построения $\Delta(\prog{})$, теорем о замкнутости относительно булевых операций и нижнего остатка~\ref{automata_complement}, \ref{theorem:automataIntersect}, \ref{theorem:anyPatternClosure}, теоремы~\ref{theorem:semantics} о выполнимости СНФ в языковой семантике и того факта, что всякая система дизъюнктов Хорна сводится в СНФ переименованием переменных.
+The proof follows from the construction of $\Delta(\prog{})$, the theorems on closure under Boolean operations and complement (Theorems \ref{automata_complement}, \ref{theorem:automataIntersect}, \ref{theorem:anyPatternClosure}), Theorem \ref{theorem:semantics} on satisfiability of SNF in the language semantics, and the fact that any system of Horn clauses can be reduced to SNF by variable renaming.
+\end{proof}
+
+\subsection{Example}\label{sec:ltlt_exmp}
+% Рассмотрим описанную в данной главе трансформацию на примере следующей системы дизъюнктов Хорна с неинтерпретированным предикатным символом $lt$, задающим отношение строгого порядка на числах Пеано:
+Consider the transformation described in this chapter using the example of the following Horn clause system with an uninterpreted predicate symbol $lt$, representing the strict ordering relation on Peano numbers:
+\begin{align*}
+    \top &\rightarrow lt(Z, S(x)), \tag{C1}\\
+    lt(x, y) &\rightarrow lt(S(x), S(y)),\tag{C2}\\
+    lt(x, y) \land lt(y, x) &\rightarrow \bot.\tag{C3}
+\end{align*}
+
+% Дизъюнкт $C1$ эквивалентен атомарной формуле $A_1 = lt(Z, S(x))$.
+% Для автомата атомарной формулы $A_1$ в $\Delta(\prog)$ окажутся универсальные замыкания следующих формул, сконструированные на основе автомата для предикатного символа $lt$:
+ The clause $C1$ is equivalent to the atomic formula $A_1 = lt(Z, S(x))$.
+For the automaton of the atomic formula $A_1$ in $\Delta(\prog)$, the universal closures of the following formulas will be constructed, based on the automaton for the predicate symbol $lt$:
+\begin{align*}
+    delta_{A_1}(Z) &= delta_{lt}(Z),\\
+    delta_{A_1}(S, q) &= delta_{lt}(S, q),\\
+    Final_{A_1}(q) &\leftrightarrow Final_{lt}(delta_{lt}(Z, S, q)).
+\end{align*}
+
+% Для дизъюнкта $C1$ в $\Delta(\prog)$ окажутся следующие формулы автомата $(delta_{C1}, Final_{C1})$, сконструированного на основе автомата для атомарной формулы $A_1$:
+For the clause $C1$ in $\Delta(\prog)$, the automaton $(\delta_{C1}, Final_{C1})$ constructed based on the automaton for the atomic formula $A_1$ will include the following formulas:
+\begin{align*}
+    delta_{C1}(f,q) &= delta_{A_1}(f, q),\\
+    Final_{C1}(q) &\leftrightarrow \neg Final_{A_1}(q).
+\end{align*}
+
+% Также в $\Delta(\prog)$ будут входить следующие условия пустоты языка автомата дизъюнкта $C1$, служащие гарантом его выполнения:
+Moreover, the following conditions of the emptiness of the automaton language for the clause $C1$, serving as guarantees for its satisfaction, will also be included in $\Delta(\prog)$.
+\begin{align*}
+    Reach_{C1}(q) &\rightarrow Reach_{C1}(delta_{C1}(f, q)), \\
+    Reach_{C1}(q) \land Final_{C1}(q)) &\rightarrow \bot.
+\end{align*}
+
+% Дизъюнкт $C2$ состоит из двух атомарных формул: $A_2 = lt(x, y)$ и $A_3 = lt(S(x), S(y))$. Автомат для атомарной формулы $A_2$ совпадает с автоматом предикатного символа $lt$, для атомарной формулы $A_3$ добавим в $\Delta(\prog{})$ автомат $delta_{A_3}$, $Final_{A_3})$, сконструированный на основе автомата для предикатного символа $lt$:
+The clause $C2$ consists of two atomic formulas: $A_2 = lt(x, y)$ and $A_3 = lt(S(x), S(y))$. The automaton for the atomic formula $A_2$ coincides with the automaton for the predicate symbol $lt$. For the atomic formula $A_3$, we will add to $\Delta(\prog)$ the automaton $(\delta_{A_3}, Final_{A_3})$ constructed based on the automaton for the predicate symbol $lt$:
+\begin{align*}
+    delta_{A_3}(f,g,q) &= delta_{lt},\\
+    Final_{A_3} (q) &\leftrightarrow Final_{lt}(delta_{lt}(S, S, q)).    
+\end{align*}
+
+% Для дизъюнкта $C2$ добавим в $\Delta(\prog{})$ автомат $(delta_{C2}, Final_{C2})$, сконструированный на основе автомата для предикатного символа $lt$ и автомата для атомарной формулы $A_3$:
+For the clause $C2$, we add to $\Delta(\prog{})$ the automaton $(delta_{C2}, Final_{C2})$, constructed based on the automaton for the predicate symbol $lt$ and the automaton for the atomic formula $A_3$:
+\begin{align*}
+    delta_{C2}(f,g,q) &= prod_2(delta_{lt}(f,g, q), delta_{A_3}(f, g, q)),\\
+    Final_{C2} (prod_2(q_1, q_2)) &\leftrightarrow Final_{lt}(q_1) \land \neg Final_{A_3}(q_2).
+\end{align*}
+
+% Добавим в $\Delta(\prog{})$ условия пустоты языка автомата $(delta_{C2},$ $Final_{C2})$ для гарантии выполнения дизъюнкта $C2$:
+We add to $\Delta(\prog{})$ the conditions for the emptiness of the language of the automaton $(delta_{C2},$ $Final_{C2})$ in order to guarantee the satisfaction of clause $C2$.
+\begin{align*}
+Reach_{C2}(q) &\rightarrow Reach_{C2}(delta_{C2}(f, g, q)), \\
+Reach_{C2}(q) \land Final_{C2}(q)) &\rightarrow \bot.
+\end{align*}
+
+% Дизъюнкт $C3$ состоит из двух атомарных формул $A4 = lt(x,y)$ и $A5 = lt(y, x)$. Автомат для атомарной формулы $A4$ полностью совпадает с автоматом для предикатного символа $lt$. Автомат для атомарной формулы $A5$ отличается от автомата для предикатного символа $lt$ только порядком аргументов, и после взятия остатка по такому линейному паттерну получается автомат, идентичный $lt$.
+
+The clause $C3$ consists of two atomic formulas $A4 = lt(x,y)$ and $A5 = lt(y, x)$. The automaton for the atomic formula $A4$ coincides entirely with the automaton for the predicate symbol $lt$. The automaton for the atomic formula $A5$ differs from the automaton for the predicate symbol $lt$ only in the order of the arguments. After taking the remainder by such a linear template, an automaton identical to $lt$ is obtained.
+
+% Для дизъюнкта $C3$ добавим в $\Delta(\prog{})$ автомат $(delta_{C3}, Final_{C3})$, сконструированный на основе автомата для предикатного символа $lt$:
+For $C3$, we add to $\Delta(\prog{})$ an automaton $(delta_{C3}, Final_{C3})$ constructed based on the automaton for the predicate symbol $lt$:
+\begin{align*}
+    delta_{C3}(f,g, prod_2(q_1, q_2)) &= prod_2(delta_{lt}(f,g, q_1), delta_{A_2}(g, f, q_2)),\\
+    Final_{C2} (prod_2(q_1, q_2)) &\leftrightarrow Final_{lt}(q_1) \land Final_{lt}(q_2) .    
+\end{align*}
+
+% Добавим в $\Delta(\prog{})$ условия пустоты языка автомата $(delta_{C3},$ $Final_{C3})$для гарантии выполнения дизъюнкта $C3$:
+We add to $\Delta(\prog{})$ the conditions for the emptiness of the language of $(delta_{C3}, Final_{C3})$ to ensure the satisfaction of $C3$:
+\begin{align*}
+Reach_{C3}(q) \rightarrow Reach_{C3}(delta_{C3}(f, g, q)), \\
+Reach_{C3}(q) \land Final_{C3}(q) &\rightarrow \bot.
+\end{align*}
+
+% Запустив на формуле $\Delta(\prog)$ инструмент поиска конечных моделей, можно извлечь из интерпретаций $delta_{lt}$ и $Final_{lt}$ синхронный регулярный инвариант исходной системы дизъюнктов Хорна, основанный на автомате $A_{lt} = \Automaton{0,1,2}{1}$, где для $q\in\{1,2\}$, $\autTrans =$
+
+By running a finite model finder on the formula $\Delta(\prog)$, we can extract interpretations from $delta_{lt}$ and $Final_{lt}$, resulting in a synchronous regular invariant of the original Horn clause system. This invariant is based on the automaton $A_{lt} = \Automaton{0,1,2}{1}$, where for $q\in{1,2}$, the transition function $\autTrans$ is defined as follows:
+\begin{align*}
+    Z &\mapsto 0,\\
+    \tuple{Z, S}(0) &\mapsto 1,\\
+    \tuple{S, Z}(0) &\mapsto 2,\\
+    \tuple{S, S}(q) &\mapsto q.
+\end{align*}
+% Языком этого автомата является  множество пар чисел Пеано, где первое число строго меньше второго.
+The language of this automaton is the set of pairs of Peano numbers, where the first number is strictly less than the second one.
+
+\section{Conclusion}
+% Рассмотренный класс синхронных регулярных инвариантов с полной свёрткой включает в себя регулярные инварианты, а также большой класс классических символьных инвариантов.
+% Поскольку используется \emph{полная} свёртка, любые операции с такими автоматами будут приводить к экспоненциальному <<взрыву>> сложности.
+% Следует отметить, что хотя предложенный метод вывода таких инвариантов теоретически существует, его эффективность необходимо проверить на практике, что выполнено в главе~\cref{ch:evaluation}.
+% Однако более практичным, чем предложенное расширение регулярных языков в сторону элементарных, может оказаться расширение элементарных языков в сторону регулярных, например, путём расширения сигнатуры языка ограничений алгебраических типов данных предикатами принадлежности терма (несинхронному) регулярному языку.
+% Соответствующий класс индуктивных инвариантов и метод вывода инвариантов для него предложены в следующей главе.
+The considered class of synchronous regular invariants with full convolution includes regular invariants as well as a large class of classical symbolic invariants. Since a \emph{full} convolution is used, any operations with such automata will lead to an exponential complexity ``explosion''. It should be noted that although the proposed method for inferring such invariants theoretically exists, its effectiveness needs to be tested in practice, which is done in Chapter~\cref{ch:evaluation}. However, more practical than the proposed extension of regular languages towards elementary ones, might be expanding elementary languages towards regular ones, for example, by extending the signature of the constraint language on algebraic data types with predicates for term membership in a (non-synchronous) regular language. The corresponding class of inductive invariants and the method for inferring invariants for it are proposed in the next chapter.

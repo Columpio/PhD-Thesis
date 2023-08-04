@@ -1,0 +1,250 @@
+% Новые переменные, которые могут использоваться во всём проекте
+% ГОСТ 7.0.11-2011
+% 9.2 Оформление текста автореферата диссертации
+% 9.2.1 Общая характеристика работы включает в себя следующие основные структурные
+% элементы:
+% актуальность темы исследования;
+\newcommand{\actualityTXT}{Актуальность темы.}
+% степень ее разработанности;
+\newcommand{\progressTXT}{Степень разработанности темы.}
+% цели и задачи;
+\newcommand{\aimTXT}{Целью}
+\newcommand{\tasksTXT}{задачи}
+% научную новизну;
+\newcommand{\noveltyTXT}{Научная новизна}
+% теоретическую и практическую значимость работы;
+\newcommand{\influenceTXT}{Теоретическая и практическая значимость работы.}
+\newcommand{\influencePrTXT}{Практическая значимость работы.}
+\newcommand{\influenceThTXT}{Теоретическая значимость работы.}
+% или чаще используют просто
+% \newcommand{\influenceTXT}{Практическая значимость}
+% методологию и методы исследования;
+\newcommand{\methodsTXT}{Методология и методы исследования.}
+% положения, выносимые на защиту;
+\newcommand{\defpositionsTXT}{Основные положения, выносимые на~защиту.}
+% степень достоверности и апробацию результатов.
+\newcommand{\reliabilityTXT}{Достоверность}
+\newcommand{\probationTXT}{Апробация работы.}
+
+\newcommand{\contributionTXT}{Личный вклад}
+\newcommand{\publicationsTXT}{Публикации.}
+
+
+%%% Заголовки библиографии:
+
+% для автореферата:
+\newcommand{\bibtitleauthor}{Публикации автора по теме диссертации}
+
+% для стиля библиографии `\insertbiblioauthorgrouped`
+\newcommand{\bibtitleauthorvak}{В изданиях из списка ВАК РФ}
+\newcommand{\bibtitleauthorscopus}{В изданиях, входящих в международную базу цитирования Scopus}
+\newcommand{\bibtitleauthorwos}{В изданиях, входящих в международную базу цитирования Web of Science}
+\newcommand{\bibtitleauthorother}{В прочих изданиях}
+\newcommand{\bibtitleauthorconf}{В сборниках трудов конференций}
+\newcommand{\bibtitleauthorpatent}{Зарегистрированные патенты}
+\newcommand{\bibtitleauthorprogram}{Зарегистрированные программы для ЭВМ}
+
+% для стиля библиографии `\insertbiblioauthorimportant`:
+\newcommand{\bibtitleauthorimportant}{Наиболее значимые \protect\MakeLowercase\bibtitleauthor}
+
+% для списка литературы в диссертации и списка чужих работ в автореферате:
+\newcommand{\bibtitlefull}{Список литературы} % (ГОСТ Р 7.0.11-2011, 4)
+
+
+\newcommand{\pdr}{IC3/PDR}
+\newcommand{\cegar}{CEGAR}
+\newcommand{\ice}{ICE}
+\newcommand{\fmf}{FMF}
+\newcommand{\satur}{Насыщение}
+
+\newcommand{\zprover}{\textsc{Z3}}
+\newcommand{\cvc}{\textsc{cvc5}}
+\newcommand{\princess}{\textsc{Princess}}
+\newcommand{\chaff}{\textsc{Chaff}}
+\newcommand{\cvcind}{\textsc{\cvc{}-Ind}}
+\newcommand{\mace}{\textsc{Mace4}}
+\newcommand{\kodkod}{\textsc{Kodkod}}
+\newcommand{\paradox}{\textsc{Paradox}}
+\newcommand{\vampire}{\textsc{Vampire}}
+\newcommand{\eprover}{\textsc{E}}
+\newcommand{\zipperposition}{\textsc{Zipperposition}}
+
+\newcommand{\eldarica}{\textsc{Eldarica}}
+\newcommand{\theringen}{\textsc{RInGen}}
+\newcommand{\ringenAny}[2]{#1(#2)}
+\newcommand{\ringenSyncAny}[1]{\textsc{#1-Sync}}
+\newcommand{\theringenCICIAny}[1]{\textsc{#1-CICI}}
+\newcommand{\ringenCICIAny}[2]{\theringenCICIAny{#1}(#2)}
+\newcommand{\ringen}[1]{\ringenAny{\theringen}{#1}}
+\newcommand{\ringenSync}{\ringenSyncAny{\theringen}}
+\newcommand{\theringenCICI}{\theringenCICIAny{\theringen}}
+\newcommand{\ringenCICI}[1]{\ringenCICIAny{\theringen}{#1}}
+\newcommand{\theringenShort}{\textsc{R}}
+\newcommand{\ringenShort}[1]{\ringenAny{\theringenShort}{#1}}
+\newcommand{\ringenSyncShort}{\ringenSyncAny{\theringenShort}}
+\newcommand{\theringenCICIShort}{\theringenCICIAny{\theringenShort}}
+\newcommand{\ringenCICIShort}[1]{\ringenCICIAny{\theringenShort}{#1}}
+\newcommand{\verifier}{\mathcal{V}}
+\newcommand{\spacer}{\textsc{Spacer}}
+\newcommand{\racer}{\textsc{Racer}}
+\newcommand{\hoice}{\textsc{HoIce}}
+\newcommand{\rchc}{\textsc{RCHC}}
+\newcommand{\vericat}{\textsc{VeriCaT}}
+\newcommand{\verimap}{\textsc{VeriMAP-iddt}}
+
+\newcommand{\chccomp}{CHC-COMP}
+
+\newcommand{\haskell}{\textsc{Haskell}}
+\newcommand{\ocaml}{\textsc{OCaml}}
+\newcommand{\fstar}{\textsc{F*}}
+\newcommand{\fsharp}{\textsc{F\#}}
+\newcommand{\clanguage}{\textsc{C}}
+\newcommand{\cplusplus}{\textsc{C++}}
+\newcommand{\rust}{\textsc{Rust}}
+\newcommand{\scala}{\textsc{Scala}}
+
+\newcommand{\liquidHaskell}{\textsc{LiquidHaskell}}
+\newcommand{\flux}{\textsc{Flux}}
+\newcommand{\leon}{\textsc{Leon}}
+\newcommand{\stainless}{\textsc{Stainless}}
+\newcommand{\rcaml}{\textsc{RCaml}}
+\newcommand{\dafny}{\textsc{Dafny}}
+\newcommand{\whyThree}{\textsc{Why3}}
+\newcommand{\viper}{\textsc{Viper}}
+\newcommand{\coq}{\textsc{Coq}}
+\newcommand{\idris}{\textsc{Idris}}
+\newcommand{\agda}{\textsc{Agda}}
+\newcommand{\lean}{\textsc{Lean}}
+\newcommand{\solidity}{\textsc{Solidity}}
+\newcommand{\rustHorn}{\textsc{RustHorn}}
+\newcommand{\solCMC}{\textsc{SolCMC}}
+
+\newcommand{\theregclass}{Reg}
+\newcommand{\regclass}{\textsc{\theregclass{}}}
+\newcommand{\theelemclass}{Elem}
+\newcommand{\elemclass}{\textsc{\theelemclass{}}}
+\newcommand{\elemextclass}{\textsc{\theelemclass{}\textsubscript{*}}}
+\newcommand{\sizeelemclass}{\textsc{Size\theelemclass{}}}
+\newcommand{\sizeelemextclass}{\textsc{Size\theelemclass{}\textsubscript{*}}}
+\newcommand{\catelemclass}{\textsc{Cat\theelemclass{}}}
+\newcommand{\syncRegFlatClass}{\regclass{}\textsubscript{+}} %TODO: take it from Haudebourg
+\newcommand{\syncRegFullClass}{\regclass{}\textsubscript{$\times$}}
+\newcommand{\regelemclass}{\textsc{\theelemclass{}\theregclass{}}}
+
+\newcommand{\signature}{\Sigma}
+
+\newcommand{\structure}{\mathcal{M}}
+\newcommand{\relations}{\mathcal{R}}
+\newcommand{\prog}{\mathcal{P}}
+\newcommand{\states}{\mathcal{S}}
+\newcommand{\functions}{\mathcal{F}}
+\newcommand{\hs}{\mathcal{H}}
+\newcommand{\diseqsem}[1]{\mathcal{D}_{\sigma_{#1}}}
+\newcommand{\diseqsemh}[1]{\widehat{\mathcal{D}}_{\sigma_{#1}}}
+\newcommand{\height}[1]{\mathcal{H}eight(#1)}
+\newcommand{\invClass}{\mathcal{I}}
+\newcommand{\theterms}{\mathcal{T}}
+\newcommand{\thelang}{\mathcal{L}}
+\newcommand{\langOf}[1]{\thelang\left(#1\right)}
+\newcommand{\classOf}[1]{\regclass_{#1}}
+
+\newcommand{\formallang}{\mathbf{L}}
+
+\newcommand{\termsOfSize}[2]{\mathbb{T}_{#1}^{#2}}
+\newcommand{\sizesOfSort}[1]{\mathbb{S}_{#1}}
+
+% CHC examples
+\newcommand{\exRef}[1]{\hyperref[ex:#1]{\textit{#1}}}
+\newcommand{\exEvenLeft}{\exRef{even}}
+\newcommand{\exLR}{\exRef{lr}}
+\newcommand{\exLt}{\exRef{lt}}
+\newcommand{\exNode}{\exRef{node}}
+
+% DT defs
+\newcommand{\natDef}{$Nat ::= Z \mid S\ Nat$}
+
+% Transition systems
+\newcommand{\csubseteq}{\subseteq}
+\newcommand{\cbot}{0}
+\newcommand{\ctop}{1}
+\newcommand{\ccap}{\cap}
+\newcommand{\ccup}{\cup}
+\newcommand{\cneg}{\neg}
+\newcommand{\csetminus}{\setminus}
+\newcommand{\init}{Init}
+\newcommand{\thepost}{T}
+\newcommand{\theapost}{\hat{T}}
+\newcommand{\post}[1]{\thepost\left(#1\right)}
+\newcommand{\apost}[1]{\theapost\left(#1\right)}
+\newcommand{\property}{Prop}
+\newcommand{\theAbstrDomain}{A}
+\newcommand{\abstrDomain}{\mathcal{\theAbstrDomain}}
+\newcommand{\asubseteq}{\sqsubseteq}
+\newcommand{\abot}{\bot_{\abstrDomain}}
+\renewcommand{\atop}{\top_{\abstrDomain}}
+\newcommand{\acap}{\sqcap}
+\newcommand{\acup}{\sqcup}
+
+% CEGAR(O)
+\newcommand{\oracle}{\mathcal{O}}
+\newcommand{\theRunBlackBox}{Collaborate}
+\newcommand{\RunBlackBox}{\textsc{\theRunBlackBox}}
+\newcommand{\substituteLemmas}{\textsc{ResidualCHCs}}
+\newcommand{\simplifiedSubstituteLemmas}[1]{Q\left(#1\right)}
+\newcommand{\ourCEGAR}{\cegar{}($\oracle$)}
+\newcommand{\theBlackBoxDomain}{B}
+\newcommand{\blackBoxDomain}{\mathcal{\theBlackBoxDomain}}
+\newcommand{\evenInv}{\mathcal{E}}
+
+\newcommand{\fsymbs}{\signature_F}
+\newcommand{\psymbs}{\signature_P}
+\newcommand{\sorts}{\signature_S}
+\newcommand{\groundTerms}{\theterms(\fsymbs)}
+\newcommand{\groundTermsStar}{\theterms(\fsymbs^{\leq k})}
+% \newcommand{\autBot}{\perp\!\!\!\perp}
+% \newcommand{\autBotOp}[1]{\operatorname{\autBot}\big(#1\big)}
+% \newcommand{\autBotInv}[1]{\operatorname{\autBot^{-1}}\big(#1\big)}
+% \newcommand{\fsymbsBot}{\fsymbs^{\autBot}}
+% \newcommand{\groundTermsBot}{\theterms(\fsymbsBot)}
+% \newcommand{\groundTermsPower}[1]{\theterms^{#1}(\fsymbsBot)}
+% \newcommand{\groundTermsMatrix}[2]{\groundTermsPower{#1\times #2}}
+% \newcommand{\groundTermsNM}{\groundTermsMatrix{n}{m}}
+\newcommand{\btuple}[1]{\big\langle #1 \big\rangle}
+\newcommand{\tuple}[1]{\left\langle #1 \right\rangle}
+\newcommand{\sizeofSet}[1]{\left|#1\right|}
+\newcommand{\thedomain}{\sizeofSet{\structure}}
+\newcommand{\domainOf}[2]{\sizeofSet{#1}_{#2}}
+\newcommand{\domain}[1]{\domainOf{\structure}{#1}}
+\newcommand{\huniv}[1]{\domainOf{\hs}{#1}}
+\newcommand{\interprets}[2]{#1\llbracket #2\rrbracket}
+\newcommand{\clforall}[1]{\forall{#1}}
+\newcommand{\theautomaton}[4]{\btuple{#1, #2, #3, #4}}
+\newcommand{\autInit}{s_0}
+\newcommand{\autStates}{S}
+\newcommand{\autFinStates}{\autStates_F}
+\newcommand{\autTrans}{\Delta}
+\newcommand{\autApp}[1]{A\left(#1\right)}
+\newcommand{\automaton}[3]{\theautomaton{#1}{\fsymbs}{#2}{#3}}
+\newcommand{\automatonDef}{\automaton{\autStates}{\autFinStates}{\autTrans}}
+\newcommand{\Automaton}[2]{\automaton{\{#1\}}{\{#2\}}{\autTrans}}
+\newcommand{\sautomatonGen}[4]{\theautomaton{#1}{\fsymbs^{\leq #2}}{#3}{#4}}
+\newcommand{\sautomaton}[3]{\sautomatonGen{\{#1\}}{#2}{\{#3\}}{\autTrans}}
+% \newcommand{\sautomatonDef}{\sautomaton{\autStates}{\autFinStates}{\autInit{}}}
+% \newcommand{\SautomatonGen}[4]{\sautomatonGen{\{#1\}}{\{#2\}}{#3}{#4}}
+% \newcommand{\Sautomaton}[3]{\SautomatonGen{#1}{#2}{#3}{\autTrans}}
+\newcommand{\eqdef}{\triangleq}
+\newcommand{\eqby}[1]{\mathrel{\stackrel{\mbox{\normalfont\tiny #1}}{=}}}
+\newcommand{\body}[1]{body\left(#1\right)}
+\newcommand{\rules}[1]{rules\left(#1\right)}
+\newcommand{\conv}{\sigma}
+\newcommand{\fullConv}{\conv_{fc}}
+\newcommand{\flatConv}{\conv_{sc}}
+\newcommand{\oneConv}{\conv_{lc}}
+\newcommand{\quotient}[2]{{#1}/{#2}}
+
+\newcommand{\subterm}[2]{#2\left(#1\right)}
+\newcommand{\leafpos}[2]{\mathit{leaves}_{#1}(#2)}
+\newcommand{\sizename}[0]{size}
+\newcommand{\maxFinSize}[1]{\operatorname{max}_{fin}\big(#1\big)}
+
+\newcommand{\booleanOp}{\bowtie}

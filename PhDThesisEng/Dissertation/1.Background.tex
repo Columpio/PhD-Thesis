@@ -1,0 +1,419 @@
+\chapter{Background}\label{ch:background}
+
+% В данной главе представлены ключевые для данного диссертационного исследования понятия и теоремы, а также описано состояние предметной области на момент написания работы.
+% В разделе~\cref{sec:background/historyExpressivity} приведена краткая история проблемы выразимости индуктивных инвариантов, которая является базовой для данного диссертационного исследования.
+% В разделе~\cref{sec:background/assertionLang} формально определены язык ограничений, логика первого порядка и алгебраические типы данных; именно с этими объектами будут оперировать предложенные в данной работе  методы верификации.
+% В разделе~\cref{sec:background/Horn} представлены системы дизъюнктов Хорна и показана их связь с задачей  верификации программ.
+% Для описания множеств термов алгебраических типов данных в разделе~\cref{sec:background/treeLangs} приведены базовые понятия формальных языков деревьев.
+% Наконец, в разделе~\cref{sec:background/conclusion} представлены выводы по обзору.
+This chapter presents the key concepts and theorems for this thesis, and outlines the state of the research field at the time of writing.
+Section~\cref{sec:background/historyExpressivity} contains a brief history of the problem of expressivity of inductive invariants~--- the key problem for this thesis.
+Section~\cref{sec:background/assertionLang} defines the constraint language, first-order logic, and algebraic data types~--- key objects for the verification methods proposed in the thesis.
+Section~\cref{sec:background/Horn} presents constrained Horn clause systems and shows their connection with the program verification.
+Formal tree languages, used to represent sets of algebraic data types terms, are presented in Section~\cref{sec:background/treeLangs}.
+Finally, Section~\cref{sec:background/conclusion} presents the conclusions of the background.
+
+
+\section{Brief History of Software Verification}\label{sec:background/historyVerification}
+
+% Историю верификации принято начинать с отрицательных результатов: проблемы останова Тьюринга (1936~г.)~\cite{turing1936computable} и теоремы Райса (1953~г.)~\cite{10.2307/1990888}, которые говорят о невозможности существования верификатора, останавливающегося на всех входах и дающего только корректные результаты.
+% Первые конструктивные попытки создать подходы для верификации программ были предприняты  Р.\,В.~Флойдом (1967~г.)~\cite{Floyd1993} и Ч.\,Э.\,Р.~Хоаром (1969~г.)~\cite{10.1145/363235.363259}. Эти исследователи развили методы, основывающиеся на  сведении верификации к проверке логических условий.
+% Первым практичным подходом к верификации считается \emph{проверка моделей} (model checking, 1981~г.)~\cite{10.1007/BFb0025774}, возникшая в контексте верификации конкурентных программ.
+% Её существенным ограничением был т.\:н. <<взрыв пространства состояний>>~\cite{10.1007/978-3-540-69850-0_1}: пространство состояний растёт \emph{экспоненциально} с ростом размерности состояния.
+The history of verification is typically started with negative results: Turing's halting problem (1936)~\cite{turing1936computable} and Rice's theorem (1953)~\cite{10.2307/1990888}. These results state that there does not exist a verifier, which halts on all inputs and only gives correct results.
+The first constructive efforts towards automatic program verification were made by R.\,W.~Floyd (1967)~\cite{Floyd1993} and C.\,A.\,R.~Hoare (1969)~\cite{10.1145/363235.363259}. These researchers devised approaches that reduced program verification to checking satisfiability of logical formulas.
+The first practical approach to verification, known as \emph{model checking}, emerged in 1981 within the context of concurrent program verification~\cite{10.1007/BFb0025774}.
+Its essential limitation was the so-called state explosion problem~\cite{10.1007/978-3-540-69850-0_1}: the state space grows \emph{exponentially} as the state dimension increases.
+
+% Для решения  этой проблемы К.\,Макмилланом была предложена \emph{символьная проверка моделей} (1987~г.), реализованная в инструменте SMV (1993~г.)~\cite{10.1007/3-540-61474-5_93}.
+To solve this problem, K.\,McMillan proposed \emph{symbolic model checking} in 1987, which was implemented in the SMV tool later in 1993~\cite{10.1007/3-540-61474-5_93}.
+
+% С 1996 года произошёл переход к представлению множеств состояний программы SAT-формулами  логики высказываний (SATisfiability  )~\cite{10.5555/1864519.1864564}, что позволило верифицировать системы, содержащие до  $10^{120}$ состояний~\cite{10.1007/3-540-61474-5_93}.
+% Это стало возможным благодаря новому поколению SAT-решателей, таких как \chaff{}~\cite{10.1145/378239.379017}, основанных на алгоритме проверки выполнимости формул с нехронологическим возвратом~--- CDCL (conflict driven clause learning)~\cite{silva1996grasp}.
+% На основе CDCL в 2002~г. был предложен алгоритм CDCL(T) для проверки выполнимости формул логики первого порядка в разных теориях (satisfiability modulo theories, SMT)~\cite{10.1007/3-540-45757-7_26}, спроектированных специально для задач в области формальных методов.
+% В 2002 г. был реализован первый SMT-решатель \textsc{CVC}~\cite{10.1007/3-540-45657-0_40}, использующий SAT-решатель \chaff{}.
+Since 1996, a shift towards representing sets of program states by SAT (SATisfiability) formulas of propositional logic has been made~\cite{10.5555/1864519.1864564}. This led to the verification of systems containing up to $10^{120}$ states~\cite{10.1007/3-540-61474-5_93}.
+It became possible thanks to a new generation of SAT solvers like \chaff{}~\cite{10.1145/378239.379017}, based on the Conflict Driven Clause Learning (CDCL) algorithm for satisfiability checking~\cite{silva1996grasp}.
+Based on CDCL, the CDCL(T) algorithm for testing the satisfiability of first-order logic formulas in different theories (satisfiability modulo theories, SMT) was proposed in 2002~\cite{10.1007/3-540-45757-7_26}; it was designed specifically for formal methods problems.
+In 2002, the first SMT solver \textsc{CVC}~\cite{10.1007/3-540-45657-0_40} was implemented on top of the \chaff{} SAT solver.
+
+% Появление эффективных SAT и SMT-решателей позволило вынести из процесса верификации проверку логических условий.
+% В 1999 г. была предложена \emph{ограничиваемая проверка моделей} (bounded model checking, BMC)~\cite{10.1007/3-540-49059-0_14}, строящая логические формулы из раскруток отношения переходов программы и отдающая их в сторонний решатель.
+% Затем, в \numrange{1995}{2000}~гг., благодаря Р.\,П.~Куршану и Э.\,Кларку, появился метод \emph{направляемого контрпримерами уточнения абстракций} (counterexample-guided abstraction refinement, \cegar{})~\cite{Kurshan1995,cegar}, который позволил  верифицировать программы путём итеративного построения индуктивных инвариантов в виде абстракций и их уточнения при помощи контрпримеров к индуктивности инвариантов программ.
+% \nomenclature{BMC}{bounded model checking, ограничиваемая проверка моделей\nomrefpage}
+% В \numrange{2003}{2005}~гг. К.\,Макмилланом было предложено строить абстракции при помощи \emph{интерполянтов} невыполнимых формул, извлекаемых из логического решателя~\cite{10.1007/978-3-540-45069-6_1,10.1007/978-3-540-31980-1_1}.
+% Интерполянты при этом, по сути, являются локальными (частичными) доказательствами корректности программы.
+% \nomenclature{\cegar{}}{counterexample-guided abstraction refinement, направляемое контрпримерами уточнение абстракций\nomrefpage}
+The emergence of efficient SAT and SMT solvers led to separation of logical conditions checking and the global verification process. In 1999, bounded model checking (BMC) was proposed~\cite{10.1007/3-540-49059-0_14}. This method builds a logical formula from the unwinding of the transition relation of the program and passes it to an external solver. Then, in \numrange{1995}{2000}, thanks to R.P.\,Kurshan and E.\,Clarke, the counterexample-guided abstraction refinement (\cegar{}) method appeared~\cite{Kurshan1995,cegar}. This method allowed for the verification of programs by iteratively constructing inductive invariants as abstractions and refining them using counterexamples to the inductiveness of the candidate program invariants.
+\nomenclature{BMC}{bounded model checking\nomrefpage}
+In \numrange{2003}{2005}, K.\,Macmillan proposed to build abstractions using \emph{interpolants} of unsatisfiable formulas extracted from a logical solver~\cite{10.1007/978-3-540-45069-6_1,10.1007/978-3-540-31980-1_1}.
+Interpolants, in fact, are local partial proofs of the correctness of the program.
+\nomenclature{\cegar{}}{counterexample-guided abstraction refinement\nomrefpage}
+
+
+% В 2012~г. было предложено внедрить в стек <<верификатор, SMT-решатель, SAT-решатель>> еще также \emph{Хорн-решатель},  отвечающего за автоматический вывод индуктивных инвариантов и контрпримеров к спецификации~\cite{10.1145/2254064.2254112}.
+% Тем самым роль верификатора свелась  к синтаксической редукции программы к системе дизъюнктов Хорна, а <<ядром>> процесса верификации становится Хорн-решатель.
+% Так, например, \cegar{} был реализован в Хорн-решателе \eldarica{}.
+% В 2014~г. П.\,Гаргом был предложен подход ICE, основанный на обучении с учителем~\cite{10.1007/978-3-319-08867-9_5}.
+% ICE реализован, например, в Хорн-решателях \hoice{} и \rchc{}.
+In 2012, it was proposed to add a so-called \emph{Horn solver} to the ``verifier, SMT solver, SAT solver'' stack. Horn solver is responsible for automatic inference of inductive invariants and counterexamples~\cite{10.1145/2254064.2254112}.
+Thus, the role of the verifier was reduced to the syntactic reduction of the program to a Horn clause system, and the Horn solver became the ``core'' of the verification process.
+For example, \cegar{} approach is implemented in the Horn solver \eldarica{}.
+In 2014 P.\,Garg proposed the ICE approach based on supervised learning~\cite{10.1007/978-3-319-08867-9_5}.
+ICE is implemented in the Horn solvers \hoice{} and \rchc{}.
+
+% В 2011~г. А.\,Р.~Брэдли был предложен подход \pdr{}~\cite{10.1007/978-3-642-18275-4_7} для верификации аппаратного обеспечения на основе SAT-решателей.
+% К 2014~г. подход был обобщён для верификации программного обеспечения на основе SMT-решателей~\cite{10.1007/978-3-642-54862-8_4,10.1007/978-3-642-31612-8_13}.
+% \pdr{} усиливает \cegar{}, создавая абстракции путём построения индуктивных усилений спецификации, при этом равномерно распределяя ресурсы между поиском индуктивного инварианта и контрпримера.
+% \pdr{} реализован в Хорн-решателях \spacer{}~\cite{komuravelli2016smt} и \racer{}~\cite{10.1145/3498722}.
+In 2011, A.~R.~Bradley proposed an approach called \pdr{} (property-directed reachability)~\cite{10.1007/978-3-642-18275-4_7} for SAT-based hardware verification. By 2014, the approach was generalized for SMT-based software verification~\cite{10.1007/978-3-642-54862-8_4,10.1007/978-3-642-31612-8_13}. The \pdr{} approach enhances \cegar{} by creating abstractions through the construction of inductive strengthenings of the specification, evenly distributing resources between the search for an inductive invariant and a counterexample. \pdr{} is implemented in the Horn solvers \spacer{}~\cite{komuravelli2016smt} and \racer{}~\cite{10.1145/3498722}.
+\nomenclature{\pdr{}}{property-directed reachability\nomrefpage}
+
+% Благодаря эффективным алгоритмам Хорн-решатели всё больше применяются при верификации реальных программ, например, самоисполняющихся контрактов.
+Thanks to efficient algorithms, Horn solvers are more and more applied in verification of real programs, such as smart contracts.
+
+\section{History of the Inductive Invariant Expressivity Problem }\label{sec:background/historyExpressivity}
+% После появления логики Флойда-Хоара в \numrange{1967}{1969}~гг.~\cite{Floyd1993,10.1145/363235.363259} остро встал вопрос о достаточности предложенного исчисления для доказательства корректности всех возможных программ.
+% Иными словами, сразу была доказана корректность исчисления, но на долгие годы оставалась нерешённой проблема его \emph{полноты}, т.\:e. что предложенного исчисления достаточно, чтобы доказать безопасность всех безопасных программ.
+% Занимаясь это проблемой, в~1978~г. С.\,А.~Кук доказал~\cite{doi:10.1137/0207005} \emph{относительную} полноту логики Хоара.
+% Ограничение относительной полноты в теореме состояло в том, что все возможные слабейшие предусловия должны быть выразимы в языке ограничений.
+% Примерно с этого времени стали накапливались примеры простых программ, чьи инварианты невыразимы в языке ограничений~\cite{10.1145/371282.371285}.
+% Поэтому в~1987~г. А.~Бласс и Ю.~Гуревич предложили отказаться от логики первого порядка в пользу \emph{экзистенциальной логики с неподвижной точкой} (existential fixed-point logic)~\cite{Blass1987,blass2000the}. Она существенно более выразительна, чем логика первого порядка, поэтому для неё была доказана классическая теорема о полноте.
+Following the emergence of Floyd-Hoare logic in \numrange{1967}{1969}~\cite{Floyd1993,10.1145/363235.363259}, the question of the sufficiency of the proposed calculus for proving the correctness of all possible programs became substantial. The correctness of the calculus was proven early on, but for many years, the problem of its completeness, i.e., whether the proposed calculus is sufficient to prove the safety of all safe programs, remained unresolved. Dealing with this problem in~1978 S.\,A.~Cook proved~\cite{doi:10.1137/0207005} the \emph{relative} completeness of Hoare logic.
+The relative completeness limitation in the theorem was that all possible weakest preconditions of the program must be expressible in the constraint language.
+Since that time, examples of simple programs whose invariants are inexpressible in the constraint language have been accumulated~\cite{10.1145/371282.371285}.
+Therefore, in~1987 A.~Blass and Yu.~Gurevich proposed to abandon first-order logic in favor of \emph{existential fixed-point logic}~\cite{Blass1987,blass2000the}. This logic is significantly more expressive than first-order logic, so the classical completeness theorem without relativeness limitation was proved for it.
+
+
+
+% Следует отметить, что формулы экзистенциальной логики с неподвижной точкой соответствуют (при взятии отрицания) системам дизъюнктов Хорна с ограничениями~\cite{Bjorner2015}.
+% А последние позволяют выразить все возможные индуктивные инварианты программ, однако они не являются \emph{эффективным} представлением: задача проверки выполнимости систем дизъюнктов Хорна в общем случае неразрешима.
+% Поэтому проблема выразимости инвариантов не исчезла, но трансформировалась в основную проблему данного диссертационного исследования:
+% \emph{как выражать и эффективно строить решения систем дизъюнктов Хорна с ограничениями?}
+Note that negated existential fixed-point logic formulas correspond to constrained Horn clause systems~\cite{Bjorner2015}.
+The latter thus allows to express all possible inductive invariants of programs, but they are not an \emph{effective} representation: the problem of checking the satisfiability of systems of Horn clauses is generally undecidable.
+Therefore, the problem of expressibility of invariants has not vanished, but it transformed instead into the main problem of this thesis:
+\emph{how to express and efficiently build solutions of constrained Horn clause systems?}
+
+
+% На данный момент предлагаются различные подходы к практическому решению этой проблемы: от трансформации систем дизъюнктов в системы, у которых существование выразимого инварианта более вероятно (см. работы \numrange{2015}{2022}~гг. E.\,De\,Angelis,
+% F.\,Fioravant, A.\,Pettorossi~\cite{angelis_fioravanti_pettorossi_proietti_2015,10.1007/978-3-662-53413-7_8,10.1093/logcom/exab090,pettorossi_proietti_2022,10.1007/978-3-030-51074-9_6,angelis_fioravanti_pettorossi_proietti_2018}), в т.\:ч. синтаксических синхронизаций дизъюнктов~\cite{10.1007/978-3-662-53413-7_8,LPAR-21:Synchronizing_Constrained_Horn_Clauses}, до вывода реляционных инвариантов (инвариантов для нескольких предикатов)~\cite{mordvinov2020}.
+At the moment, various approaches to solve this problem in practice are proposed: from the transformation of clause systems into systems in which the existence of an expressible invariant is more likely (see the works \numrange{2015}{2022} E.\,De\,Angelis,  A.\,Pettorossi~\cite{angelis_fioravanti_pettorossi_proietti_2015,10.1007/978-3-662-53413-7_8,10.1093/logcom/exab090,pettorossi_proietti_2022,10.1007/978-3-030-51074-9_6,angelis_fioravanti_pettorossi_proietti_2018}), syntactic synchronizations of clauses~\cite{10.1007/978-3-662-53413-7_8,LPAR-21:Synchronizing_Constrained_Horn_Clauses}, to the inference of relational invariants (invariants for several predicates)~\cite{mordvinov2020,DBLP:journals/corr/abs-2304-12588}.
+
+
+% Фактически, решению того же вопроса посвящены исследования в области \emph{полноты абстрактной интерпретации}~---возникшего в~1977~г. подхода~\cite{10.1145/512950.512973}, который позволяет строить статические анализаторы, корректные по построению.
+% Неполнота возникает из-за аппроксимации неразрешимых свойств в разрешимом абстрактном домене, например, в логике первого порядка.
+In fact, research in the field of \emph{completeness of abstract interpretation} is devoted to the solution of the same problem. Abstract interpretation is an approach~\cite{10.1145/512950.512973} for building correct-by-construction static analyzers.
+Incompleteness in abstract interpretation arises from the approximation of undecidable properties in a decidable abstract domain, e.g., in some fragment of the first-order logic.
+
+
+
+% В 2000~г. было показано, что абстрактный домен можно уточнять по мере работы анализатора~\cite{10.1145/333979.333989}. Однако, как в 2015~г. показали Р.~Джакобацци и др.~\cite{giacobazzi2015analyzing}, это может привести к слишком точному абстрактному домену, в результате чего анализатор не будет завершаться.
+% Поэтому важнейшей частью проектирования абстрактного интерпретатора является построение абстрактного домена под конкретный класс задач~\cite{10.1093/logcom/2.4.511}.
+% Последние работы в области~\cite{10.1145/3498721,9470608} направлены на исследование точности анализа и \emph{локальной полноты}: полноты относительно заданного набора трасс.
+In 2000, it was shown that the abstract domain can be automatically refined by the analyzer~\cite{10.1145/333979.333989}. However, as shown by R.~Giacobazzi et al.~\cite{giacobazzi2015analyzing} in 2015, this can lead to an overly precise abstract domain, causing the analyzer to diverge.
+Therefore, the most important step in the abstract interpreter design is to come up with an abstract domain which will work well for a specific class of tasks~\cite{10.1093/logcom/2.4.511}.
+Recent works in the field~\cite{10.1145/3498721,9470608} study the accuracy of the analysis and \emph{local completeness}: completeness with respect to a given set of traces.
+
+\section{Constraint Language}\label{sec:background/assertionLang}
+
+% Для произвольного множества $X$ определим следующие множества:
+% $X^{n}\eqdef \{\tuple{x_1,\ldots,x_n} \mid x_i \in X\}$ и $X^{\leq n} \eqdef \bigcup_{i=1}^n X^i$.
+For an arbitrary set $X$, define the following sets:
+$X^{n}\eqdef \{\tuple{x_1,\ldots,x_n} \mid x_i \in X\}$ and $X^{\leq n} \eqdef \bigcup_{i=1}^n X ^i$.
+
+\subsection{Syntax and Semantics of the Constraint Language}
+% Многосортная сигнатура первого порядка с равенством является кортежем $\signature = \tuple{\sorts, \fsymbs, \psymbs} $, где $\sorts $~--- множество сортов, $\fsymbs $~--- множество функциональных символов, $\psymbs $~--- множество предикатных символов, среди которых есть выделенный символ равенства $= _{\sigma} $ для каждого сорта $\sigma $ (индекс сорта у равенства везде далее будет опущен). Каждый функциональный символ $f \in \fsymbs $ имеет арность $\sigma_1 \times \dots \times \sigma_n \rightarrow \sigma $, где $\sigma_1, \ldots, \sigma_n, \sigma \in \sorts $, а каждый предикатный символ $p \in \psymbs $ имеет арность $\sigma_1 \times \dots \times \sigma_n $. Термы, атомы, формулы, замкнутые формулы и предложения языка первого порядка (ЯПП) определяются также, как обычно.
+A multisort first-order signature with equality is a tuple $\signature = \tuple{\sorts, \fsymbs, \psymbs}$, where $\sorts $ denotes the set of sorts, $\fsymbs $ represents the set of functional symbols, and $\psymbs $ is the set of predicate symbols, which includes a distinguished equality symbol $= _{\sigma} $ for each sort $\sigma $. The equality sort index will be omitted in the following sections. Each functional symbol $f \in \fsymbs$ has arity $\sigma_1 \times \dots \times \sigma_n \rightarrow \sigma $, where $\sigma_1, \ldots, \sigma_n, \sigma \in \sorts $, and each predicate symbol $p \in \psymbs $ has arity $\sigma_1 \times \dots \times \sigma_n $. Terms, atoms, formulas, closed formulas, and first-order language (FOL) sentences are defined as usual.
+% Для упрощения обозначений в символах равенства будут опускаться индексы сортов.
+% Язык первого порядка, определённый над сигнатурой $\signature$, будет называться \emph{языком ограничений}, а формулы в нём~--- $\signature$-формулами.
+The first-order language defined over the signature $\signature$ will be called the \emph{constraint language}, and the formulas in it $\signature$-formulas.
+
+% Многосортная структура (модель) $\structure $ для сигнатуры $\signature $ состоит из непустых носителей $\domain{\sigma} $ для каждого сорта $\sigma \in \sorts $. Каждому функциональному символу $f $ с арностью $\sigma_1 \times \dots \times \sigma_n \rightarrow \sigma $ сопоставим интерпретацию $\interprets{\structure}{f}: \domain{\sigma_1} \times \dots \times \domain{ \sigma_n} \rightarrow \domain{\sigma} $, и каждому предикатному символу $p $ с арностью $\sigma_1 \times \dots \times\sigma_n$ сопоставим интерпретацию $\interprets{\structure}{p} \subseteq \domain{\sigma_1} \times\dots\times\domain{\sigma_n} $. Для каждого замкнутого терма $t $ с сортом $\sigma$ интерпретация $\interprets{\structure}{t} \in \domain{\sigma} $ определяется рекурсивно естественным образом. 
+
+A multi-sort structure (model) $\structure $ for signature $\signature $ consists of non-empty domains $\domain{\sigma}$ for each sort $\sigma \in \sorts $. For each functional symbol $f $ with arity $\sigma_1 \times \dots \times \sigma_n \rightarrow \sigma $ we assign the interpretation $\interprets{\structure}{f}: \domain{\sigma_1} \times \dots \times \domain{ \sigma_n} \rightarrow \domain{\sigma} $, and to each predicate symbol $p $ with arity $\sigma_1 \times \dots \times\sigma_n$ we assign the interpretation $\interprets{\structure}{p} \subseteq \domain{\sigma_1}\times\dots\times\domain{\sigma_n}$. For every closed term $t$ with sort $\sigma$, the interpretation $\interprets{\structure}{t} \in \domain{\sigma}$ is defined recursively in a natural manner.
+
+% Структура называется конечной, если все её носители всех сортов конечны, в противном случае она называется бесконечной.
+A structure is called finite if all domains of all its sorts are finite, otherwise it is called infinite.
+
+% Выполнимость предложения $\phi$ в модели $\structure$ обозначается $\structure \models \phi $ и определяется, как обычно.
+% Употреблением $\phi (x_1, \ldots, x_n) $ вместо $\phi$ будет подчёркиваться, что все свободные переменные в $\phi $ находятся среди $\{x_1, \ldots, x_n \} $. Далее, $\structure \models \phi (a_1, \ldots, a_n) $ обозначает, что $\structure $ выполняет $\phi$ на оценке, сопоставляющей свободным переменным элементы соответствующих носителей $a_1, \ldots, a_n $ (переменные также связаны с сортами). Универсальное замыкание формулы $\phi (x_1, \ldots, x_n) $ обозначается $\clforall{\phi} $ и определяется как $\forall x_1 \dots \forall x_n. \phi $. Если $\phi $ имеет свободные переменные, то $\structure \models \phi $ означает $\structure \models \clforall{\phi} $.
+% Формула называется \emph{выполнимой в свободной теории}, когда существует произвольная модель, выполняющая эту формулу.
+The satisfiability of a clause $\phi$ in a model $\structure$ is denoted by $\structure \models \phi $ and is defined as usual.
+By writing $\phi(x_1, \ldots, x_n) $ instead of $\phi$ we will emphasize that all free variables in $\phi $ are among $\{x_1, \ldots, x_n \} $. Next, $\structure \models \phi (a_1, \ldots, a_n) $ denotes that $\structure $ satisfies $\phi$ on an evaluation that maps free variables to elements of corresponding domains $a_1, \ldots, a_n $ (variables are also associated with sorts). The universal closure of the formula $\phi (x_1, \ldots, x_n) $ is denoted by $\clforall{\phi} $ and is defined as $\forall x_1 \dots \forall x_n. \phi $. If $\phi$ has free variables, then $\structure\models\phi$ means $\structure\models\clforall{\phi}$.
+A formula is called \emph{satisfiable in a free theory} iff it is satisfiable in some model of the same signature.
+
+
+\subsection{Algebraic Data Types}
+% Алгебраический тип данных (АТД) является кортежем $\tuple{C, \sigma} $, где $\sigma $~--- это сорт данного АТД, $C $~--- множество функциональных символов-конструкторов.
+% В научной литературе АТД также называют \emph{абстрактными типами данных}, \emph{индуктивными типами данных} и \emph{рекурсивными типами данных}.
+% Они позволяют задавать такие структуры данных как списки, бинарные и красно-чёрные деревья и др.
+An algebraic data type (ADT) is a tuple $\tuple{C, \sigma} $ where $\sigma $ is the sort of this ADT, and $C$ is a set of functional symbols of constructors.
+ADTs are also referred to as \emph{abstract data types}, \emph{inductive data types}, and \emph{recursive data types}.
+With ADTs one can define data structures such as lists, binary trees, red-black trees, and others.
+
+% Пусть дан набор АТД $\tuple{C_1, \sigma_1}, \ldots, \tuple{C_n, \sigma_n} $ такой, что $\sigma_i \neq \sigma_j $ и $C_i \cap C_j = \emptyset $ при $i \neq j $.
+% В связи с фокусом данной работы далее мы будет рассматривать только сигнатуры теории алгебраических типов данных $\signature = \tuple{\sorts, \fsymbs, \psymbs} $, где $\sorts = \{\sigma_1, \ldots, \sigma_n \} $, $\fsymbs = C_1 \cup \dots \cup C_n $ и $\psymbs = \{= _{\sigma_1}, \ldots,= _{\sigma_n} \} $.
+% Поскольку $\signature $ не имеет предикатных символов, отличных от символов равенства (которые имеют фиксированные интерпретации внутри каждой структуры), существует единственная эрбрановская модель $\hs $ для $\signature $.
+% Носитель эрбрановской модели $\hs$~--- это кортеж $\tuple{\huniv{\sigma_1},\ldots,\huniv{\sigma_n}}$, где каждое множество $\huniv{\sigma_i}$~--- это  все замкнутые термы сорта $\sigma_i$.
+% Эрбрановская модель интерпретирует все замкнутые термы ими самими, поэтому служит стандартной моделью для теории алгебраических типов данных.
+% Формула $\phi $ языка ограничений будет называться \emph{выполнимой по модулю теории} АТД, если имеем $\hs \models \phi $.
+Let $\tuple{C_1, \sigma_1}, \ldots, \tuple{C_n, \sigma_n} $ be an ADT set such that $\sigma_i \neq \sigma_j $ and $C_i \cap C_j = \emptyset $ for $i \neq j $.
+Due to the focus of this work, we will further consider only signatures of the theory of algebraic data types $\signature = \tuple{\sorts, \fsymbs, \psymbs} $, where $\sorts = \{\sigma_1, \ldots, \sigma_n \} $, $\fsymbs = C_1 \cup \dots \cup C_n $ and $\psymbs = \{=_{\sigma_1},\ldots,=_{\sigma_n}\}$.
+Since $\signature $ has no predicate symbols other than equality symbols (which have fixed interpretations within each structure), there is a single Herbrand model $\hs $ for $\signature $.
+The domain of the Herbrand model $\hs$ is a tuple $\tuple{\huniv{\sigma_1},\ldots,\huniv{\sigma_n}}$, where each set $\huniv{\sigma_i}$ is a set of all closed terms of sort $\sigma_i$.
+The Herbrand model interprets all closed terms as themselves, and therefore serves as the standard model for the theory of algebraic data types.
+A formula $\phi$ will be called \emph{satisfiable modulo the ADT theory} iff $\hs \models \phi$.
+
+% Выполнимость формул в свободной теории, а также в теории АТД, может быть проверена автоматически при помощи так называемых \emph{SMT-решателей}, таких как \zprover{}~\cite{de2008z3}, \cvc{}~\cite{cvc5} и \princess{}~\cite{princess}, и посредством автоматических инструментов доказательства теорем, таких как \vampire{}~\cite{reger2017instantiation}.
+% Эти инструменты позволяют отделить задачу поиска доказательства безопасности программы от проверки таких доказательств,  автоматизируя последнюю задачу.
+The satisfiability of formulas in free theory, as well as in ADT theory, can be checked automatically by the so-called \emph{SMT solvers}, such as \zprover{}~\cite{de2008z3}, \cvc{}~\cite{cvc5} and \princess{}~\cite{princess}, and by automated theorem provers such as \vampire{}~\cite{reger2017instantiation}.
+These tools allow separating the task of building proofs of program safety from the task of verifying such proofs, automating the latter task.
+
+\section{Constrained Horn Clause Systems}\label{sec:background/Horn}
+% Системы дизъюнктов Хорна~--- логический способ представлять программы совместно с их спецификациями.
+% К задаче проверки выполнимости систем дизъюнктов Хорна сводится задача верификации программ на самых разных языках программирования, от функциональных до объектно-ориентированных~\cite{Bjorner2015}.
+% Поэтому задача вывода индуктивных инвариантов в данной работе ставится и исследуется в формулировке для систем дизъюнктов Хорна, а дизъюнкты Хорна являются ключевым понятием для всей дальнейшей работы.
+By constrained Horn clause (CHC) systems, one can represent programs and their specifications by means of logic.
+The task of verifying programs in different (from functional to object-oriented) programming languages can be reduced to the problem of checking the satisfiability of constrained Horn clause systems~\cite{Bjorner2015}.
+That is why we formulate and examine the problem of inductive invariant inference for programs in terms of CHC systems, which makes CHC systems the central concept of this thesis.
+
+\subsection{Syntax}
+% Пусть $\relations = \{P_1, \dots, P_n \} $ является конечным множеством предикатных символов с сортами из сигнатуры $\signature $.
+% Такие символы будут называться \emph{неинтерпретированными}.
+% Формула $C $ над сигнатурой $\signature \cup \relations $ называется \emph{дизъюнктом Хорна с ограничениями}, если эта формула имеет следующий вид:
+% \begin{align*}
+% 	\phi \land R_1(\overline{t}_1) \land \ldots \land R_m(\overline{t}_m) \rightarrow H.
+% \end{align*}
+% Здесь $\phi $~--- это \emph{ограничение} (формула языка ограничений без кванторов),  $R_i \in \relations $, а $\overline{t}_i $~--- кортеж термов. $H $ называется \emph{головой} дизъюнкта и может быть либо ложью $\bot $ (тогда дизъюнкт называется \emph{запросом}), либо атомарной формулой $R (\overline{t}) $ (тогда дизъюнкт называется \emph{определением} \emph{для $R $}). При этом $R \in \relations $ и $\overline{ t} $ является кортежем термов.
+% Множество всех определений для $R \in \relations$ обозначается $\rules{R}$.
+% Посылка импликации $\phi \land R_1 (\overline{t} _1) \land \ldots \land R_m (\overline{t} _m) $ называется \emph{телом} формулы $C $ и обозначается $\body{C}$.
+Let $\relations = \{P_1, \dots, P_n \}$ be a finite set of predicate symbols with sorts from signature $\signature $.
+Such symbols are called \emph{uninterpreted}.
+A formula $C$ over a signature $\signature \cup \relations $ is called a \emph{constrained Horn clause} (CHC) if it has the following form:
+\begin{align*}
+	\phi \land R_1(\overline{t}_1) \land \ldots \land R_m(\overline{t}_m) \rightarrow H.
+\end{align*}
+Here, $\phi$ is a \emph{constraint} (a constraint language formula without quantifiers), $R_i \in \relations$, and $\overline{t}_i$ is a tuple of terms. $H$ called the \emph{head} of the clause is either false $\bot$ (in which case the clause is referred to as a \emph{query}) or an atomic formula $R (\overline{t})$ (in which case the clause is called a \emph{rule} \emph{for $R $}). In this case, $R \in \relations $ and $\overline{t} $ is a tuple of terms.
+The set of all rules for $R \in \relations$ is denoted by $\rules{R}$.
+The premise of the implication $\phi \land R_1 (\overline{t} _1) \land \ldots \land R_m (\overline{t} _m)$ is called the \emph{body} of the formula $C$ and is denoted as $\body{C}$.
+
+% Системой дизъюнктов Хорна $\prog $ называется конечное множество дизъюнктов Хорна с ограничениями.
+A (constrained) Horn clause (CHC) system $\prog $ is a finite set of constrained Horn clauses.
+
+
+\subsection{Satisfiability and Safe Inductive Invariants}
+% Пусть $\overline{X} = \langle X_1, \ldots, X_n \rangle $ является кортежем таких отношений, что  если предикат $P_i $ имеет сорт $\sigma_1 \times \ldots \times \sigma_m $, то справедливо $X_i \subseteq \huniv{\sigma_1} \times \ldots \times \huniv{\sigma_m} $.
+% Для упрощения обозначений расширение модели $\hs \{P_1 \mapsto X_1, \ldots, P_n \mapsto X_n \} $ будет записываться как $\tuple{\hs, X_1, \ldots, X_n} $ или просто $\tuple{\hs, \overline{X}} $.
+Let $\overline{X} = \langle X_1, \ldots, X_n \rangle $ be a tuple of relations such that if predicate $P_i $ has sort $\sigma_1 \times \ldots \times \sigma_m $, then $X_i \ subseteq \huniv{\sigma_1} \times \ldots \times \huniv{\sigma_m}$.
+To simplify notation, the model extension $\hs \{P_1 \mapsto X_1, \ldots, P_n \mapsto X_n \} $ will be written as $\tuple{\hs, X_1, \ldots, X_n} $ or just $\tuple{\ hs,\overline{X}}$.
+
+% Система дизъюнктов Хорна $\prog$ называется \emph{выполнимой по модулю теории} АТД (или \emph{безопасной}), если существует кортеж отношений $\overline{X} $ такой, что выполнено $\tuple{\hs, \overline{X}} \models C $ для всех формул $C \in \prog $. В таком случае кортеж $\overline{X} $ называется \emph{(безопасным индуктивным) инвариантом} системы $\prog$.
+% Таким образом, по определению система дизъюнктов Хорна выполнима тогда и только тогда, когда у неё существует безопасный индуктивный инвариант.
+A Horn clause system $\prog$ is said to be \emph{satisfiable modulo theory} ADT (or \emph{safe}) if there exists a tuple of relations $\overline{X} $ such that $\tuple{\hs, \overline {X}} \models C$ for all $C formulas \in \prog$. In such a case, the tuple $\overline{X}$ is referred to as a \emph{(safe inductive) invariant} of the system $\prog$.
+Thus, by definition, a Horn clause system is satisfiable if and only if it has a safe inductive invariant.
+
+% Поскольку индуктивный инвариант $\overline{X}$~--- это кортеж множеств, которые для большинства систем будут бесконечными, то для автоматического вывода индуктивных инвариантов выбирается некоторый фиксированный класс, элементы которого выразимы некоторым конечным образом. Именно такие классы рассматриваются  в данной работе.
+As the inductive invariant $\overline{X}$ is a tuple of sets which are infinite for most CHC systems, a class of inductive invariants is typically fixed in order to make automatic inductive invariant inference feasible. Such classes are design in such a way, so that their elements are expressible finitely. This thesis is focused on classes of inductive invariants with this property.
+
+% Важно отметить, что у  системы дизъюнктов Хорна может не быть индуктивного инварианта (если она невыполнима), может быть один индуктивный инвариант, а также их может быть несколько, в том числе бесконечно много.
+% Также важно, что если некоторый алгоритм ищет индуктивные инварианты системы дизъюнктов Хорна только в заранее заданном классе, то может возникнуть ситуация, что данная система  выполнима, однако ни один из её индуктивных инвариантов невыразим в этом классе. Как правило, это приводит к тому, что на такой системе алгоритм не завершает свою работу.
+
+Note three important types of Horn clause systems: systems with no inductive invariants (unsatisfiable ones), systems with only one inductive invariant, and systems with multiple (even infinite) inductive invariants.
+It is also noteworthy that if a certain algorithm is designed to infer inductive invariants within some fixed class, it may be the case that the system is satisfiable, yet none of its inductive invariants lies in that class. This typically leads to nontermination of the algorithm on such a system.
+
+% Здесь и далее нотация $\prog \in \mathcal{C}$, где $\prog$~--- название примера с некоторой системой дизъюнктов Хорна \emph{с одним неинтерпретированным символом}, а $\mathcal{C}$~--- некоторый класс индуктивных инвариантов, означает, что система $\prog$ безопасна и \emph{некоторый} её безопасный индуктивный инвариант (отношение, интерпретирующее единственный предикат) лежит в классе $\mathcal{C}$.
+By notation $\prog \in \mathcal{C}$, where $\prog$ is the name of an example CHC system \emph{with one uninterpreted symbol}, and $\mathcal{C}$ is an inductive invariants class, we mean that the system $\prog$ is safe and \emph{some} its safe inductive invariant (the relation interpreting the only predicate) belongs to the class $\mathcal{C}$.
+
+\begin{define}[\elemclass{}]
+% Отношение $ X \subseteq \domain{\sigma_1} \times \dots \times \domain{\sigma_n} $ называется \emph{выразимым языком АТД первого порядка} (или \emph{элементарным}), если существует $\signature$-формула $ \phi (x_1, \ldots, x_n) $ такая, что $ (a_1, \ldots, a_n) \in X $ тогда и только тогда, когда $ \hs \models \phi (a_1, \ldots, a_n) $.  Класс всех элементарных отношений будем обозначать $ \elemclass{} $. Инварианты, лежащие в этом классе, называются элементарными, а также классическими символьными инвариантами.
+A relation $ X \subseteq \domain{\sigma_1} \times \dots \times \domain{\sigma_n} $ is called \emph{expressible in first-order ADT language} (or \emph{elementary}) if there exists a $\signature$-formula $ \phi (x_1, \ldots, x_n) $ such that $ (a_1, \ldots, a_n) \in X $ if and only if $ \hs \models \phi (a_1, \ldots, a_n) $.  The class of all elementary relations will be denoted by $ \elemclass{} $. The invariants in this class are called elementary, as well as \emph{classical symbolic invariants}.
+\end{define}
+
+\subsubsection{Elementary Invariants with Term Size Constraints}
+% Инструмент \eldarica{}~\cite{8603013} выводит инварианты системы дизъюнктов Хорна над АТД в расширении языка ограничений ограничениями на размер термов. Определим класс инвариантов, выразимых формулами этого языка.
+A tool \eldarica{}~\cite{8603013} infers invariants of Horn clause systems over ADT in extension of the constraint language by term size constraints. Let us define the class of invariants expressible by the formulas of this language.
+
+\begin{define}[\sizeelemclass{}]
+% Сигнатура \sizeelemclass{}  получается из языка \elemclass{} путем добавления в  сорта $ Int $, операций из арифметики Пресбургера и функциональных символов $ \sizename{} _ \sigma $ с арностью $ \sigma \rightarrow Int $. Для краткости мы будем опускать значек $ \sigma $ в символах $ \sizename{} $.
+The \sizeelemclass{} signature can be obtained from the \elemclass{} signature by adding the $ Int $ sort, operations from Presburger arithmetic, and functional symbols $ \sizename{} _ \sigma $ with arity $ \sigma \rightarrow Int $. For brevity, we will omit the $ \sigma $ sign in the $ \sizename{} $ symbols.
+
+% Выполнимость формул с ограничениями на размер термов проверяется в структуре $ \hs_{\sizename{}} $, полученной путём соединения стандартной модели арифметики Пресбургера с эрбрановской моделью $ \hs $ и следующей интерпретацией функции размера:
+% $$\interprets{\hs_{\sizename{}}}{\sizename{}(f(t_1,\ldots,t_n)}\eqdef 1 + \interprets{\hs_{\sizename{}}}{t_1} + \ldots + \interprets{\hs_{\sizename{}}}{t_n}.$$
+The satisfiability of formulas with term size constraints is checked in the structure $ \hs_{\sizename{}} $, obtained by joining the standard model of Presburger arithmetic with the Herbrand model $ \hs $ and the following natural interpretation of the size function:
+$$\interprets{\hs_{\sizename{}}}{\sizename{}(f(t_1,\ldots,t_n)}\eqdef 1 + \interprets{\hs_{\sizename{}}}{t_1} + \ldots + \interprets{\hs_{\sizename{}}}{t_n}.$$
+\end{define}
+
+% Например, размер терма
+% $t\equiv cons\big(Z, cons(S(Z), nil)\big) $
+% % с сортом $List$, определяемым как $List := nil : List \mid cons : Nat \times List \rightarrow List$,
+% в объединённой структуре вычисляется следующим образом: $\interprets{\hs_{\sizename{}}}{\sizename{}(t)}=6$.
+For example, the size of the term
+$t\equiv cons\big(Z, cons(S(Z), nil)\big) $
+in the joint structure is evaluated as follows: $\interprets{\hs_{\sizename{}}}{\sizename{}(t)}=6$.
+
+\subsection{Unsatisfiability and Resolution Refutations}
+% Хорошо известно, что невыполнимость системы дизъюнктов Хорна может быть засвидетельствована резолютивным опровержением.
+It is well known that the unsatisfiability of a Horn clause system can be witnessed by a resolution refutation.
+
+\begin{define}
+% \emph{Резолютивное опровержение} (дерево опровержений) системы дизъюнктов Хорна $\prog$~--- это конечное дерево с вершинами $\tuple{C, \Phi}$, где
+A \emph{resolution refutation} (refutation tree) of a CHC system $\prog$ is a finite tree with vertices $\tuple{C, \Phi}$, where
+\begin{enumerate}[label=(\arabic*)]
+\item $C \in \prog$ и $\Phi$ is a $\signature \cup \relations$-formula;
+\item the root of the tree contains the query $C$ and a satisfiable $\signature$-formula $\Phi$;
+\item each leaf contains a pair $\tuple{C, \body{C}}$, where $\body{C}$ is a $\signature$-formula;
+\item each tree node $\tuple{C, \Phi}$ has children $\tuple{C_1, \Phi_1},\ldots,\tuple{C_n, \Phi_n}$ such that:
+\begin{itemize}
+    \item $\body{C} \equiv \phi \land P_1(\overline{x}_1) \land 
+\ldots \land P_n(\overline{x}_n)$;
+    \item $C_i \in \rules{P_i}$;
+    \item $\Phi \equiv \phi \land \Phi_1(\overline{x}_1) \land 
+\ldots \land \Phi_n(\overline{x}_n)$.
+\end{itemize}
+\end{enumerate}
+\end{define}
+
+\begin{theorem}
+  % У системы дизъюнктов Хорна есть резолютивное опровержение тогда и только тогда, когда она невыполнима.
+  A Horn clause system has a resolution refutation iff it is unsatisfiable.
+\end{theorem}
+
+\subsection{From Verification to Solving Horn Clause Systems}
+% Инструменты, позволяющие автоматически решать задачу проверки выполнимости системы дизъюнктов Хорна, называются \emph{Хорн-решателями}. Как правило, Хорн-решатель для некоторой системы дизъюнктов возвращает индуктивный инвариант или резолютивное опровержение, хотя также может вернуть результат <<неизвестно>> или не завершиться.
+Tools that automatically check the satisfiability of a Horn clause system are called \emph{Horn solvers} (CHC solvers). Typically, a Horn solver either returns an inductive invariant or a resolution refutation, although it may also return ``unknown'' or diverge.
+
+% При помощи различных теоретических подходов задача верификации программ может быть сведена к задаче проверки выполнимости системы дизъюнктов Хорна~\cite{10.1145/2254064.2254112,Bjorner2015}.
+% Среди таких теоретических подходов значимыми являются логика Флойда-Хоара для императивных программ~\cite{Floyd1993,10.1145/363235.363259}, а также зависимые (dependent types)~\cite{10.1145/292540.292560} и уточняющие типы (refinement types)~\cite{713327} для функциональных программ.
+% Существует множество инструментов, в рамках которых может быть реализовано это сведение, например, \liquidHaskell{}~\cite{10.1145/2692915.2628161} для языка \haskell{}, \rcaml{}~\cite{10.1007/978-3-319-63390-9_30} для языка \ocaml{}, \flux{}~\cite{https://doi.org/10.48550/arxiv.2207.04034} для языка \rust{}, \leon{}~\cite{10.1007/978-3-642-23702-7_23} и \stainless{}~\cite{10.1145/3360592} для языка \scala{}.
+% На основе этих подходов построены такие инструменты, как \rustHorn{}~\cite{10.1145/3462205}~--- верификатор для языка \rust{}, и \solCMC{}~\cite{10.1007/978-3-031-13185-1_16}~--- верификатор самовыполняющихся контрактов на языке \solidity{}. Эти инструменты напрямую используют Хорн-решатели с поддержкой АТД, такие как \spacer{} и \eldarica{}.
+The problem of program verification can be reduced to the problem of checking the satisfiability of a Horn clause system~\cite{10.1145/2254064.2254112,Bjorner2015}.
+Among approaches providing such a reduction, the most significant are the Floyd-Hoare logic for imperative programs~\cite{Floyd1993,10.1145/363235.363259}, as well as dependent types~\cite{10.1145/292540.292560} and refinement types~\cite{713327} for functional programs.
+There are many tools within which this reduction can be implemented, for example, \liquidHaskell{}~\cite{10.1145/2692915.2628161} for the \haskell{} language, \rcaml{}~\cite{10.1007/978-3-319-63390-9_30} for \ocaml{}, \flux{}~\cite{https://doi.org/10.48550/arxiv.2207.04034} for \rust{}, \leon{}~\cite{10.1007/978-3-642-23702-7_23} and \stainless{}~\cite{10.1145/3360592} for the \scala{} language.
+For example, tools like \rustHorn{}~\cite{10.1145/3462205}, a verifier for the \rust{} language, and \solCMC{}~\cite{10.1007/978-3-031-13185-1_16}, a smart contract verifier for the \solidity{} language, are based on the above approaches. These tools directly apply Horn solvers with ADT support, such as \spacer{} and \eldarica{}.
+
+
+% Различные множества АТД-термов, называемые языками деревьями, исследуются в рамках формальных языков как обобщения языков строк.
+% В частности, исследуется обобщение (строковых) автоматов до автоматов над деревьями, а также различные их расширения, как правило, обладающие свойствами разрешимости и замкнутости базовых языковых операций (например, проверки на пустоту пересечения языков)~\cite{chabin2007visibly, gouranton2001synchronized, limet2001weakly, chabin2006synchronized, jacquemard2009rigid, engelfriet2017multiple}.
+% Для данной работы различные классы языков деревьев представляют интерес, поскольку они могут служить в качестве классов безопасных индуктивных инвариантов программ, использующих АТД.
+\section{Tree Languages}\label{sec:background/treeLangs}
+Various types of sets of ADT terms, viewed as tree languages, are studied within the field of formal languages as generalizations of string languages.
+In particular, the generalization of (string) automata to tree automata and their extensions, which typically have the properties of decidability and closure of basic language operations (for example, testing for emptiness of language intersections), are studied~\cite{chabin2007visibly, gouranton2001synchronized, limet2001weakly, chabin2006synchronized, jacquemard2009rigid, engelfriet2017multiple}.
+For this thesis, various classes of tree languages are of interest because they can serve as classes of safe inductive invariants for programs that use ADTs.
+
+\subsection{Properties and Operations}
+% Для построения эффективного алгоритма вывода инвариантов от класса инвариантов, как правило, требуются следующие свойства: замкнутость относительно булевых операций, разрешимость задачи принадлежности кортежа инварианту и разрешимость задачи проверки пустоты инварианта.
+In order to design an efficient invariant inference algorithm, one typically needs to build the class of invariants with the following properties: closure under Boolean operations, decidability of the tuple membership problem in the invariant, and decidability of the invariant emptiness check problem.
+
+\begin{define}[Boolean closure]
+% Пусть операция $\booleanOp$~--- это или $\cap$ (пересечение множеств), или $\cup$ (объединение множеств), или $\setminus$ (вычитание множеств). Класс множеств называется замкнутым относительно бинарной операции $\booleanOp$, если для каждой пары множеств $X$ и $Y$ из данного класса множество $X \booleanOp Y$ также лежит в классе.
+Let an operation $\booleanOp$ be either $\cap$ (set intersection), or $\cup$ (set union), or $\setminus$ (set subtraction). A class of sets is said to be closed under the binary operation $\booleanOp$ if for each pair of sets $X$ and $Y$ from the given class the set $X \booleanOp Y$ also lies in the class.
+\end{define}
+
+\begin{define}[Decidability of membership]
+    % Задача по определению принадлежности кортежа замкнутых термов некоторому множеству термов разрешима в некотором классе множеств термов тогда и только тогда, когда разрешимо множество пар из кортежей замкнутых термов $\overline{t}$ и элементов этого класса $i$ таких, что $i$ выражает некоторое множество $I$ и выполняется $\overline{t}\in I$.
+    The problem of determining whether a tuple of closed terms belongs to a particular set of terms is \emph{decidable within a given class of term sets} iff the set of pairs of tuples of closed terms $\overline{t}$ and elements $i$ of this class, such that $i$ expresses some set $I$, and $\overline{t}\in I$ holds, is decidable.
+\end{define}
+
+\begin{define}[Decidability of emptiness]
+    % Задача определения пустоты множества разрешима в классе множеств термов  тогда и только тогда, когда разрешимо множество элементов класса, выражающих пустое множество.
+    The problem of determining the emptiness of a set is \emph{decidable in the class of term sets} iff the set of class elements expressing the empty set is decidable.
+\end{define}
+
+\subsection{Tree Automata}
+% Автоматы над деревьями являются обобщением классических строковых автоматов на языки деревьев (языки термов), сохраняющим свойства разрешимости и замкнутости базовых операций. 
+% Классические результаты для автоматов над деревьями и их расширений представлены в книге~\cite{tata
+Tree automata generalize classical string automata to tree languages (term languages), preserving the decidability and closure of basic operations.
+Classical results for tree automata and their extensions are presented in the book~\cite{tata}.
+
+\begin{define}\label{sec:background/TA}
+  % \emph{(Конечный) $n$-автомат над деревьями} над (алфавитом) $ \fsymbs $ является кортежем $ \automatonDef $, где $ \autStates $~--- это (конечное) множество состояний, $ \autFinStates \subseteq \autStates ^ n $~--- множество конечных состояний, $ \autTrans $~--- отношение перехода с правилами следующего вида:
+  A \emph{(finite) tree $n$-automaton} over (alphabet) $ \fsymbs $ is a tuple $ \automatonDef $, where $ \autStates $ is a (finite) set of states, $ \autFinStates \subseteq \autStates ^ n $ is a set of final states, and $ \autTrans $ is a transition relation with the rules of the following form:
+  \begin{align*}
+    f (s_1, \ldots, s_m) \rightarrow s.
+  \end{align*}
+% Здесь использованы следующие обозначения: функциональные символы~--- $ f \in \fsymbs $, их арность~--- $ ar (f) = m $ и состояния~--- $ s, s_1, \ldots, s_m \in \autStates $.
+Here the following notations are used: functional symbols are denoted by $f \in \fsymbs$, their arity is denoted by $ar(f) = m$, and states are denoted by $s, s_1, \ldots, s_m \in \autStates$.
+
+  % Автомат называется \emph{детерминированным}, если в $ \autTrans $ нет правил с совпадающей левой частью.
+  An automaton is called \emph{deterministic} if there are no rules in $ \autTrans $ with the same left-hand side.
+  \end{define}
+  
+  \begin{define}
+  % Кортеж замкнутых термов $ \tuple{t_1, \ldots, t_n} $ \emph{принимается} (допускается) $ n $-автоматом
+  A tuple of closed terms $ \tuple{t_1, \ldots, t_n} $ is \emph{accepted} by an $ n $-automaton
+  $ A = \automatonDef $, if $ \tuple{A [t_1], \ldots, A [t_n]} \in S_F $, where
+  \begin{align*}
+    A \big[f(t_{1},\ldots,t_{m}) \big] \eqdef\left\{\begin{array}{rl}
+    s, &\text{ if } \big(f (A[t_1],\ldots, A[t_m])\rightarrow s\big)\in\autTrans,\\
+    \text{not defined}, &\text{ otherwise}.
+    \end{array}\right.
+  \end{align*}
+
+  % \emph{Язык автомата} $A$, обозначаемый $\langOf{A}$,~--- это множество всех допустимых автоматом $A$ кортежей термов.
+  \emph{Automaton language} of $A$, denoted by $\langOf{A}$, is the set of all tuples of terms accepted by automaton $A$.
+  \end{define}
+  
+  \begin{example}
+  % Пусть $\signature = \tuple{Prop, \{ (\_\land\_), (\_\rightarrow\_), \top, \bot \}, \emptyset}$ является сигнатурой логики высказываний. Рассмотрим автомат $ A = \Automaton{q_0, q_1}{q_1} $ с  набором отношений перехода $ \autTrans $, представленными ниже.
+  Let $\signature = \tuple{Prop, \{ (\_\land\_), (\_\rightarrow\_), \top, \bot \}, \emptyset}$ be a propositional signature. Consider an automaton $ A = \Automaton{q_0, q_1}{q_1} $ with a set of transition relations $ \autTrans $ presented below.
+  \begin{equation*}
+  \begin{aligned}[c]
+  q_1 \land q_1 &\mapsto q_1\\
+  q_1 \land q_0 &\mapsto q_0\\
+  q_0 \land q_1 &\mapsto q_0\\
+  q_0 \land q_0 &\mapsto q_0
+  \end{aligned}
+  \qquad\qquad
+  \begin{aligned}[c]
+  q_1 \rightarrow q_0 &\mapsto q_0\\
+  q_1 \rightarrow q_1 &\mapsto q_1\\
+  q_0 \rightarrow q_0 &\mapsto q_1\\
+  q_0 \rightarrow q_1 &\mapsto q_1
+  \end{aligned}
+  \qquad\qquad
+  \begin{aligned}[c]
+  \bot &\mapsto q_0\\
+  \top &\mapsto q_1
+  \end{aligned}
+  \end{equation*}
+  % Автомат $A$ допускает только истинные пропозициональные формулы без переменных.
+  The automaton $A$ accepts only true propositional formulas without variables.
+  \end{example}
+
+\subsection{Finite Models}
+% Существует взаимно-однозначное соответствие между конечными моделями формул свободной теории и автоматами над деревьями~\cite{kozen2012automata}. На основе  этого соответствия  можно создать следующую процедуру построения автоматов над деревьями по конечным моделям. 
+% По конечной модели $ \structure $ для каждого предикатного символа $ P \in \psymbs $ строится автомат $ A_P = \automaton{\thedomain{}}{\structure (P)}{\autTrans} $; для всех автоматов определено общее отношение переходов $ \autTrans $~--- для каждого $ f \in \fsymbs $ с арностью $ \sigma_1 \times \ldots \times \sigma_n \mapsto \sigma $ и для каждого $ x_i \in \domain{ \sigma_i} $ положим $ \autTrans \big (f (x_1, \ldots, x_n) \big) = \structure(f) (x_1, \ldots, x_n) $.
+There is a one-to-one correspondence between finite models of free theory formulas and tree automata~\cite{kozen2012automata}. This correspondence gives the following procedure for building tree automata from finite models.
+Using the finite model $ \structure $, for each predicate symbol $ P \in \psymbs $ an automaton $ A_P = \automaton{\thedomain{}}{\structure (P)}{\autTrans} $ is built; for all automata a common transition relation $ \autTrans $ is defined~--- for each  $ f \in \fsymbs $ with arity $ \sigma_1 \times \ldots \times \sigma_n \mapsto \sigma $ and for each $ x_i \in \domain{ \sigma_i} $ we set $ \autTrans \big (f (x_1, \ldots, x_n) \big) = \structure(f) (x_1, \ldots, x_n) $.
+
+\begin{theorem}\label{thm:finite-to-automaton}
+% Для любого построенного автомата $A_P$ справедливо следующее утверждение: $$\langOf{A_P} = \{\tuple{t_1,\ldots,t_n} \mid \tuple{\interprets{\structure}{t_1},\ldots,\interprets{\structure}{t_n}} \in \structure(P)\}).$$
+For any automaton $A_P$, the following holds: $$\langOf{A_P} = \{\tuple{t_1,\ldots,t_n} \mid \tuple{\interprets{\structure}{t_1},\ldots,\ interprets{\structure}{t_n}} \in \structure(P)\}).$$
+\end{theorem}
+
+% Практическая ценность этого результата заключается в том, что построение автомата над деревьями по спецификации эквивалентно поиску конечной модели для неё.
+% Таким образом, ряд инструментов, таких как \mace{}~\cite{https://doi.org/10.48550/arxiv.cs/0310055}, \kodkod{}~\cite{10.1007/978-3-540-71209-1_49}, \paradox{}~\cite{claessen2003new}, а также \cvc{}~\cite{reynolds2013finite} и \vampire{}~\cite{10.1007/978-3-319-40970-2_20} могут быть использованы для поиска конечных моделей формул свободной теории и, как следствие, для автоматического построения автоматов над деревьями.The practical value of this result lies in the fact that building a tree automaton according to the specification is equivalent to finding a finite model for it.
+The practical value of this result is that building a tree automaton for the formula is equivalent to finding a finite model for it. Therefore, a number of tools such as \mace{}~\cite{https://doi.org/10.48550/arxiv.cs/0310055}, \kodkod{}~\cite{10.1007/978-3-540-71209-1_49}, \paradox{}~\cite{claessen2003new}, as well as \cvc{}~\cite{reynolds2013finite} and \vampire{}~\cite{10.1007/978-3-319-40970-2_20} can be used for finding finite models of free theory formulas and, as a result, to automatically build tree automata.
+
+
+% Большинство из этих инструментов реализуют кодирование в SAT: конечный домен и функции над ним кодируются в битовое представление, после этого по нему  получают формулу логики высказываний, которую передают в SAT-решатель.
+% По этой причине данные инструменты применяются для задач верификации~\cite{lisitsa2012finite}, а также  для построения бесконечных моделей формул первого порядка~\cite{peltier2009constructing}.
+Most of these tools implement encoding into SAT: the finite domain and functions over it are encoded into a bit representation, from which a propositional logic formula is obtained, which is passed to a SAT solver.
+These tools are applied in verification~\cite{lisitsa2012finite}, as well as in first-order infinite model building~\cite{peltier2009constructing}.
+
+\section{Conclusions}\label{sec:background/conclusion}
+% Ключевую роль в формальных методах, в особенности, в статическом анализе, играет задача автоматического вывода индуктивных инвариантов программ.
+% Не смотря на то, что существует некоторое количество весьма проработанных методов вывода индуктивных инвариантов,
+% и каждый год по этой теме появляются публикации  на различных конференциях по информатике и языкам программирования ранга A* (POPL, PLDI и CAV и др.), а также каждый год проводятся соревнования между соответствующими инструментами,
+% всё ещё остаётся открытой проблема следующая проблема: как лучше выражать индуктивные инварианты программ.
+% Проблема подбора наилучшего представления инвариантов состоит в том, чтобы, с одной стороны, были выразимы инварианты реальных программ, а, с другой стороны, существовала бы эффективная процедура вывода инвариантов.
+% Наиболее критична эта проблема  в контексте алгебраических типов данных, для которых классические способы представлять инварианты крайне малоэффективны: если инвариант не представим, то алгоритм его вывода в этом представлении не будет завершаться.
+% Это делает данное диссертационное исследование востребованным и актуальным.
+Automatic inference of inductive program invariants plays a key role in formal methods, particularly in static analysis.
+Despite the fact that there are a number of well-developed methods for inferring inductive invariants,
+and new papers on this topic appear each year at various A* computer science and programming language conferences (such as POPL, PLDI, CAV, etc.), as well as annual competitions between corresponding tools, 
+the following problem still remains open: how to express the inductive invariants of programs.
+The challenge of designing the best representation of invariants lies in expressing the invariants of \emph{real life programs} on the one hand, while having an \emph{efficient invariant inference} procedure on the other hand.
+This problem is even more critical in the context of algebraic data types, for which the classical methods of representing invariants are extremely inefficient; and if the invariant is not representable, then the inference algorithm for this representation will not terminate.
+This makes the research conducted in this thesis in-demand and relevant.
