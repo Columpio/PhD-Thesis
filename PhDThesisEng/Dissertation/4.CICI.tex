@@ -18,8 +18,8 @@ Let $\tuple{\states, \csubseteq, \cbot, \ctop, \ccap, \ccup, \cneg}$ be a comple
 \begin{define}
 % \emph{Система переходов (программа)} является тройкой $TS = \tuple{\states, \init, \thepost}$, где  $\init \in \states$~--- это начальные состояния, а функция $\thepost : \states \mapsto \states$ называется \emph{функцией перехода},  имеет  следующие свойства:
 % \begin{itemize}
-%     \item $\thepost$ монотонна, т.е. из $s_1 \csubseteq s_2$ следует $\post{s_1} \csubseteq \post{s_2}$;
-%     \item $\thepost$ аддитивна, т.е. $\post{s_1 \ccup s_2} = \post{s_1}\ccup\post{s_2}$;
+%     \item $\thepost$ монотонна, т.\:е. из $s_1 \csubseteq s_2$ следует $\post{s_1} \csubseteq \post{s_2}$;
+%     \item $\thepost$ аддитивна, т.\:е. $\post{s_1 \ccup s_2} = \post{s_1}\ccup\post{s_2}$;
 %     \item $\post{\cbot}=\init$.
 A \emph{transition system (program)} is a triple $TS = \tuple{\states, \init, \thepost}$, where $\init \in \states$ are the initial states, and the function $\thepost : \states \mapsto \states$ is referred to as a \emph{transition function}. It has the following properties:
 \begin{itemize}
@@ -83,7 +83,7 @@ An abstract domain together with a Galois connection uniquely define the class o
 In what follows, it is assumed that checks of the form $\gamma(a) \csubseteq \property$ are computable.
 
 \begin{define}
-% \emph{Абстрактная функция перехода} $\theapost : \abstrDomain \mapsto \abstrDomain$ <<поднимает>> функцию перехода в абстрактный домен, т.е. для всех $a\in\abstrDomain$ справедливо
+% \emph{Абстрактная функция перехода} $\theapost : \abstrDomain \mapsto \abstrDomain$ <<поднимает>> функцию перехода в абстрактный домен, т.\:е. для всех $a\in\abstrDomain$ справедливо
 An \emph{abstract transition function} $\theapost : \abstrDomain \mapsto \abstrDomain$ ``raises'' a transition function to the abstract domain, i.e. for all $a\in\abstrDomain$ holds
 \[\alpha(\post{\gamma(a)})\asubseteq\apost{a}.\]
 \end{define}
@@ -300,14 +300,14 @@ The \RunBlackBox{} procedure overwrites the abstraction used in \cegar{} (p.~\re
 
 % Остаточная система устроена следующим образом.
 % Её состояния в исходной системе достижимы из состояний, нарушающих индуктивность $A$.
-% В частности, её начальные состояния $\init'$~--- это $\post{A} \setminus A$, т.е. образ неиндуктивных состояний. Достижимые за один шаг в остаточной системе состояния $\thepost'(\init') = \post{\post{A} \setminus A} \setminus A$~--- это $\thepost$-образ неиндуктивных состояний.
+% В частности, её начальные состояния $\init'$~--- это $\post{A} \setminus A$, т.\:е. образ неиндуктивных состояний. Достижимые за один шаг в остаточной системе состояния $\thepost'(\init') = \post{\post{A} \setminus A} \setminus A$~--- это $\thepost$-образ неиндуктивных состояний.
 The residual system is structured as follows.
 Its states in the original system are reachable from states that violate the inductivity of $A$.
 In particular, its initial states $\init'$ are $\post{A} \setminus A$, i.e. the image of non-inductive states. The states $\thepost'(\init') = \post{\post{A} \setminus A} \setminus A$ are reachable in one step in the residual system is the $\thepost$-image of non-inductive states.
 
 % Основная идея алгоритма \ourCEGAR{} состоит в том, чтобы использовать дополнительный верификатор $\oracle$ для \emph{ослабления} неиндуктивного множества состояний $A$ до некоторой неподвижной точки в комбинированном классе.
-% Если второй верификатор найдёт индуктивный инвариант остаточной системы, т.е. некую индуктивную аппроксимацию $B$ неиндуктивных состояний, то $A \ccup B$ будет индуктивным инвариантом исходной системы.
-% Иными словами, путём построения остаточной системы алгоритм берёт безопасную, но неиндуктивную часть текущего кандидата в инварианты и передаёт её сотрудничающему верификатору, чтобы он дополнил её до неподвижной точки, т.е. индуктивного инварианта.
+% Если второй верификатор найдёт индуктивный инвариант остаточной системы, т.\:е. некую индуктивную аппроксимацию $B$ неиндуктивных состояний, то $A \ccup B$ будет индуктивным инвариантом исходной системы.
+% Иными словами, путём построения остаточной системы алгоритм берёт безопасную, но неиндуктивную часть текущего кандидата в инварианты и передаёт её сотрудничающему верификатору, чтобы он дополнил её до неподвижной точки, т.\:е. индуктивного инварианта.
 
 The main idea of the \ourCEGAR{} algorithm is to use an additional verifier $\oracle$ to \emph{weaken} the non-inductive state set $A$ to some fixed point in the combined class.
 If the second verifier finds an inductive invariant of the residual system, i.e. some inductive approximation $B$ of non-inductive states, then $A \ccup B$ will be an inductive invariant of the original system.
@@ -454,7 +454,7 @@ The Horn clause system $\prog$ defines the transition system$\tuple{\states, \in
 s \models B \right\}.
 \end{align*}
 
-% Без потери общности предположим, что система дизъюнктов Хорна $\prog$ имеет единственный предикат в запросе $Q$, т.е. далее будем рассматривать только системы полученные следующим образом:
+% Без потери общности предположим, что система дизъюнктов Хорна $\prog$ имеет единственный предикат в запросе $Q$, т.\:е. далее будем рассматривать только системы полученные следующим образом:
 Assume without loss of generality that the Horn clause system $\prog$ has a single predicate in the query $Q$, i.e. further, we will consider only systems obtained as follows:
 $$ \prog' \eqdef \rules{\prog}\cup\left\{ \body{C}(\overline{x})\rightarrow Q(\overline{x})\mid C \text{ является запросом }\prog\right\}\cup\{Q(\overline{x})\rightarrow\bot\}.$$
 % Система дизъюнктов определяет свойство для системы переходов как: $\property(Q)\eqdef\bot$ и для каждого $P\in\relations$, $\property(P)\eqdef\top$.
@@ -624,7 +624,7 @@ The procedure \textsc{RecoverCex} is linear in the number of nodes in the input 
 
 \subsection{Aprroach instantiation within \pdr{}}\label{sec:beyond-cegar}
 
-% Приведённый алгоритм позволяет выводить комбинированные инварианты в классе $\elemclass{}\uplus\regclass{}$, т.е. индуктивные инварианты, выразимые формулами вида
+% Приведённый алгоритм позволяет выводить комбинированные инварианты в классе $\elemclass{}\uplus\regclass{}$, т.\:е. индуктивные инварианты, выразимые формулами вида
 % $\phi(\overline{x})\,\lor\,\overline{x}\!\in\!L$,
 % где $\phi$~--- формула первого порядка над АТД, а $L$~--- язык деревьев.
 % Реализация подхода в рамках \pdr{} как сложной инстанциации \cegar{} может быть обобщена для автоматического вывода инвариантов в полном бескванторном фрагменте $\regelemclass{}$, состоящем из формул следующего вида:

@@ -60,7 +60,7 @@ This formula is satisfied by the following finite model $\structure$.
 \begin{lemma}[Soundness]\label{lemma:finiteToHebrand}
 % Пусть система дизъюнктов Хорна $\prog$ с неинтерпретированными предикатами $\relations=\{P_1,\ldots,P_k\}$ без
 % %equality and disequality 
-% ограничений в дизъюнктах выполняется в некоторой модели $\structure$, т.е. $\structure\models C$ для всех $C\in\prog$. Пусть также справедливо следующее:
+% ограничений в дизъюнктах выполняется в некоторой модели $\structure$, т.\:е. $\structure\models C$ для всех $C\in\prog$. Пусть также справедливо следующее:
 % \[X_i\eqdef \{\tuple{t_1,\ldots,t_n} \mid \tuple{\interprets{\structure}{t_1},\ldots,\interprets{\structure}{t_n}} \in \structure(P_i)\}.\]
 % Тогда $\tuple{\hs,X_1,\ldots,X_k}$ является индуктивным инвариантом $\prog$.
 Let an unconstrained system of Horn clauses $\prog$ with uninterpreted predicates $\relations=\{P_1,\ldots,P_k\}$  be satisfied in some model $\structure$, i.e. $\structure\models C$ for all $C\in\prog$. Let the following also be true:
@@ -157,7 +157,7 @@ Without loss of generality, we can assume that each clause $ C \in \prog $ has t
 In $\prog'$ this clause is transformed into the following clause:
 \[ C'\equiv diseq(u_1, t_1) \land \ldots \land diseq(u_k, t_k) \land R_1(\overline{u}_1) \land \ldots \land R_m(\overline{u}_m) \rightarrow H.\]
 
-% Таким образом, каждое предложение в $ \prog '$ не содержит ограничений (т.к. правила $ diseq $ также не содержат ограничений), а значит по лемме~\ref{lemma:finiteToHebrand} у $\prog'$ есть некоторый индуктивный инвариант $ \tuple{\hs, X_1, \ldots, X_k, U_1, \ldots, U_n} $. Тогда по лемме~\ref{lemma:diseqTransIsOk} имеем
+% Таким образом, каждое предложение в $ \prog '$ не содержит ограничений (т.\:к. правила $ diseq $ также не содержат ограничений), а значит по лемме~\ref{lemma:finiteToHebrand} у $\prog'$ есть некоторый индуктивный инвариант $ \tuple{\hs, X_1, \ldots, X_k, U_1, \ldots, U_n} $. Тогда по лемме~\ref{lemma:diseqTransIsOk} имеем
 % $\tuple{\hs, X_1,\ldots, X_k, \diseqsem{1}, \ldots, \diseqsem{n}}\models C'$ для каждого $C'\in\prog'$.
 % Однако очевидно следующее:
 % $$\interprets{\tuple{\hs, X_1,\ldots, X_k, \diseqsem{1}, \ldots, \diseqsem{n}}}{C'}=\interprets{\tuple{\hs, X_1,\ldots, X_k}}{C}.$$ 
@@ -175,7 +175,7 @@ $\tuple{\hs, X_1,\ldots, X_k}\models C$ for each $C\in\prog$ is the desired indu
 % Для проверки выполнимости формул первого порядка могут быть использованы инструменты автоматического доказательства теорем, строящие насыщения, такие как \vampire{}~\cite{kovacs2013first}, \eprover{}~\cite{10.5555/1218615.1218621} и \zipperposition{}~\cite{10.1007/978-3-319-66167-4_10}.
 To check the satisfiability of first-order formulas, ITPs that build saturations can be used, such as \vampire{}~\cite{kovacs2013first}, \eprover{}~\cite{10.5555/1218615.1218621} and \zipperposition{}~\cite {10.1007/978-3-319-66167-4_10}.
 
-% Насыщения, при помощи которых они представляют модели, имеют высокую выразительную силу, т.к. позволяют выразить многие отношения, невыразимые в других классах.
+% Насыщения, при помощи которых они представляют модели, имеют высокую выразительную силу, т.\:к. позволяют выразить многие отношения, невыразимые в других классах.
 % Однако насыщения не дают эффективный класс инвариантов, поскольку даже проверка принадлежности кортежа замкнутых термов множеству, выраженному насыщением, неразрешима~\cite{4556689}.
 % По этой причине насыщения в качестве основы для самостоятельного класса инвариантов не рассматриваются в данной работе. Однако изучение их подклассов, как и создание процедур автоматического вывода для инвариантов в них многообещающи.
 % О применении метода для вывода более узкого класса регулярных инвариантов повествует следующий раздел.
@@ -224,7 +224,7 @@ Consider the following clause system with several different invariants.
 \end{align*}
 % Эта система имеет следующий очевидный элементарный инвариант.
 % $$ inc (x, y) \equiv (y = S (x)), dec (x, y) \equiv (x = S (y)).$$
-% Этот инвариант является наиболее сильным из возможных, т.к. выражает денотационную семантику $ inc $ и $ dec $ соответственно. Эти отношения нерегулярны, то есть не существует 2-автоматов представляющих эти отношения~\cite{tata}.
+% Этот инвариант является наиболее сильным из возможных, т.\:к. выражает денотационную семантику $ inc $ и $ dec $ соответственно. Эти отношения нерегулярны, то есть не существует 2-автоматов представляющих эти отношения~\cite{tata}.
 This system has the obvious elementary invariant.
 $$ inc (x, y) \equiv (y = S (x)), dec (x, y) \equiv (x = S (y)).$$
 This invariant is the strongest possible, since it expresses the denotational semantics of $inc$ and $dec$ respectively. These relations are irregular, that is, there are no 2-automata representing these relations~\cite{tata}.

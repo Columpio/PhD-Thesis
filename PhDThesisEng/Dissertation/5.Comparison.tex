@@ -52,7 +52,7 @@ The results of the theoretical comparison are shown in Tables~\cref{tab:boolClas
 
 % \section{Замкнутость классов относительно булевых операций и разрешимость операций}\label{sec:comparison/boolean}
 
-% Свойства замкнутости и разрешимости для рассмотренных классов сведены в таблицу~\cref{tab:boolClasses}. Сноска в каждой ячейке таблица отсылает к соответствующей теореме; отсутствие сноски свидетельствует об очевидности утверждаемого в ячейке факта. Например, замкнутость классов \elemclass{}, \sizeelemclass{} и \regelemclass{} относительно булевых операций очевидна, т.к. они синтаксически строятся как языки первого порядка с соответствующими операциями.
+% Свойства замкнутости и разрешимости для рассмотренных классов сведены в таблицу~\cref{tab:boolClasses}. Сноска в каждой ячейке таблица отсылает к соответствующей теореме; отсутствие сноски свидетельствует об очевидности утверждаемого в ячейке факта. Например, замкнутость классов \elemclass{}, \sizeelemclass{} и \regelemclass{} относительно булевых операций очевидна, т.\:к. они синтаксически строятся как языки первого порядка с соответствующими операциями.
 \section{Closure of Classes with Respect to Boolean Operations and Decidability of Operations}\label{sec:comparison/boolean}
 
 The properties of closure and decidability for the considered classes are summarized in Table~\cref{tab:boolClasses}. A footnote in each cell of the table refers to the corresponding theorem; the absence of a footnote indicates the obviousness of the fact asserted in the cell. For example, the closure of the classes \elemclass{}, \sizeelemclass{}, and \regelemclass{} with respect to Boolean operations is clear, as they are syntactically constructed as first-order languages with the corresponding operations.
@@ -102,9 +102,9 @@ Since some classes are built as syntactic extensions of other classes (for examp
 It is important to distinguish between classes of invariants for the analysis of invariant inference algorithms, in particular, for understanding the limits of their applicability. If the invariants of problems of some kind do not lie in the class of invariants inferred by the given algorithm, then this algorithm will not terminate on problems of this kind. Therefore, these relationships are presented in the table.
 
 % Для класса $A$ в строке и класса $B$ в столбце в соответствующей им ячейке находится сноска, а также либо символ $\emptyset$, либо $\infty$, или название некоторой системы дизъюнктов из данной работы.
-% Каждую ячейку следует читать как ответ на вопрос: <<Что находится в классе $A\setminus B$?>> Если в ячейке находится $\emptyset$, значит $A\setminus B = \emptyset$. Если в ячейке находится $\infty$, значит $B \subseteq A$. Наконец, если в ячейке находится название системы $\prog$, значит, классы $A$ и $B$ несравнимы, т.е. $\prog \in A \setminus B \neq \emptyset$ и при этом $B \setminus A \neq \emptyset$.
+% Каждую ячейку следует читать как ответ на вопрос: <<Что находится в классе $A\setminus B$?>> Если в ячейке находится $\emptyset$, значит $A\setminus B = \emptyset$. Если в ячейке находится $\infty$, значит $B \subseteq A$. Наконец, если в ячейке находится название системы $\prog$, значит, классы $A$ и $B$ несравнимы, т.\:е. $\prog \in A \setminus B \neq \emptyset$ и при этом $B \setminus A \neq \emptyset$.
 % Сноска отсылает к соответствующей теореме, представленной в данной  работе. Отсутствие сноски означает очевидность приводимого факта.
-% Например, в ячейке $\sizeelemclass{}\setminus\elemclass{}$ находится $\infty$ без сноски, т.к. класс $\sizeelemclass{}$ является синтаксическим расширением класса $\elemclass{}$, следовательно, включает, как минимум, те же инварианты.
+% Например, в ячейке $\sizeelemclass{}\setminus\elemclass{}$ находится $\infty$ без сноски, т.\:к. класс $\sizeelemclass{}$ является синтаксическим расширением класса $\elemclass{}$, следовательно, включает, как минимум, те же инварианты.
 For class $A$ in the row and class $B$ in the column, the corresponding cell contains a footnote, and either the symbol $\emptyset$, or $\infty$, or the name of a certain clause system from this work.
 Each cell should be read as an answer to the question: ``What is in class $A\setminus B$?'' If the cell contains $\emptyset$, then $A\setminus B = \emptyset$. If the cell contains $\infty$, then $B \subseteq A$. Finally, if the cell contains the name of a system $\prog$, then the classes $A$ and $B$ are incomparable, i.e. $\prog \in A \setminus B \neq \emptyset$ and $B \setminus A \neq \emptyset$.
 The footnote refers to the corresponding theorem presented in this thesis. The absence of a footnote indicates the obviousness of the stated fact.
@@ -127,7 +127,7 @@ In Figure~\cref{fig:Representations-new}, inclusion relations between invariant 
 This example allows us to separate classes of synchronous regular invariants with full and standard convolution, as the next lemma shows.
 \begin{lemma}\label{lemm:node-not-in-reg-flat}
     
-% Существуют синхронные регулярные инварианты с полной свёрткой, которые невыразимы при помощи только стандартной свёртки, т.е. $\exNode{}\in\syncRegFullClass{}\setminus\syncRegFlatClass{}$.
+% Существуют синхронные регулярные инварианты с полной свёрткой, которые невыразимы при помощи только стандартной свёртки, т.\:е. $\exNode{}\in\syncRegFullClass{}\setminus\syncRegFlatClass{}$.
 There are synchronous regular invariants with full convolution that are inexpressible using only standard convolution, i.e. $\exNode{}\in\syncRegFullClass{}\setminus\syncRegFlatClass{}$.
 \end{lemma}
 \begin{proof}
@@ -146,7 +146,7 @@ The validity of $\exNode{}\not\in\syncRegFlatClass{}$ is shown in~\cite[Ex.~3.2]
 % Это множество лежит в классе элементарных инвариантов, однако не может быть выражено никаким синхронным автоматов над деревьями даже с полной синхронизацией, как показывает следующая лемма.
 This set lies in the class of elementary invariants, but cannot be expressed by any synchronous tree automata even with complete synchronization, as the next lemma shows.
 \begin{lemma}\label{lemm:lr-not-in-reg-full}
-% Существуют элементарные инварианты, которые не являются инвариантами, выразимыми регулярно с полной синхронизацией, т.е. 
+% Существуют элементарные инварианты, которые не являются инвариантами, выразимыми регулярно с полной синхронизацией, т.\:е. 
 There are elementary invariants that are not invariants expressible regularly with full synchronization, i.e.,
      $\exLR{}\not\in\syncRegFullClass{}$.
 \end{lemma}
@@ -259,7 +259,7 @@ In fact, Lemma~\ref{lemm:pump-elem} states that for sufficiently large tuples of
 This lemma formalizes the fact that a constraint language over an ADT theory can only describe equalities and inequalities between subterms of bounded depth: if you go deep enough and replace leaf terms with arbitrary terms, then the initial and resulting terms are \emph{indistinguishable} by a first-order language formula.
 
 \begin{theorem}
-% Существуют регулярные, но неэлементарные инварианты, т.е. $\regclass{} \setminus \elemclass{} \neq \emptyset$.
+% Существуют регулярные, но неэлементарные инварианты, т.\:е. $\regclass{} \setminus \elemclass{} \neq \emptyset$.
 There are regular but non-elementary invariants, i.e. $\regclass{} \setminus \elemclass{} \neq \emptyset$.
 \end{theorem}
 \begin{proof}
@@ -336,7 +336,7 @@ The core idea of Lemma~\ref{lemm:pump-sizeelem} is that having a language from t
 \end{example}
 
 \begin{theorem}\label{thm:exEvenLeft}
-% Существуют регулярные инварианты, которые не являются инвариантами, выразимыми элементарно с ограничениями на размер термов, т.е. $\exEvenLeft{} \in \regclass{} \setminus \sizeelemclass{}$.
+% Существуют регулярные инварианты, которые не являются инвариантами, выразимыми элементарно с ограничениями на размер термов, т.\:е. $\exEvenLeft{} \in \regclass{} \setminus \sizeelemclass{}$.
 There are regular invariants that are not elementary invariants with term size constraints, i.e. $\exEvenLeft{} \in \regclass{} \setminus \sizeelemclass{}$.
 
 \end{theorem}
