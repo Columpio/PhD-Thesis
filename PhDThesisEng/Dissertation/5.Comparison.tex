@@ -44,21 +44,20 @@ The results of the theoretical comparison are shown in Tables~\cref{tab:boolClas
             \item [7] see~\cite[Def.~3.2.1 and Th.~1.7.2]{tata}
             \item [8] see~\cite[Def.~3.2.1 and Th.~1.7.4]{tata}
             \item [9] see~Section~\cref{sec:SyncReg/decidability}
-            \item [10] see~\cite[следствие~2]{comon1994equational}
+            \item [10] see~\cite[Corollary~2]{comon1994equational}
             \end{tablenotes}
 \end{multicols}          
     \end{threeparttable}
 \end{table}
 
-% \section{Замкнутость классов относительно булевых операций и разрешимость операций}\label{sec:comparison/boolean}
+\section{Closure of Classes With Respect to Boolean Operations and Decidability of Operations}\label{sec:comparison/boolean}
 
 % Свойства замкнутости и разрешимости для рассмотренных классов сведены в таблицу~\cref{tab:boolClasses}. Сноска в каждой ячейке таблица отсылает к соответствующей теореме; отсутствие сноски свидетельствует об очевидности утверждаемого в ячейке факта. Например, замкнутость классов \elemclass{}, \sizeelemclass{} и \regelemclass{} относительно булевых операций очевидна, т.\:к. они синтаксически строятся как языки первого порядка с соответствующими операциями.
-\section{Closure of Classes with Respect to Boolean Operations and Decidability of Operations}\label{sec:comparison/boolean}
 
 The properties of closure and decidability for the considered classes are summarized in Table~\cref{tab:boolClasses}. A footnote in each cell of the table refers to the corresponding theorem; the absence of a footnote indicates the obviousness of the fact asserted in the cell. For example, the closure of the classes \elemclass{}, \sizeelemclass{}, and \regelemclass{} with respect to Boolean operations is clear, as they are syntactically constructed as first-order languages with the corresponding operations.
 
 
-\section{Expressibility in Invariant Classes}\label{sec:comparison/expressivity}
+\section{Invariant Classes Expressivity}\label{sec:comparison/expressivity}
 
 \begin{table} [htbp]
 \centering
@@ -115,7 +114,7 @@ For example, the cell $\sizeelemclass{}\setminus\elemclass{}$ contains $\infty$ 
 In Figure~\cref{fig:Representations-new}, inclusion relations between invariant classes are presented separately for convenience. An edge from class $A$ to class $B$ labeled $\prog$ means that $A\subsetneq B$ and $\prog\in B \setminus A$.
 
 
-\subsection{Inexpressibility in synchronous languages}\label{sec:comparison/undef-in-sync}
+\subsection{Inexpressivity in Synchronous Languages}\label{sec:comparison/undef-in-sync}
 
 \begin{example}[\exNode{}]\label{ex:node}
     % Рассмотрим следующее множество термов над алгебраическим типом бинарных деревьев $Tree ::= left\,|\,node(Tree, Tree)$:
@@ -155,7 +154,7 @@ There are elementary invariants that are not invariants expressible regularly wi
     In~\cite[Ex.~1.4]{tata}, applying the pumping lemma to $\exLR{}$, it is shown that $\exLR{}\not\in\regclass{}$. By Lemma~\ref{lemma:reg-full-one-is-reg}, this implies $\exLR{}\not\in\syncRegFullClass{}$.
 \end{proof}
 
-\subsection{Inexpressibility in combined languages}
+\subsection{Inexpressivity in Combined Languages}
 \begin{theorem}\label{thm:exLt}
   $\exLt{} \in \sizeelemclass{}$, $\exLt{}\in\syncRegFlatClass{}$, $\exLt{}\not\in\regelemclass{}$
 \end{theorem}
@@ -192,7 +191,7 @@ Consider the model $\mathcal{M} = (\mathbb{N}\cup\mathbb{N}^*, s, c\mid\_)$, whe
 
 
 
-\subsection{Inexpressibility in elementary languages}
+\subsection{Inexpressivity in Elementary Languages}
 % В данном разделе представлены леммы о <<накачке>> для языков первого порядка: языка ограничений и языка ограничений, расширенного ограничениями на размер термов.
 This section presents pumping lemmas for first-order languages: the constraint language and the constraint language extended with term size constraints.
 

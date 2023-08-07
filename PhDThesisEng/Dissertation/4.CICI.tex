@@ -12,7 +12,7 @@ The chapter is based on~\cite{LPAR2023:Collaborative_Inference_of_Combined}.
 % Для простоты изложения ключевая идея коллаборативного вывода представлена как модификации подхода \cegar{} \emph{для систем переходов}.
 For ease of presentation, the key idea of collaborative inference is presented as a modification of the \cegar{} approach \emph{for transition systems}.
 
-\subsection{\cegar{} for transition systems}\label{sec:cici/origCEGAR}
+\subsection{\cegar{} for Transition Systems}\label{sec:cici/origCEGAR}
 % Пусть $\tuple{\states, \csubseteq, \cbot, \ctop, \ccap, \ccup, \cneg}$~--- это полная булева решётка, представляющая множества конкретных состояний программы. 
 Let $\tuple{\states, \csubseteq, \cbot, \ctop, \ccap, \ccup, \cneg}$ be a complete Boolean lattice representing sets of specific program states.
 
@@ -51,7 +51,7 @@ Safety can be proved using the \emph{(safe) inductive invariant} $I \in \states$
 % Так как все индуктивные инварианты по определению являются неподвижными точками функции перехода $\thepost$, то часто в контексте поиска индуктивного инварианта будут рассматриваться именно неподвижные точки.
 Since all inductive invariants are, by definition, fixed points of the transition function $\thepost$, it is often the fixed points that will be considered in the context of searching for an inductive invariant.
 
-\begin{theorem}[см.~\cite{Floyd1993}]
+\begin{theorem}[cf.~\cite{Floyd1993}]
 % Программа безопасна тогда и только тогда, когда она имеет безопасный индуктивный инвариант.
 A program is safe if and only if it has a safe inductive invariant.
 \end{theorem}
@@ -130,7 +130,7 @@ The pseudocode of the \cegar{} approach for transition systems is shown in Listi
 The algorithm starts by constructing an initial abstraction $\tuple{\alpha, \gamma}$, for example, using the trivial mappings $\alpha(s) = \abot$ and $\gamma(a) = \ctop$.
 Then, using the abstraction, the \textsc{ModelCheck} procedure builds,  according to the program, a finite sequence of abstract states $\overline{a}=\tuple{a_{0},\ldots,a_n}$ such that:
 \begin{align}\label{prop:cegar-inv}
-    a_0 = \alpha(\init)\quad\text{ и }\quad
+    a_0 = \alpha(\init)\quad\text{ and }\quad
     a_{i+1} = a_i \acup \apost{a_i}  \quad\forall i \in\{0,\ldots,n-1\}.
 \end{align}
 % Если для какого-то $i$ имеем $\gamma(a_i) \not\csubseteq \property$, то возвращается \emph{абстрактный контрпример} $cex$ либо в паре с $A=\cbot$ (если $i=0$), либо в паре с $A=\gamma(a_{i-1})$, который удовлетворяет $\gamma(a_{i-1}) \csubseteq \property$.
@@ -140,7 +140,7 @@ If for some $i$ we have $\gamma(a_i) \not\csubseteq \property$, then \emph{abstr
 If $\gamma(a_i) \csubseteq \property$ holds true for all $i$, and $\apost{a_n} \asubseteq a_n$ holds at some step, then $\gamma(a_n)$ is an inductive invariant, and therefore \ textsc{ModelCheck} returns an empty $cex$ and $A=\gamma(a_n)$.
 The concept of an abstract counterexample is defined by each concrete \cegar{} implementation. Thus, the value returned from the \textsc{ModelCheck} procedure satisfies the following property:
 \begin{align}\label{prop:cegar-inv-A}
-    A=\cbot\quad\text{ или }\quad\init \subseteq A \subseteq \property.
+    A=\cbot\quad\text{ or }\quad\init \subseteq A \subseteq \property.
 \end{align}
 
 % Если процедура \textsc{ModelCheck} вернула пустой абстрактный контрпример, то программа безопасна и \cegar{} возвращает $\gamma(a_n)$ в качестве индуктивного инварианта. В противном случае необходима проверка того, соответствует ли абстрактному контрпримеру какой-либо конкретный контрпример в исходной программе (процедура \textsc{IsFeasible}).
@@ -148,7 +148,7 @@ The concept of an abstract counterexample is defined by each concrete \cegar{} i
 If \textsc{ModelCheck} returns an empty abstract counterexample, then the program is safe and \cegar{} returns $\gamma(a_n)$ as an inductive invariant. Otherwise, it is necessary to check whether the abstract counterexample corresponds to any concrete counterexample in the source program (procedure \textsc{IsFeasible}).
 If so, then \cegar{} stops and returns this counterexample, otherwise it goes on to iteratively refine the $\tuple{\alpha,\gamma}$ abstraction to eliminate the $cex$ counterexample (the \textsc{Refine} procedure).
 
-\subsection{Collaborative inference via \cegar{} modification}
+\subsection{Collaborative Inference via \cegar{} Modification}
 % В данном разделе предложен подход к коллаборативному выводу комбинированных инвариантов.
 % Подход основан на коллаборации двух алгоритмов вывода инвариантов и является асимметричным в следующем смысле.
 % Во-первых, требуется, чтобы один из алгоритмов был экземпляром \cegar{}, другой же может быть произвольным.
@@ -231,7 +231,7 @@ The \texttt{tr} function performs the transformation described above on the repr
 % Эта программа безопасна относительно заданного свойства, однако не имеет индуктивных инвариантов, выразимых в классах \elemclass{} или \regclass{} для функций  \texttt{ok}  и  \texttt{tr}.
 % Однако у неё есть комбинированные инварианты в $\elemclass{}\uplus\regclass{}$.
 % Так, для любых программ $p, t : Prog$, функция $\texttt{ok}(p)$ возвращает \texttt{true}, если имеем
-This program is safe with regards to this property, but has no inductive invariants expressible in the \elemclass{} or \regclass{} classes for the \texttt{ok} and \texttt{tr} functions. However, it has combined invariants in $\elemclass{}\uplus\regclass{}$. Thus, for any programs $p, t : Prog$  $\texttt{ok}(p)$ returns \texttt{true} if we have
+This program is safe with regard to this property, but has no inductive invariants expressible in the \elemclass{} or \regclass{} classes for the \texttt{ok} and \texttt{tr} functions. However, it has combined invariants in $\elemclass{}\uplus\regclass{}$. Thus, for any programs $p, t : Prog$  $\texttt{ok}(p)$ returns \texttt{true} if we have
 
 \begin{align}\label{eq:for-join-ok-inv}
     p \in \evenInv{}.
@@ -435,7 +435,7 @@ where $\evenInv{}$ is a tree language given by the automaton from Example~\ref{e
 and $\overline{\evenInv{}}$ is its complement.
 \end{example}
 
-\subsection{Horn clause systems as transition systems}
+\subsection{Horn Clause Systems as Transition Systems}
 
 % Определим полную булеву решетку конкретных состояний 
 Define a complete Boolean lattice of specific states $\tuple{\states, \csubseteq, \cbot, \ctop, \ccap, \ccup, \cneg}$.
@@ -457,7 +457,7 @@ s \models B \right\}.
 
 % Без потери общности предположим, что система дизъюнктов Хорна $\prog$ имеет единственный предикат в запросе $Q$, т.\:е. далее будем рассматривать только системы полученные следующим образом:
 Assume without loss of generality that the Horn clause system $\prog$ has a single predicate in the query $Q$, i.e. further, we will consider only systems obtained as follows:
-$$ \prog' \eqdef \rules{\prog}\cup\left\{ \body{C}(\overline{x})\rightarrow Q(\overline{x})\mid C \text{ является запросом }\prog\right\}\cup\{Q(\overline{x})\rightarrow\bot\}.$$
+$$ \prog' \eqdef \rules{\prog}\cup\left\{ \body{C}(\overline{x})\rightarrow Q(\overline{x})\mid C \text{ is a query of }\prog\right\}\cup\{Q(\overline{x})\rightarrow\bot\}.$$
 % Система дизъюнктов определяет свойство для системы переходов как: $\property(Q)\eqdef\bot$ и для каждого $P\in\relations$, $\property(P)\eqdef\top$.
 The clause system defines a property for the transition system as: $\property(Q)\eqdef\bot$ and for each $P\in\relations$, $\property(P)\eqdef\top$.
 
@@ -468,7 +468,7 @@ A system of Horn clauses $\prog$ is satisfiable if the corresponding transition 
 $\tuple{\states, \init, \thepost}$ is safe with respect to $\property$.
 \end{proposition}
 
-\subsection{Residual system generation}\label{sec:subst_lemmas}
+\subsection{Residual System Generation}\label{sec:subst_lemmas}
 
 % Процедура \RunBlackBox{} начинает с построения остаточной системы $$\tuple{\post{A}\ccap \cneg A, \lambda B. \left(\post{B}\ccap \cneg A\right)},$$ которая передаётся коллаборирующему верификатору.
 The \RunBlackBox{} procedure starts by constructing the residual system $$\tuple{\post{A}\ccap \cneg A, \lambda B. \left(\post{B}\ccap \cneg A\right)},$$ which is passed to the collaborating verifier.
@@ -554,7 +554,7 @@ which can be simplified down to the clause system
   \end{align*}
 \end{example}
 
-\subsection{\ourCEGAR{} for clauses: recovery of counterexamples}\label{sec:recover-cex}
+\subsection{\ourCEGAR{} for Clauses: Recovery of Counterexamples}\label{sec:recover-cex}
 
 % В данном разделе представлена процедура построения абстрактного контрпримера исходной системы по конкретному контрпримеру для остаточной системы, получаемой как $\prog'=\substituteLemmas(\prog, a)$. Иными словами, представлена инстанциация процедуры \textsc{RecoverCex} из листинга~\ref{code:runblackbox}.
 
@@ -623,7 +623,7 @@ Thus, $T'$ is the refutation tree of the $\prog''$ system.
 The procedure \textsc{RecoverCex} is linear in the number of nodes in the input refutation tree.
 \end{proposition}
 
-\subsection{Aprroach instantiation within \pdr{}}\label{sec:beyond-cegar}
+\subsection{Approach Instantiation Within \pdr{}}\label{sec:beyond-cegar}
 
 % Приведённый алгоритм позволяет выводить комбинированные инварианты в классе $\elemclass{}\uplus\regclass{}$, т.\:е. индуктивные инварианты, выразимые формулами вида
 % $\phi(\overline{x})\,\lor\,\overline{x}\!\in\!L$,

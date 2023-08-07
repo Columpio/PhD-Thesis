@@ -72,7 +72,7 @@ In 2011, A.~R.~Bradley proposed an approach called \pdr{} (property-directed rea
 % Благодаря эффективным алгоритмам Хорн-решатели всё больше применяются при верификации реальных программ, например, самоисполняющихся контрактов.
 Thanks to efficient algorithms, Horn solvers are more and more applied in verification of real programs, such as smart contracts.
 
-\section{History of the Inductive Invariant Expressivity Problem }\label{sec:background/historyExpressivity}
+\section{History of the Inductive Invariant Expressivity Problem}\label{sec:background/historyExpressivity}
 % После появления логики Флойда-Хоара в \numrange{1967}{1969}~гг.~\cite{Floyd1993,10.1145/363235.363259} остро встал вопрос о достаточности предложенного исчисления для доказательства корректности всех возможных программ.
 % Иными словами, сразу была доказана корректность исчисления, но на долгие годы оставалась нерешённой проблема его \emph{полноты}, т.\:e. что предложенного исчисления достаточно, чтобы доказать безопасность всех безопасных программ.
 % Занимаясь это проблемой, в~1978~г. С.\,А.~Кук доказал~\cite{doi:10.1137/0207005} \emph{относительную} полноту логики Хоара.
@@ -92,7 +92,7 @@ Therefore, in~1987 A.~Blass and Yu.~Gurevich proposed to abandon first-order log
 % \emph{как выражать и эффективно строить решения систем дизъюнктов Хорна с ограничениями?}
 Note that negated existential fixed-point logic formulas correspond to constrained Horn clause systems~\cite{Bjorner2015}.
 The latter thus allows to express all possible inductive invariants of programs, but they are not an \emph{effective} representation: the problem of checking the satisfiability of systems of Horn clauses is generally undecidable.
-Therefore, the problem of expressibility of invariants has not vanished, but it transformed instead into the main problem of this thesis:
+Therefore, the problem of the invariant expressivity has not vanished, but it transformed instead into the main problem of this thesis:
 \emph{how to express and efficiently build solutions of constrained Horn clause systems?}
 
 
@@ -131,7 +131,7 @@ The first-order language defined over the signature $\signature$ will be called 
 
 % Многосортная структура (модель) $\structure $ для сигнатуры $\signature $ состоит из непустых носителей $\domain{\sigma} $ для каждого сорта $\sigma \in \sorts $. Каждому функциональному символу $f $ с арностью $\sigma_1 \times \dots \times \sigma_n \rightarrow \sigma $ сопоставим интерпретацию $\interprets{\structure}{f}: \domain{\sigma_1} \times \dots \times \domain{ \sigma_n} \rightarrow \domain{\sigma} $, и каждому предикатному символу $p $ с арностью $\sigma_1 \times \dots \times\sigma_n$ сопоставим интерпретацию $\interprets{\structure}{p} \subseteq \domain{\sigma_1} \times\dots\times\domain{\sigma_n} $. Для каждого замкнутого терма $t $ с сортом $\sigma$ интерпретация $\interprets{\structure}{t} \in \domain{\sigma} $ определяется рекурсивно естественным образом. 
 
-A multi-sort structure (model) $\structure $ for signature $\signature $ consists of non-empty domains $\domain{\sigma}$ for each sort $\sigma \in \sorts $. For each functional symbol $f $ with arity $\sigma_1 \times \dots \times \sigma_n \rightarrow \sigma $ we assign the interpretation $\interprets{\structure}{f}: \domain{\sigma_1} \times \dots \times \domain{ \sigma_n} \rightarrow \domain{\sigma} $, and to each predicate symbol $p $ with arity $\sigma_1 \times \dots \times\sigma_n$ we assign the interpretation $\interprets{\structure}{p} \subseteq \domain{\sigma_1}\times\dots\times\domain{\sigma_n}$. For every closed term $t$ with sort $\sigma$, the interpretation $\interprets{\structure}{t} \in \domain{\sigma}$ is defined recursively in a natural manner.
+A multi-sort structure (model) $\structure $ for signature $\signature $ consists of nonempty domains $\domain{\sigma}$ for each sort $\sigma \in \sorts $. For each functional symbol $f $ with arity $\sigma_1 \times \dots \times \sigma_n \rightarrow \sigma $ we assign the interpretation $\interprets{\structure}{f}: \domain{\sigma_1} \times \dots \times \domain{ \sigma_n} \rightarrow \domain{\sigma} $, and to each predicate symbol $p $ with arity $\sigma_1 \times \dots \times\sigma_n$ we assign the interpretation $\interprets{\structure}{p} \subseteq \domain{\sigma_1}\times\dots\times\domain{\sigma_n}$. For every closed term $t$ with sort $\sigma$, the interpretation $\interprets{\structure}{t} \in \domain{\sigma}$ is defined recursively in a natural manner.
 
 % Структура называется конечной, если все её носители всех сортов конечны, в противном случае она называется бесконечной.
 A structure is called finite if all domains of all its sorts are finite, otherwise it is called infinite.
@@ -214,7 +214,7 @@ A Horn clause system $\prog$ is said to be \emph{satisfiable modulo theory} ADT 
 Thus, by definition, a Horn clause system is satisfiable if and only if it has a safe inductive invariant.
 
 % Поскольку индуктивный инвариант $\overline{X}$~--- это кортеж множеств, которые для большинства систем будут бесконечными, то для автоматического вывода индуктивных инвариантов выбирается некоторый фиксированный класс, элементы которого выразимы некоторым конечным образом. Именно такие классы рассматриваются  в данной работе.
-As the inductive invariant $\overline{X}$ is a tuple of sets which are infinite for most CHC systems, a class of inductive invariants is typically fixed in order to make automatic inductive invariant inference feasible. Such classes are design in such a way, so that their elements are expressible finitely. This thesis is focused on classes of inductive invariants with this property.
+As the inductive invariant $\overline{X}$ is a tuple of sets which are infinite for most CHC systems, a class of inductive invariants is typically fixed in order to make automatic inductive invariant inference feasible. Such classes are design in such a way, so that their elements are finitely expressible. This thesis is focused on classes of inductive invariants with this property.
 
 % Важно отметить, что у  системы дизъюнктов Хорна может не быть индуктивного инварианта (если она невыполнима), может быть один индуктивный инвариант, а также их может быть несколько, в том числе бесконечно много.
 % Также важно, что если некоторый алгоритм ищет индуктивные инварианты системы дизъюнктов Хорна только в заранее заданном классе, то может возникнуть ситуация, что данная система  выполнима, однако ни один из её индуктивных инвариантов невыразим в этом классе. Как правило, это приводит к тому, что на такой системе алгоритм не завершает свою работу.
@@ -260,7 +260,7 @@ It is well known that the unsatisfiability of a Horn clause system can be witnes
 % \emph{Резолютивное опровержение} (дерево опровержений) системы дизъюнктов Хорна $\prog$~--- это конечное дерево с вершинами $\tuple{C, \Phi}$, где
 A \emph{resolution refutation} (refutation tree) of a CHC system $\prog$ is a finite tree with vertices $\tuple{C, \Phi}$, where
 \begin{enumerate}[label=(\arabic*)]
-\item $C \in \prog$ и $\Phi$ is a $\signature \cup \relations$-formula;
+\item $C \in \prog$ and $\Phi$ is a $\signature \cup \relations$-formula;
 \item the root of the tree contains the query $C$ and a satisfiable $\signature$-formula $\Phi$;
 \item each leaf contains a pair $\tuple{C, \body{C}}$, where $\body{C}$ is a $\signature$-formula;
 \item each tree node $\tuple{C, \Phi}$ has children $\tuple{C_1, \Phi_1},\ldots,\tuple{C_n, \Phi_n}$ such that:
