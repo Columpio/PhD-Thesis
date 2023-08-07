@@ -6,21 +6,22 @@
 % В разделе~\cref{sec:fmf/specRegular} описано, как предложенный метод может быть применён для вывода регулярных инвариантов при помощи инструментов поиска конечных моделей.
 % В отличие от классических элементарных инвариантов, регулярные инварианты, основанные на автоматах над деревьями, позволяют выражать рекурсивные отношения, в частности, свойства алгебраических термов произвольной глубины.
 % Как указано в разделе~\cref{sec:fmf/totalCorrectness}, предложенный метод также может быть совмещён с общими инструментами автоматического доказательства теорем.
-The main contribution of this chapter is a new method for automatic inference of inductive invariants of systems over ADT using automated theorem provers.
-In Section~\cref{sec:fmf/partialCorrectness}, the method is presented and its correctness is proven for simplified unconstrained clause systems, and in Section~\cref{sec:fmf/totalCorrectness}, the method is extended to arbitrary systems.
+The main contribution of this chapter is a new method of automatic inductive invariant inference for systems over ADT using automated theorem provers.
+In Section~\cref{sec:fmf/partialCorrectness}, the method is presented and its correctness is proven for simplified Horn clause systems without constraints, and in Section~\cref{sec:fmf/totalCorrectness}, the method is extended to arbitrary constraint Horn clause systems.
 Section~\cref{sec:fmf/regular} considers the class of regular invariants that can be inferred using the proposed method.
-Section~\cref{sec:fmf/specRegular} describes how the proposed method can be applied to infer regular invariants using finite model finders.
-Unlike classical elementary invariants, regular invariants based on tree automata allow expressing recursive relationships, and in particular, properties of algebraic terms of arbitrary depth.
-As mentioned in Section~\cref{sec:fmf/totalCorrectness}, the proposed method can also be combined with general-purpose interactive theorem provers.
+Section~\cref{sec:fmf/specRegular} describes how the proposed method can be applied to automatically infer regular invariants using finite model finders.
+Unlike classical elementary invariants, regular invariants based on tree automata can express recursive relationships, and in particular, arbitrary deep properties of algebraic terms.
+As stated in Section~\cref{sec:fmf/totalCorrectness}, the proposed method can also be combined with general-purpose automated theorem provers.
+The chapter is based on~\cite{10.1145/3453483.3454055}.
 
-\section{Inference for Unconstrained Clause Systems}\label{sec:fmf/partialCorrectness}
+\section{Inference for Horn Clause Systems without Constraints}\label{sec:fmf/partialCorrectness}
 
 % Основная идея метода заключается в следующем. Если у системы дизъюнктов Хорна над АТД без ограничений есть модель в свободной теории, то она безопасна и этой модели соответствует некоторый индуктивный инвариант.
-The core idea of the method is as follows. If an unconstrained Horn clause system over ADT has a model in the free theory, then it is safe, and this model corresponds to a certain inductive invariant.
+The core idea of the method is as follows. If a Horn clause system over ADTs without constraints has a model in the free theory, then it is also satisfiable in the ADT theory, and the model corresponds to some ADT inductive invariant.
 
 \begin{example}\label{ex:evenNat}
 % Рассмотрим следующую систему дизъюнктов Хорна над алгебраическим типом чисел Пеано $Nat ::= Z\,|\,S\,Nat$. Эта система кодирует предикат чётности чисел Пеано $even$ и свойство: <<никакие два следующих друг за другом натуральных числа не могут быть чётными одновременно>>.
-Consider the following Horn clause system over the algebraic data type of Peano numbers, This system encodes the parity predicate for Peano numbers $even$, and the property of ``no two consecutive natural numbers can be even at the same time''.
+Consider the following Horn clause system over the algebraic data type of Peano numbers. The system encodes the parity predicate for Peano numbers $even$, and the property that ``no two consecutive natural numbers can be even at the same time''.
 \begin{align}
     x = Z &\rightarrow even(x)\\
     x = S(S(y)) \land even(y) &\rightarrow even(x)\\
@@ -28,12 +29,11 @@ Consider the following Horn clause system over the algebraic data type of Peano 
 \end{align}
 
 % Хотя эта простая система безопасна, у неё нет классического символьного инварианта, что будет показано в главе~\cref{ch:comparison}. 
-
 Although this simple system is safe, it does not have a classical symbolic invariant, as will be shown in Chapter~\ref{ch:comparison}.
 \end{example}
 
 % Эта система может быть переписана в следующую эквивалентную систему без ограничений в дизъюнктах.
-This system can be rewritten into the following equivalent unconstrained clause system.
+This system can be rewritten into the following equivalent Horn clause system without constraints.
 \begin{align*}
     \top &\rightarrow even(Z)\\
     even(x) &\rightarrow even(S(S(x)))\\
@@ -63,7 +63,7 @@ This formula is satisfied by the following finite model $\structure$.
 % ограничений в дизъюнктах выполняется в некоторой модели $\structure$, т.\:е. $\structure\models C$ для всех $C\in\prog$. Пусть также справедливо следующее:
 % \[X_i\eqdef \{\tuple{t_1,\ldots,t_n} \mid \tuple{\interprets{\structure}{t_1},\ldots,\interprets{\structure}{t_n}} \in \structure(P_i)\}.\]
 % Тогда $\tuple{\hs,X_1,\ldots,X_k}$ является индуктивным инвариантом $\prog$.
-Let an unconstrained system of Horn clauses $\prog$ with uninterpreted predicates $\relations=\{P_1,\ldots,P_k\}$  be satisfied in some model $\structure$, i.e. $\structure\models C$ for all $C\in\prog$. Let the following also be true:
+Assume that a Horn clause system without constraints $\prog$ with uninterpreted predicates $\relations=\{P_1,\ldots,P_k\}$ is satisfied in some model $\structure$, i.e. $\structure\models C$ for all $C\in\prog$. Let the following be true:
 \[X_i\eqdef \{\tuple{t_1,\ldots,t_n} \mid \tuple{\interprets{\structure}{t_1},\ldots,\interprets{\structure}{t_n}} \in \structure(P_i)\}.\]
 Then $\tuple{\hs,X_1,\ldots,X_k}$ is an inductive invariant of $\prog$.
 \end{lemma}
@@ -85,18 +85,18 @@ By the definition of the satisfiability of a Horn clause, it follows that
 \end{proof}
 
 % Таким образом, из конечной модели для примера выше строим множество $X\eqdef \{t\mid \interprets{\structure}{t}=0 \} = \{S^{2n}(Z) \mid n\geq 0\}$, которое является безопасным индуктивным инвариантом исходной системы.
-Thus, from the finite model for the example above, we construct the set $X\eqdef \{t\mid \interprets{\structure}{t}=0 \} = \{S^{2n}(Z) \mid n\geq 0 \}$, which is a safe inductive invariant of the original system.
+Thus, from the finite model for the example above, we can build a set $X\eqdef \{t\mid \interprets{\structure}{t}=0 \} = \{S^{2n}(Z) \mid n\geq 0 \}$, which is a safe inductive invariant of the original system.
 
-\section{Inference for Constrained Clause Systems}\label{sec:fmf/totalCorrectness}
+\section{Inference for Constrained Horn Clause Systems}\label{sec:fmf/totalCorrectness}
 
 % По системе с ограничениями в дизъюнктах можно построить эквивыполнимую систему без ограничений в дизъюнктах следующим образом. Без ограничения общности можно предположить, что ограничение каждого дизъюнкта содержит отрицания только над атомами. Литералы равенств термов могут быть устранены при помощи унификации~\cite{oppen1980reasoning}. Каждый же литерал неравенства вида $ \neg (t = _{\sigma} u) $ заменим на атомарную формулу $ diseq_{ \sigma} (t, u) $.
 % Для этого для каждого алгебраического типа $ (C, \sigma) $ введём новый неинтерпретированный символ $ diseq _{\sigma} $ и добавим его в множество реляционных символов $ \relations '\eqdef \relations \cup \{diseq _{\sigma} \mid \sigma \in \sorts \} $.
-Given a constrained clause system, an equisatisfiable unconstrained clause system can be constructed as follows. Without loss of generality, we can assume that the constraint of each clause contains negations only over atoms. Term equality literals can be eliminated via unification~\cite{oppen1980reasoning}, and each literal of the inequality of form $ \neg (t = _{\sigma} u) $ is replaced by the atomic formula $ diseq_{ \sigma} (t, u) $.
-To do this, for each algebraic type $ (C, \sigma) $ we introduce a new uninterpreted symbol $ diseq _{\sigma} $ and add it to the set of relational symbols $ \relations '\eqdef \relations \cup \{diseq _{\sigma } \mid \sigma \in \sorts \} $.
+Given a constrained clause system, an equisatisfiable clause system without constraints can be built as follows. Without loss of generality, we can assume that the constraint of each clause contains negations only over atoms. Term equality literals can be eliminated via unification~\cite{oppen1980reasoning}, and each literal of the inequality of form $ \neg (t = _{\sigma} u) $ is replaced by the atomic formula $ diseq_{ \sigma} (t, u) $.
+For each algebraic type $ (C, \sigma) $ we also introduce a new uninterpreted symbol $ diseq _{\sigma} $ and add it to the set of relational symbols $ \relations '\eqdef \relations \cup \{diseq _{\sigma } \mid \sigma \in \sorts \} $.
 
 % Далее построим по системе $\prog$ систему дизъюнктов $\prog'$ над $\relations'$ следующим образом.
 % Для каждого алгебраического типа $ (C, \sigma) $ в $ \prog '$ добавим следующие дизъюнкты для $ diseq _{\sigma} $:
-Next, we construct a system of clauses $\prog'$ over $\relations'$ from the system $\prog$ as follows.
+Next, we build a system of clauses $\prog'$ over $\relations'$ from the system $\prog$ as follows.
 For each algebraic type $(C, \sigma)$ in $\prog '$ we add the following clauses for $ diseq _{\sigma} $:
 \begin{align}\notag%\label{def:diseq-base}
     \top\rightarrow diseq_{\sigma}(c(\overline{x}), c'(\overline{x}')) \text{ for all various constructors $c$ and $c'\in C$ of sort $\sigma$}
@@ -109,10 +109,10 @@ diseq_{\sigma'}(x, y)\rightarrow diseq_{\sigma}(c(\ldots,\underbrace{x}_{\mathcl
 for all constructors $c$ of sort $\sigma$, all $i$ and all $x, y$ of sort $\sigma'$.
 
 % Для каждого сорта $\sigma\in\sorts$ обозначим диагональное множество $\diseqsem{}\eqdef \{ (x,y)\in\huniv{\sigma}^2 \mid x \neq y \}$.
-For each sort $\sigma\in\sorts$ we denote the diagonal set $\diseqsem{}\eqdef \{ (x,y)\in\huniv{\sigma}^2 \mid x \neq y \}$.
+For each sort $\sigma\in\sorts$ we denote the diagonal set as $\diseqsem{}\eqdef \{ (x,y)\in\huniv{\sigma}^2 \mid x \neq y \}$.
 
 % Хорошо известно, что универсально замкнутые дизъюнкты Хорна имеют наименьшую модель, которая является денотационной семантикой программы, моделируемой системой дизъюнктов. Эта наименьшая модель является наименьшей неподвижной точка оператора перехода. Из этого тривиально следует следующая лемма.
-It is well-known that universally closed Horn disjunctive clauses have a least model, which serves as the denotational semantics of the program modeled by the clause system. This least model is the least fixed point of the transition operator. This trivially implies the following lemma.
+It is well-known that universally quantified Horn clauses have the least model, which is the denotational semantics of the program modeled by the clause system. The least model is the least fixed point of the program transition operator. From these facts, the following lemma is trivially implied.
 
 \begin{lemma}\label{lemma:diseq-lfp}
 % Наименьший индуктивный инвариант дизъюнктов для $diseq_{\sigma}$ является кортежем отношений $\diseqsem{}$.
@@ -131,7 +131,7 @@ if $\tuple{\hs, X_1, \ldots, X_k, Y_1, \ldots, Y_n} \models \prog'$ then $\tuple
 
 \begin{example}
 % Система дизъюнктов $\prog=\{ Z\neq S(Z) \rightarrow \bot\}$ трансформируется в следующую систему $\prog'$.
-Clause system $\prog=\{ Z\neq S(Z) \rightarrow \bot\}$ is transformed into the following system, $\prog'$.
+A CHC system $\prog=\{ Z\neq S(Z) \rightarrow \bot\}$ is transformed into the following system, $\prog'$.
 
 \begin{align*}
 \top&\rightarrow diseq_{Nat}(Z, S(x))\\
@@ -144,9 +144,9 @@ diseq_{Nat}(Z, S(Z))&\rightarrow \bot
 
 % Корректность трансформации, приведённой в данном разделе, доказывается в следующей теореме.
 The correctness of the transformation given in this section is proved in the following theorem.
-\begin{theorem}\label{th:diseqTrCorrectness}
+\begin{theorem}[Soundness]\label{th:diseqTrCorrectness}
 % Пусть $ \prog $~--- система дизъюнктов Хорна, а $ \prog '$~--- система дизъюнктов, полученная описанной трансформацией. Если существует модель системы $ \prog '$ в свободной теории, то у исходной системы $ \prog $ есть индуктивный инвариант.
-Let $ \prog $ be a Horn clause system, and $ \prog '$ be a clause system obtained by the described transformation. If there exists a model for $\prog'$ in the free theory, then the original $\prog$ has an inductive invariant.
+Let $ \prog $ be a Horn clause system, and $ \prog '$ be a clause system obtained by the described transformation. If $\prog'$ is satisfiable in the free theory, then the original system $\prog$ has an inductive invariant.
 \end{theorem}
 \begin{proof}
 % Без ограничения общности можно предположить, что каждый дизъюнкт $ C \in \prog $ имеет следующий вид:
@@ -163,26 +163,25 @@ In $\prog'$ this clause is transformed into the following clause:
 % $$\interprets{\tuple{\hs, X_1,\ldots, X_k, \diseqsem{1}, \ldots, \diseqsem{n}}}{C'}=\interprets{\tuple{\hs, X_1,\ldots, X_k}}{C}.$$ 
 % Это означает, что 
 % $\tuple{\hs, X_1,\ldots, X_k}\models C$ для каждого $C\in\prog$~--- желаемый индуктивный инвариант исходной системы.
-Thus, each sentence in $ \prog '$ does not contain constraints (because $ diseq $ rules also do not contain constraints), which means that by Lemma~\ref{lemma:finiteToHebrand} $\prog'$ has some inductive invariant $ \tuple{\hs, X_1, \ldots, X_k, U_1, \ldots, U_n} $. Then by Lemma~\ref{lemma:diseqTransIsOk} we have
+Thus, each sentence in $ \prog '$ does not contain constraints (because $ diseq $ rules also do not contain constraints), which means that by previous correctness Lemma~\ref{lemma:finiteToHebrand} $\prog'$ has some inductive invariant $ \tuple{\hs, X_1, \ldots, X_k, U_1, \ldots, U_n} $. Then by Lemma~\ref{lemma:diseqTransIsOk} we have
 $\tuple{\hs, X_1,\ldots, X_k, \diseqsem{1}, \ldots, \diseqsem{n}}\models C'$ for each $C'\in\prog'$.
-However, the following is evident:
+However, it is obvious that:
 $$\interprets{\tuple{\hs, X_1,\ldots, X_k, \diseqsem{1}, \ldots, \diseqsem{n}}}{C'}=\interprets{\tuple{\hs, X_1,\ldots, X_k}}{C}.$$
 This means that
-$\tuple{\hs, X_1,\ldots, X_k}\models C$ for each $C\in\prog$ is the desired inductive invariant of the original system.
+$\tuple{\hs, X_1,\ldots, X_k}\models C$ for each $C\in\prog$, so $\tuple{X_1,\ldots, X_k}$ is the desired inductive invariant of the original system.
 \end{proof}
 
 \paragraph{Using the method for invariant inference.}
 % Для проверки выполнимости формул первого порядка могут быть использованы инструменты автоматического доказательства теорем, строящие насыщения, такие как \vampire{}~\cite{kovacs2013first}, \eprover{}~\cite{10.5555/1218615.1218621} и \zipperposition{}~\cite{10.1007/978-3-319-66167-4_10}.
-To check the satisfiability of first-order formulas, ITPs that build saturations can be used, such as \vampire{}~\cite{kovacs2013first}, \eprover{}~\cite{10.5555/1218615.1218621} and \zipperposition{}~\cite {10.1007/978-3-319-66167-4_10}.
-
 % Насыщения, при помощи которых они представляют модели, имеют высокую выразительную силу, т.\:к. позволяют выразить многие отношения, невыразимые в других классах.
 % Однако насыщения не дают эффективный класс инвариантов, поскольку даже проверка принадлежности кортежа замкнутых термов множеству, выраженному насыщением, неразрешима~\cite{4556689}.
 % По этой причине насыщения в качестве основы для самостоятельного класса инвариантов не рассматриваются в данной работе. Однако изучение их подклассов, как и создание процедур автоматического вывода для инвариантов в них многообещающи.
 % О применении метода для вывода более узкого класса регулярных инвариантов повествует следующий раздел.
-However, saturations do not provide an effective class of invariants, since even checking whether a tuple of closed terms belongs to the set expressed by saturation is undecidable~\cite{4556689}.
-For this reason, saturations as a basis for an independent class of invariants are not considered in this thesis. However, the study of their subclasses, as well as the creation of automatic inference procedures for invariants in them, appears promising.
-The following section discusses the application of the method for inferring a narrower class of regular invariants.
+Arbitrary automated theorem provers, e.g., saturation-based, such as \vampire{}~\cite{kovacs2013first}, \eprover{}~\cite{10.5555/1218615.1218621} and \zipperposition{}~\cite{10.1007/978-3-319-66167-4_10}, can be used as a backend to check the satisfiability of first-order formulas.
+However, saturations do not provide an effective class of invariants, since even checking whether a tuple of closed terms belongs to the set expressed by a saturation is undecidable~\cite{4556689}.
+For this reason, possible saturation-based inductive invariant classes are not considered in this thesis. However, the study of their subclasses and automatic invariant inference procedures for them are promising.
 
+The following sections discuss the specialization of the proposed method for inference of more specific regular invariants.
 
 \section{Regular Invariants}\label{sec:fmf/regular}
 
@@ -193,28 +192,26 @@ We will say that an $ n $-automaton $ A $ over $\fsymbs$ \emph{expresses} the re
  $X = \langOf{A} $.
  
 % Отношение $ X $, для которого существуют выражающий его ДКАД, называется \emph{регулярным} отношением. Класс регулярных отношений будет обозначаться \regclass{}.
-A relation $ X $ for which there exists a tree automaton expressing it is called an \emph{regular} relation. The class of regular relations will be denoted by \regclass{}.
+If for a relation $ X $ there exists a tree automaton expressing $X$, then the relation is called \emph{regular}. The class of regular relations will be denoted as \regclass{}.
 
 %Пусть $ \prog $~--- система дизъюнктов Хорна. Если $ \overline{X} = \tuple{X_1, \ldots, X_n} $, где каждый $ X_i $ регулярен, и $ \tuple{\hs, \overline{X}} \models C $ для всех $ C \in \prog $, тогда $ \tuple{\hs, \overline{X}} $ называется \emph{регулярным инвариантом} $ \prog $.
- Let $ \prog $ be a Horn clause system. If $ \overline{X} = \tuple{X_1, \ldots, X_n} $ where every $ X_i $ is regular and  $ \tuple{\hs, \overline{X}} \models C $ for all $ C \in \prog $, then $ \tuple{\hs, \overline{X}} $ is called a \emph{regular invariant} of $ \prog $.
-
-
+Let $ \prog $ be a constrained Horn clause system. If $ \overline{X} = \tuple{X_1, \ldots, X_n} $ where every $ X_i $ is regular and  $ \tuple{\hs, \overline{X}} \models C $ for all $ C \in \prog $, then an inductive invariant $ \tuple{\hs, \overline{X}} $ is called a \emph{regular invariant} of $ \prog $.
 \end{define}
 
 \begin{example}\label{ex:evenInReg}
-% Система дизъюнктов Хорна из примера~\ref{ex:evenNat} имеет регулярный инвариант $ \langle \hs, \langOf{A} \rangle $, где $A$~--- это $ 1 $-ДКАД $ \Automaton{s_0, s_1, s_2}{s_0} $,
+% Система дизъюнктов Хорна из примера~\ref{ex:evenNat} имеет регулярный инвариант $ \tuple{\hs, \langOf{A}} $, где $A$~--- это $ 1 $-ДКАД $ \Automaton{s_0, s_1, s_2}{s_0} $,
 % со следующим отношением перехода $ \autTrans $:
-The Horn clause system from Example~\ref{ex:evenNat} has a regular invariant $ \langle \hs, \langOf{A} \rangle $, where $A$ is an $ 1 $-tree automaton $ \Automaton{s_0 , s_1, s_2}{s_0}$,
+The Horn clause system from Example~\ref{ex:evenNat} has a regular invariant $ \tuple{\hs, \langOf{A}} $, where $A$ is a $1$-tree automaton $ \Automaton{s_0, s_1, s_2}{s_0}$,
 with the following transition relation $\autTrans$:
 \exampleTwo
 
 % Множество $\langOf{A} = \{Z, S (S (Z)), S (S (S (S (Z))))), \ldots \} = \{ S ^{2n} (Z) \mid n \geq 0 \} $ очевидным образом удовлетворяет всем дизъюнктам системы.
-Set $\langOf{A} = \{Z, S (S (Z)), S (S (S (S (Z))))), \ldots \} = \{ S ^{2n} (Z) \mid n \geq 0 \} $ trivially satisfies all clauses of the system.
+A set $\langOf{A} = \{Z, S (S (Z)), S (S (S (S (Z)))), \ldots \} = \{ S ^{2n} (Z) \mid n \geq 0 \} $ trivially satisfies all clauses of the system.
 \end{example}
 
 \begin{example}\label{exmpl:incdec}
 % Рассмотрим следующую систему дизъюнктов с несколькими различными инвариантами.
-Consider the following clause system with several different invariants.
+Consider the following clause system with a number of different invariants.
 \begin{align*}
     x = Z \land y = S(Z) &\rightarrow inc(x, y)\\
     x = S(x') \land y = S(y') \land inc(x', y') &\rightarrow inc(x, y)\\
@@ -225,25 +222,24 @@ Consider the following clause system with several different invariants.
 % Эта система имеет следующий очевидный элементарный инвариант.
 % $$ inc (x, y) \equiv (y = S (x)), dec (x, y) \equiv (x = S (y)).$$
 % Этот инвариант является наиболее сильным из возможных, т.\:к. выражает денотационную семантику $ inc $ и $ dec $ соответственно. Эти отношения нерегулярны, то есть не существует 2-автоматов представляющих эти отношения~\cite{tata}.
-This system has the obvious elementary invariant.
+This system has an obvious elementary invariant
 $$ inc (x, y) \equiv (y = S (x)), dec (x, y) \equiv (x = S (y)).$$
-This invariant is the strongest possible, since it expresses the denotational semantics of $inc$ and $dec$ respectively. These relations are irregular, that is, there are no 2-automata representing these relations~\cite{tata}.
+This invariant is the strongest possible, since it expresses the denotational semantics of $inc$ and $dec$. Yet these relations are not regular, i.e., there are no tree automata representing these relations~\cite{tata}.
 
 % Однако эта система дизъюнктов имеет другой, менее очевидный, регулярный инвариант, порождённый двумя $ 2 $-ДКАД $ \automaton{\{s_0, s_1, s_2, s_3\}}{\autStates_*}{\autTrans} $ с конечными состояниями соответственно $ \autStates_{inc} = \{\tuple{s_0, s_1}, \tuple{s_1, s_2}, \tuple{s_2, s_0} \} $, $ \autStates_{dec} = \{\tuple{s_1, s_0}, \tuple{s_2, s_1}, \tuple{s_0, s_2} \} $ и с правилами перехода, имеющими следующий вид:
-However, this system of clauses has another, less obvious, regular invariant generated by the two $ 2 $-tree automata $ \automaton{\{s_0, s_1, s_2, s_3\}}{\autStates_*}{\autTrans}$ with finite states, respectively, $ \autStates_{inc} = \{\tuple{s_0, s_1}, \tuple{s_1, s_2}, \tuple{s_2, s_0} \} $, $ \autStates_{dec} = \{\tuple{s_1, s_0}, \tuple{s_2, s_1}, \tuple{s_0, s_2} \} $ and with transition rules of the following form:
+However, this CHC system has a less obvious regular invariant based on two $ 2 $-tree automata $ \automaton{\{s_0, s_1, s_2, s_3\}}{\autStates_*}{\autTrans}$ with two sets of finite states, respectively, $ \autStates_{inc} = \{\tuple{s_0, s_1}, \tuple{s_1, s_2}, \tuple{s_2, s_0} \} $, $ \autStates_{dec} = \{\tuple{s_1, s_0}, \tuple{s_2, s_1}, \tuple{s_0, s_2} \} $ and with transition rules of the following form:
 \exampleOne
 
 % Автомат для $ inc $ проверяет, что $ (x \, \mathit{mod} \, 3, \, y \, \mathit{mod} \, 3) \in \{(0,1), (1 , 2), (2,0) \} $, а автомат для $ dec $ проверяет, что $ (x \, \mathit{mod} \, 3, \, y \, \mathit{mod} \, 3) \in \{(1,0), (2,1), (0,2) \} $. Эти отношения аппроксимируют сверху денотационную семантику $ inc $ и $ dec $ и при этом доказывают невыполнимость формулы $ inc (x, y) \land dec (x, y) $.
-The automaton for $ inc $ checks that $ (x \, \mathit{mod} \, 3, \, y \, \mathit{mod} \, 3) \in \{(0,1), (1 , 2 ), (2,0) \} $, and the automaton for $ dec $ checks that $ (x \, \mathit{mod} \, 3, \, y \, \mathit{mod} \, 3) \in \{(1,0),(2,1),(0,2)\}$. These relations over-approximate the denotational semantics of $inc$ and $dec$ and, at the same time, prove the unsatisfiability of the formula $inc(x, y) \land dec(x, y)$.
+The automaton for $inc$ predicate checks that $ (x \, \mathit{mod} \, 3, \, y \, \mathit{mod} \, 3) \in \{(0,1), (1 , 2 ), (2,0) \} $, and the automaton for $ dec $ checks that $ (x \, \mathit{mod} \, 3, \, y \, \mathit{mod} \, 3) \in \{(1,0),(2,1),(0,2)\}$. These relations overapproximate the denotational semantics of $inc$ and $dec$ and prove the unsatisfiability of the formula $inc(x, y) \land dec(x, y)$.
 % Таким образом, хотя многие отношения нерегулярны, у программ могут существовать неочевидные регулярные инварианты.
-Therefore, although many relations are irregular, programs may have non-obvious regular invariants.
+Therefore, although many relations might be not regular, programs still may have non-obvious regular invariants.
 \end{example}
 
 % Более подробно свойства регулярных инвариантов рассмотрены в главе~\cref{ch:comparison}.
 The properties of regular invariants are considered in more detail in Chapter~\cref{ch:comparison}.
 
-
-\section{Specializing the Method for Regular Invariant Inference}\label{sec:fmf/specRegular}
+\section{Specialization for Regular Invariant Inference}\label{sec:fmf/specRegular}
 
 \newworkflowWithTestersAndSelectors{}
 
@@ -252,16 +248,14 @@ The properties of regular invariants are considered in more detail in Chapter~\c
 % Если запустить на ней инструмент поиска конечных моделей, при помощи классического построения~---
 % теоремы~\ref{thm:finite-to-automaton} об изоморфизме между конечными моделями и автоматами над деревьями~--- можно получить автомат над деревьями, выражающий регулярный инвариант исходной системы дизъюнктов Хорна.
 % Корректность всего подхода гарантируется теоремами~\ref{th:diseqTrCorrectness} и~\ref{thm:finite-to-automaton}.
-
-The method proposed in the previous sections can be specialized to infer regular invariants, as shown in Figure~\cref{fig:newworkflow-with-testers-selectors}. By employing the transformations from Sections~\cref{sec:fmf/partialCorrectness} and~\cref{sec:fmf/totalCorrectness}, it is possible to convert a Horn clause system over ADTs into an equisatisfiable first-order formula over the free theory. If a finite model finder is employed on this formula and classic construction theorems~\ref{thm:finite-to-automaton} are applied~--- which establish an isomorphism between finite models and tree automata~--- it is possible to derive a tree automaton that expresses a regular invariant of the original Horn clause system. The approach's correctness is ensured by Theorems~\ref{th:diseqTrCorrectness} and~\ref{thm:finite-to-automaton}.
+The proposed method can be specialized to regular invariant inference, as shown in Figure~\cref{fig:newworkflow-with-testers-selectors}. By employing the transformations from Sections~\cref{sec:fmf/partialCorrectness} and~\cref{sec:fmf/totalCorrectness}, it is possible to transform a constrained Horn clause system over ADTs into an equisatisfiable first-order formula over the free theory. If a finite model finder comes up with a finite model of this formula, then by application of a classical theorem~\ref{thm:finite-to-automaton} on isomorphism between finite models and tree automata it is possible to recover a tree automaton that expresses a regular invariant of the original Horn clause system. The correctness of the approach thus is ensured by Theorems~\ref{th:diseqTrCorrectness} and~\ref{thm:finite-to-automaton}.
 
 % Например, по конечной модели из раздела~\cref{sec:fmf/partialCorrectness} для примера $ Even $ будет получен следующий автомат $ A _{Even} $, изоморфный представленному в примере~\ref{ex:evenInReg}.
-
-For instance, using the finite model from Section~\cref{sec:fmf/partialCorrectness} for the $Even$ example, an automaton $A_{Even}$ is obtained, which is isomorphic to the one presented in Example~\ref{ex:evenInReg}.
+For instance, from the finite model for the $Even$ example from Section~\cref{sec:fmf/partialCorrectness} we can obtain the following automaton $A_{Even}$, which is isomorphic to the one presented in Example~\ref{ex:evenInReg}.
  \exampleCostruction
 
 % На практике это означает, что индуктивные инварианты систем дизъюнктов Хорна над АТД можно строить при помощи \emph{инструментов поиска конечных моделей}, таких как \mace{}~\cite{https://doi.org/10.48550/arxiv.cs/0310055}, \kodkod{}~\cite{10.1007/978-3-540-71209-1_49}, \paradox{}~\cite{claessen2003new}, а также \cvc{}~\cite{reynolds2013finite} и \vampire{}~\cite{10.1007/978-3-319-40970-2_20}.
-In practice, this means that inductive invariants of Horn clause systems over ADTs can be constructed using \emph{finite model finders}, such as \mace{}~\cite{https://doi.org/10.48550/arxiv.cs/0310055}, \kodkod{}~\cite{10.1007/978-3-540-71209-1_49}, \paradox{}~\cite{claessen2003new}, \cvc{}~\cite{reynolds2013finite} and \vampire{}~\cite{10.1007/978-3-319-40970-2_20}.
+In practice, this means that inductive invariants of constrained Horn clause systems over ADTs can be inferred automatically using \emph{finite model finders}, such as \mace{}~\cite{https://doi.org/10.48550/arxiv.cs/0310055}, \kodkod{}~\cite{10.1007/978-3-540-71209-1_49}, \paradox{}~\cite{claessen2003new}, and general theorem provers, such as \cvc{}~\cite{reynolds2013finite} and \vampire{}~\cite{10.1007/978-3-319-40970-2_20}, with appropriate options.
 
 \section{Conclusions}\label{sec:fmf/conclusion}
 % Предложенный метод позволяет свести задачу поиска индуктивного инварианта системы дизъюнктов Хорна с АТД к задаче проверки выполнимости формулы универсального фрагмента логики первого порядка.
@@ -270,9 +264,9 @@ In practice, this means that inductive invariants of Horn clause systems over AD
 % Также совместно с предложенным методом могут быть использованы инструменты поиска конечных моделей, такие как, например, \mace{}~\cite{https://doi.org/10.48550/arxiv.cs/0310055}, \kodkod{}~\cite{10.1007/978-3-540-71209-1_49}, \paradox{}~\cite{claessen2003new}, а также \cvc{}~\cite{reynolds2013finite} и \vampire{}~\cite{10.1007/978-3-319-40970-2_20} в соответствующих режимах. Композиция предложенного метода и инструмента поиска конечных моделей может выводить регулярные инварианты, которые позволяют выражать рекурсивные отношения и представлять инварианты некоторых систем, для которых классических символьных инвариантов не существует. Кроме того, проверка, что заданный автомат над деревьями выражает регулярный инвариант заданной системы, разрешима.
 % Ограничением регулярных инвариантов является то, что они не позволяют представлять синхронные отношения, такие как равенство и неравенство термов, а потому существуют системы, у которых есть классический символьный инвариант, но нет регулярных.
 % Более богатый класс \emph{синхронных} регулярных инвариантов, решающий эту проблему, а также новый метод вывода инвариантов для этого класса рассмотрены в следующей главе.
-The proposed method reduces the problem of finding the inductive invariant of a Horn clause system with ADT to the problem of checking the satisfiability of the formula of a universal fragment of first-order logic.
-Therefore, in general, arbitrary ITPs such as \vampire{}~\cite{kovacs2013first}, \eprover{}~\cite{10.5555/1218615.1218621} and \zipperposition{}~\cite{10.1007/978-3-319-66167-4_10} can be used in combination with the proposed method.
-These tools produce satisfiability proofs in the form of saturations, which enable the expression of a broad class of invariants. However, verifying whether a saturation represents an inductive invariant for a given system is undecidable. Thus, using saturations to express inductive invariants is not feasible.
-Additionally, finite model finders can be utilized in conjunction with the proposed method. Examples include \mace{}~\cite{https://doi.org/10.48550/arxiv.cs/0310055}, \kodkod{}~\cite {10.1007/978-3-540-71209-1_49}, \paradox{}~\cite{claessen2003new},  \cvc{}~\cite{reynolds2013finite}, and \vampire{}~\cite{10.1007/978-3-319-40970-2_20} in the corresponding modes. Combining the proposed method with a finite model finder can help infer regular invariants that enable expressing recursive relations and representing invariants for certain systems which do not have classical symbolic invariants. Moreover, checking that a given tree automaton expresses a regular invariant of a given system is decidable.
-A limitation of regular invariants is that they cannot represent synchronous relations, such as equality and inequality of terms. As a result, there are systems that have a classical symbolic invariant but lack regular ones.
+The proposed method reduces the problem of finding the inductive invariant of a constrained Horn clause system over ADTs to the problem of checking the satisfiability in a universal fragment of the first-order logic.
+Therefore, arbitrary automated theorem provers such as \vampire{}~\cite{kovacs2013first}, \eprover{}~\cite{10.5555/1218615.1218621} and \zipperposition{}~\cite{10.1007/978-3-319-66167-4_10} can be used in combination with the proposed method for this task.
+These tools produce satisfiability proofs in the form of saturations, which can express a broad class of invariants. However, verifying whether a saturation represents an inductive invariant for a given CHC system is undecidable. Thus, using saturations to express inductive invariants is not feasible.
+Additionally, finite model finders can be utilized together with the proposed method. Examples of such tools include \mace{}~\cite{https://doi.org/10.48550/arxiv.cs/0310055}, \kodkod{}~\cite{10.1007/978-3-540-71209-1_49}, \paradox{}~\cite{claessen2003new}, and even \cvc{}~\cite{reynolds2013finite} and \vampire{}~\cite{10.1007/978-3-319-40970-2_20} in appropriate modes. The proposed method together with a finite model finder infers regular invariants based on tree automata that can express recursive relations and represent invariants for certain systems which do not have classical symbolic invariants. Moreover, checking that a given tree automaton expresses a regular invariant of a given system is decidable.
+A limitation of regular invariants is that they cannot represent synchronous relations, such as increment of Peano integers. As a result, there are systems that have a classical symbolic invariant but lack regular ones.
 A richer \emph{synchronous} regular invariant class that solves this problem, as well as a new method for inferring invariants for this class, are discussed in the next chapter.

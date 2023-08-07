@@ -124,7 +124,7 @@ $X^{n}\eqdef \{\tuple{x_1,\ldots,x_n} \mid x_i \in X\}$ и $X^{\leq n} \eqdef \b
 Системой дизъюнктов Хорна $\prog $ называется конечное множество дизъюнктов Хорна с ограничениями.
 
 \subsection{Выполнимость и безопасные индуктивные инварианты}
-Пусть $\overline{X} = \langle X_1, \ldots, X_n \rangle $ является кортежем таких отношений, что  если предикат $P_i $ имеет сорт $\sigma_1 \times \ldots \times \sigma_m $, то справедливо $X_i \subseteq \huniv{\sigma_1} \times \ldots \times \huniv{\sigma_m} $.
+Пусть $\overline{X} = \tuple{X_1, \ldots, X_n} $ является кортежем таких отношений, что если предикат $P_i $ имеет сорт $\sigma_1 \times \ldots \times \sigma_m $, то справедливо $X_i \subseteq \huniv{\sigma_1} \times \ldots \times \huniv{\sigma_m} $.
 Для упрощения обозначений расширение модели $\hs \{P_1 \mapsto X_1, \ldots, P_n \mapsto X_n \} $ будет записываться как $\tuple{\hs, X_1, \ldots, X_n} $ или просто $\tuple{\hs, \overline{X}} $.
 
 Система дизъюнктов Хорна $\prog$ называется \emph{выполнимой по модулю теории} АТД (или \emph{безопасной}), если существует кортеж отношений $\overline{X} $ такой, что выполнено $\tuple{\hs, \overline{X}} \models C $ для всех формул $C \in \prog $. В таком случае кортеж $\overline{X} $ называется \emph{(безопасным индуктивным) инвариантом} системы $\prog$.

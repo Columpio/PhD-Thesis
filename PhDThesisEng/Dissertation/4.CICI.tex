@@ -6,6 +6,7 @@
 This chapter proposes a method for the inference of combined invariants.
 Combined invariants (Section~\cref{sec:cici/combinedInvs}) are invariants expressed in the extension of the constraint language by predicates of term membership to a language of an arbitrary class.
 The method presented in Section~\cref{sec:cici/inference} enables the modification of any counterexample-guided abstraction refinement (\cegar{}) based invariant inference algorithm in the constraint language. This modification enables the algorithm to effectively infer combined invariants. The modification of this method involves a collaborative exchange of information with the invariant inference algorithm in the class with which it is combined (this idea is described in Section~\cref{sec:cici/idea}).
+The chapter is based on~\cite{LPAR2023:Collaborative_Inference_of_Combined}.
 
 \section{Core Idea of Collaborative Inference}\label{sec:cici/idea}
 % Для простоты изложения ключевая идея коллаборативного вывода представлена как модификации подхода \cegar{} \emph{для систем переходов}.
@@ -270,7 +271,7 @@ where $t \not\in \evenInv{}$ means that the ADT term $t$  \emph{is not} containe
 
 \paragraph{\textbf{Description of \ourCEGAR{}.}}
 % Предлагаемый подход представлен на листинге~\ref{code:cegar}. Алгоритм работает аналогично классическому \cegar{}, представленному в разделе ~\ref{sec:cici/origCEGAR}, но также в начале каждой итерации он асинхронно опрашивает коллаборирующий верификатор $\oracle$ путём вызова процедуры \RunBlackBox{} (строка~\ref{line:call-bb}). Вызовы делаются асинхронно, чтобы предотвратить зацикливание алгоритма.
-The proposed approach is shown in Listing~\ref{code:cegar}. The algorithm works similarly to the classic \cegar{} presented in Section~\ref{sec:cici/origCEGAR} , but also at the beginning of each iteration it asynchronously polls the collaborating verifier $\oracle$ by calling the \RunBlackBox{} procedure (line~\ref {line:call-bb}). The calls are made asynchronously to prevent the algorithm from looping.
+The proposed approach is shown in Listing~\ref{code:cegar}. The algorithm works similarly to the classic \cegar{} presented in Section~\ref{sec:cici/origCEGAR} , but also at the beginning of each iteration it asynchronously polls the collaborating verifier $\oracle$ by calling the \RunBlackBox{} procedure (line~\ref{line:call-bb}). The calls are made asynchronously to prevent the algorithm from looping.
 
 \begin{algorithm2e}[t!]
 	\KwData{Verifier $\oracle$ over domain $\blackBoxDomain$.}

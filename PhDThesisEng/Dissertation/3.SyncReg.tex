@@ -47,7 +47,7 @@ A term convolution is a computable bijective function from $\groundTerms^{\leq k
 
 \begin{define}
     % Множество кортежей термов $X$ называется \emph{$\conv$-свёрточным регулярным языком}, если существует автомат над деревьями $A$ такой, что $\langOf{A} = \{ \conv(\overline{t}) \mid \overline{t}\in X \} \eqdef \conv(X)$.
-    A set of term tuples $X$ is called a \emph{$\conv$-convolutional regular language} if there exists a tree automaton $A$ such that $\langOf{A} = { \conv(\overline{t}) \mid \overline{t}\in X } \eqdef \conv(X)$.
+    A set of term tuples $X$ is called a \emph{$\conv$-convolutional regular language} if there exists a tree automaton $A$ such that $\langOf{A} = \{ \conv(\overline{t}) \mid \overline{t}\in X \} \eqdef \conv(X)$.
 
     % Классом языков $\classOf{\conv}$ называется множество всех $\conv$-свёрточных регулярных языков. Обозначим посредством \syncRegFlatClass{} класс $\classOf{\flatConv}$ и \syncRegFullClass{}~--- класс $\classOf{\fullConv}$.
     The class of languages $\classOf{\conv}$ is the set of all $\conv$-convolutional regular languages. We denote by \syncRegFlatClass{} the class $\classOf{\flatConv}$ and by \syncRegFullClass{} the class $\classOf{\fullConv}$.
@@ -194,11 +194,11 @@ To define the $\Delta$ procedure, we introduce a formula language semantics, all
 
 \subsection{Formula language semantics}
 % Формула $\Phi = \forall x_1 \dots \forall x_n.\phi(x_1, \dots, x_n)$ находится в сколемовской нормальной форме (СНФ), если $\phi$ является бескванторной формулой со свободными переменными $x_1, \dots, x_n$. Известно, что любая формула в языке первого порядка может быть приведена к сколемовской нормальной форме с помощью процедуры сколемизации.
-The formula $\Phi = \forall x_1 \dots \forall x_n.\phi(x_1, \dots, x_n)$ is in Skolem normal form (SNF) if $\phi$ is a quantifier-free formula with free variables $x_1, \dots, x_n$. It is known that any formula in first-order language can be converted to Skolem normal form using Skolemization.
+The formula $\Phi = \forall x_1 \dots \forall x_n.\phi(x_1, \dots, x_n)$ is in Skolem normal form (SNF) if $\phi$ is a quantifier-free formula with free variables $x_1, \dots, x_n$. It is known that any formula in first-order language can be transformed to Skolem normal form using Skolemization.
 
 \begin{define}
-% Кортеж термов $\langle t_1, \dots, t_k \rangle$ называется $(n, k)$-шаблоном, если каждый его элемент $t_i$ зависит не более чем от $n$ переменных из общего набора переменных данного кортежа.
-A tuple of terms $\langle t_1, \dots, t_k \rangle$ is called an $(n, k)$-pattern if each of its elements $t_i$ depends on no more than $n$ variables from the common set of variables of this tuple.
+% Кортеж термов $\tuple{t_1, \dots, t_k}$ называется $(n, k)$-шаблоном, если каждый его элемент $t_i$ зависит не более чем от $n$ переменных из общего набора переменных данного кортежа.
+A tuple of terms $\tuple{t_1, \dots, t_k}$ is called an $(n, k)$-pattern if each of its elements $t_i$ depends on no more than $n$ variables from the common set of variables of this tuple.
 \end{define}
 
 \begin{define}
@@ -209,36 +209,36 @@ A pattern will be called \textit{linear} if each variable appears in no more tha
 
 
 \begin{define}
-% Подстановкой замкнутых термов $u = \langle u_1, \dots, u_n \rangle$ в $(n, k)$-шаблон $t = \langle t_1, \dots, t_k \rangle$ назовем кортеж замкнутых термов, полученный подстановкой термов $u_i$ на место переменных $x_i$ для $i = 1, \dots, n$: 
-By substituting closed terms $u = \langle u_1, \dots, u_n \rangle$ into an $(n, k)$-pattern $t = \langle t_1, \dots, t_k \rangle$, we refer to a tuple of closed terms obtained by substituting terms $u_i$ in place of variables $x_i$ for $i = 1, \dots, n$
+% Подстановкой замкнутых термов $u = \tuple{u_1, \dots, u_n}$ в $(n, k)$-шаблон $t = \tuple{t_1, \dots, t_k}$ назовем кортеж замкнутых термов, полученный подстановкой термов $u_i$ на место переменных $x_i$ для $i = 1, \dots, n$: 
+By substituting closed terms $u = \tuple{u_1, \dots, u_n}$ into an $(n, k)$-pattern $t = \tuple{t_1, \dots, t_k}$, we refer to a tuple of closed terms obtained by substituting terms $u_i$ in place of variables $x_i$ for $i = 1, \dots, n$
 \begin{center}
-    $t[u] = \langle t_1\{x_1 \leftarrow u_1, \dots, x_n \leftarrow u_n\}, \dots, t_k\{x_1 \leftarrow u_1, \dots, x_n \leftarrow u_n\} \rangle $.
+    $t[u] = \tuple{t_1\{x_1 \leftarrow u_1, \dots, x_n \leftarrow u_n\}, \dots, t_k\{x_1 \leftarrow u_1, \dots, x_n \leftarrow u_n\}} $.
 \end{center}
 \end{define}
 
 \begin{define}
 % \textit{Нижний остаток языка} $L$ по $(n, k)$-шаблону $t$~--- это $n$-арный язык $\quotient{L}{t} \eqdef \{ u \in \groundTerms{}^n \ | \ t[u] \in L \}$.
-The lower remainder of a language $L$ with respect to an $(n, k)$-pattern $t$ is defined as the $n$-ary language $\quotient{L}{t} \eqdef { u \in \groundTerms{}^n \ | \ t[u] \in L }$.
+The lower remainder of a language $L$ with respect to an $(n, k)$-pattern $t$ is defined as the $n$-ary language $\quotient{L}{t} \eqdef \{ u \in \groundTerms{}^n \ | \ t[u] \in L \}$.
 \end{define}
 
 \begin{example}
 % Рассмотрим сигнатуру чисел Пеано, содержащую два функциональных символа $Z$ и $S$, имеющих арность 0 и 1 соответственно. 
 Consider the Peano number signature, which includes two functional symbols, $Z$ and $S$, with arities of 0 and 1, respectively.
 
-% Кортеж $\langle x_1, S(x_2), Z \rangle$ является линейным $(2,3)$-шаблоном.
-The tuple $\langle x_1, S(x_2), Z \rangle$ is a linear $(2,3)$-pattern.
+% Кортеж $\tuple{x_1, S(x_2), Z}$ является линейным $(2,3)$-шаблоном.
+The tuple $\tuple{x_1, S(x_2), Z}$ is a linear $(2,3)$-pattern.
 
-% Кортеж $\langle S(x_1), x_1 \rangle$ является нелинейным $(1,2)$-шаблоном.
-The tuple $\langle S(x_1), x_1 \rangle$ is a non-linear $(1,2)$-pattern.
+% Кортеж $\tuple{S(x_1), x_1}$ является нелинейным $(1,2)$-шаблоном.
+The tuple $\tuple{S(x_1), x_1}$ is a non-linear $(1,2)$-pattern.
 
-% Подстановка кортежа термов $u = \langle Z,\ S(Z) \rangle$ в $(2, 3)$-шаблон $t =\langle S(x_1),\ S(S(x_2),\ Z) \rangle$ является кортежем
-The substitution of of term tuple $u = \langle Z,\ S(Z) \rangle$ into a $(2,3)$-pattern $t =\langle S(x_1),\ S(S(x_2),\ Z) \rangle$ is the tuple
-$t[u] = \langle S(Z),\ S(S(S(Z))), Z \rangle$.
+% Подстановка кортежа термов $u = \tuple{Z,\ S(Z)}$ в $(2, 3)$-шаблон $t =\tuple{S(x_1),\ S(S(x_2),\ Z)}$ является кортежем
+The substitution of of term tuple $u = \tuple{Z,\ S(Z)}$ into a $(2,3)$-pattern $t =\tuple{S(x_1),\ S(S(x_2),\ Z)}$ is the tuple
+$t[u] = \tuple{S(Z),\ S(S(S(Z))), Z}$.
 \end{example}
 
 \begin{define}
 % Пусть каждому неинтерпретированному предикатному символу $p$ соответствует некоторый язык кортежей термов, обозначаемый $\interprets{L}{p}$. Язык равенства определён как $\interprets{L}{=} = \{(x,x) \ \mid \ x \in \groundTerms{}\}$. \textit{Языковой семантикой} формулы в СНФ $\forall x_1 \dots \forall x_n.\phi(x_1, \dots, x_n)$ назовём язык $\interprets{L}{\phi}$, определённый индуктивно следующим образом:
-Let each uninterpreted predicate symbol $p$ correspond to a language of term tuples, denoted as $\interprets{L}{p}$. The language of equality is defined as $\interprets{L}{=} = {(x,x) \mid x \in \groundTerms{}}$. The language semantics of a formula in SNF, $\forall x_1 \dots \forall x_n.\phi(x_1, \dots, x_n)$ refers to a language $\interprets{L}{\phi}$ defined inductively as follows:
+Let each uninterpreted predicate symbol $p$ correspond to a language of term tuples, denoted as $\interprets{L}{p}$. The language of equality is defined as $\interprets{L}{=} = \{(x,x) \mid x \in \groundTerms{}\}$. The language semantics of a formula in SNF, $\forall x_1 \dots \forall x_n.\phi(x_1, \dots, x_n)$ refers to a language $\interprets{L}{\phi}$ defined inductively as follows:
 \begin{align*}
     \interprets{L}{p(\overline{t})} &\eqdef\quotient{\interprets{L}{p}}{\overline{t}}\\
     \interprets{L}{\neg \psi} &\eqdef \groundTerms{}^n \setminus \interprets{L}{\psi}\\
@@ -292,14 +292,14 @@ To prove the induction step, we can use De Morgan's law for disjunction.
 
 \begin{theorem}~\label{theorem:patternClosure}
 % Пусть $L\in\syncRegFullClass{}$~--- язык кортежей размера $n$. Тогда нижний остаток $\quotient{L}{t}$ относительно линейного шаблона $t =
-% \langle x_1, \dots, x_{i-1}, f(y_1,\dots,y_m), x_{i+1}, \dots x_n \rangle$ также принадлежит классу \syncRegFullClass{}.
+% \tuple{x_1, \dots, x_{i-1}, f(y_1,\dots,y_m), x_{i+1}, \dots x_n}$ также принадлежит классу \syncRegFullClass{}.
 Let $L \in \syncRegFullClass{}$ be a language of tuples of size $n$. Then the lower remainder $\quotient{L}{t}$ with respect to the linear pattern $t =
-\langle x_1, \dots, x_{i-1}, f(y_1,\dots,y_m), x_{i+1}, \dots x_n \rangle$ also belongs to the class \syncRegFullClass{}.
+\tuple{x_1, \dots, x_{i-1}, f(y_1,\dots,y_m), x_{i+1}, \dots x_n}$ also belongs to the class \syncRegFullClass{}.
 \end{theorem}
 \begin{proof}
-% Не ограничивая общности, рассмотрим шаблон $t = \langle f(y_1,\dots,y_m), x_2, \dots x_n \rangle$.
+% Не ограничивая общности, рассмотрим шаблон $t = \tuple{f(y_1,\dots,y_m), x_2, \dots x_n}$.
 % Пусть $\fullConv(L)=\langOf{A}$, где $A = \sautomatonGen{\autStates}{n}{\autFinStates}{\autTrans}$. Рассмотрим автомат $A' = \sautomatonGen{\autStates'}{n-1+m}{\autFinStates'}{\autTrans'}$, каждое состояние которого \textit{хранит} до $n-1$ функционального символа и до $m^n$ состояний автомата $A$, то есть $\autStates' = \Sigma^{\leq n-1} \times \autStates^{\leq m^n}$.
-Without loss of generality, consider the pattern $t = \langle f(y_1,\dots,y_m), x_2, \dots x_n \rangle$. Let $\fullConv(L)=\langOf{A}$, where $A = \sautomatonGen{\autStates}{n}{\autFinStates}{\autTrans}$. Consider the automaton $A' = \sautomatonGen{\autStates'}{n-1+m}{\autFinStates'}{\autTrans'}$, every state of which stores up to $n-1$ functional symbols and up to $m^n$ states of automaton $A$, that is, $\autStates' = \Sigma^{\leq n-1} \times \autStates^{\leq m^n}$.
+Without loss of generality, consider the pattern $t = \tuple{f(y_1,\dots,y_m), x_2, \dots x_n}$. Let $\fullConv(L)=\langOf{A}$, where $A = \sautomatonGen{\autStates}{n}{\autFinStates}{\autTrans}$. Consider the automaton $A' = \sautomatonGen{\autStates'}{n-1+m}{\autFinStates'}{\autTrans'}$, every state of which stores up to $n-1$ functional symbols and up to $m^n$ states of automaton $A$, that is, $\autStates' = \Sigma^{\leq n-1} \times \autStates^{\leq m^n}$.
 
 % Далее, определим автомат $A'$ таким образом, чтобы выполнялось следующее свойство:
 Next, we define automaton $A'$ in such a way that the following property holds:
