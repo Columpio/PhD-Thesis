@@ -204,7 +204,7 @@ In general, any pumping lemma must show that for all languages in some class (e.
 % Для формулировки лемм о <<накачке>> в начале определим следующее расширение $\elemextclass{}$ языка ограничений, которое допускает устранение кванторов.
 % Для каждого АТД $ \tuple{\sigma, C} $ и каждого конструктора $ f \in C $, имеющего арность $ \sigma_1 \times \dots \times \sigma_n \rightarrow \sigma $ для некоторых сортов $ \sigma_1, \ldots, \sigma_n $, введём \emph{селекторы} $ g_i \in S $ с арностью $ \sigma \rightarrow \sigma_i $ для каждого $ i \leq n $ со стандартной семантикой, заданной так: $ g_i (f (t_1, \ldots, t_n)) \eqdef t_i $.
 To formulate pumping lemmas, we first define the following extension $\elemextclass{}$ of the constraint language, which allows elimination of quantifiers.
-For every ADT $ \tuple{\sigma, C}$ and every constructor $ f \in C $ of arity $ \sigma_1 \times \dots \times \sigma_n \rightarrow \sigma $ for some sorts of $ \sigma_1, \ldots , \sigma_n $, introduce \emph{selectors} $ g_i \in S $ of arity $ \sigma \rightarrow \sigma_i $ for each $ i \leq n $ with standard semantics given as follows: $ g_i (f (t_1, \ ldots, t_n)) \eqdef t_i $.
+For every ADT $ \tuple{\sigma, C}$ and every constructor $ f \in C $ of arity $ \sigma_1 \times \dots \times \sigma_n \rightarrow \sigma $ for some sorts of $ \sigma_1, \ldots , \sigma_n $, introduce \emph{selectors} $ g_i \in S $ of arity $ \sigma \rightarrow \sigma_i $ for each $ i \leq n $ with standard semantics given as follows: $ g_i (f (t_1, \ldots, t_n)) \eqdef t_i $.
 
 \begin{theorem}[see~\cite{oppen1980reasoning}]
     % Всякая $\elemclass{}$-формула эквивалентна некоторой бескванторной $\elemextclass{}$-формуле.
