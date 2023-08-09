@@ -333,6 +333,15 @@ sorting=none,% настройка сортировки списка литера
     }
     }
 }
+\else
+\DeclareSourcemap{
+    \maps{
+    \map[overwrite]{
+        \perdatasource{biblio/external.bib}
+        \step[fieldset=month,null]
+    }
+    }
+}
 \fi
 
 \defbibfilter{vakscopuswos}{%
