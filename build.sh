@@ -1,3 +1,4 @@
+find . -iname "*.pdf" -delete
 cd PhDThesis
 make clean
 make dissertation

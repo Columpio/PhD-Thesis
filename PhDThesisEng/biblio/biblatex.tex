@@ -348,25 +348,25 @@ sorting=none,% настройка сортировки списка литера
 }
 
 %%% Убираем неразрывные пробелы перед двоеточием и точкой с запятой %%%
-%\makeatletter
-%\ifnumequal{\value{draft}}{0}{% Чистовик
-%    \renewcommand*{\addcolondelim}{%
-%      \begingroup%
-%      \def\abx@colon{%
-%        \ifdim\lastkern>\z@\unkern\fi%
-%        \abx@puncthook{:}\space}%
-%      \addcolon%
-%      \endgroup}
-%
-%    \renewcommand*{\addsemicolondelim}{%
-%      \begingroup%
-%      \def\abx@semicolon{%
-%        \ifdim\lastkern>\z@\unkern\fi%
-%        \abx@puncthook{;}\space}%
-%      \addsemicolon%
-%      \endgroup}
-%}{}
-%\makeatother
+\makeatletter
+\ifnumequal{\value{draft}}{0}{% Чистовик
+   \renewcommand*{\addcolondelim}{%
+     \begingroup%
+     \def\abx@colon{%
+       \ifdim\lastkern>\z@\unkern\fi%
+       \abx@puncthook{:}\space}%
+     \addcolon%
+     \endgroup}
+
+   \renewcommand*{\addsemicolondelim}{%
+     \begingroup%
+     \def\abx@semicolon{%
+       \ifdim\lastkern>\z@\unkern\fi%
+       \abx@puncthook{;}\space}%
+     \addsemicolon%
+     \endgroup}
+}{}
+\makeatother
 
 %%% Правка записей типа thesis, чтобы дважды не писался автор
 %\ifnumequal{\value{draft}}{0}{% Чистовик
@@ -399,6 +399,16 @@ sorting=none,% настройка сортировки списка литера
 %  \usebibmacro{related}%
 %  \usebibmacro{finentry}}
 %}{}
+
+% change 'ed. by' to 'Ed. by', e.g.:
+% Stump, A. CVC:
+% A Cooperating Validity Checker [Текст] / A. Stump,
+% C. W. Barrett, D. L. Dill // Computer Aided Verification / ed. by
+% E. Brinksma, K. G. Larsen. — Berlin, Heidelberg: Springer Berlin Heidel­
+% berg, 2002. — P. 500—504.
+\DefineBibliographyStrings{english}{%
+    byeditor = {Ed\adddot\space by},%
+}
 
 %\newbibmacro{string+doi}[1]{% новая макрокоманда на простановку ссылки на doi
 %    \iffieldundef{doi}{#1}{\href{http://dx.doi.org/\thefield{doi}}{#1}}}
