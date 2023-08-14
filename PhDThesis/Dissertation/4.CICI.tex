@@ -344,7 +344,7 @@ $$ok(p) \Leftrightarrow p \in \evenInv{},\quad tr(p, t) \Leftrightarrow \neg(p =
 s \models B \right\}.
 \end{align*}
 
-Без потери общности предположим, что система дизъюнктов Хорна $\prog$ имеет единственный предикат в запросе $Q$, т.\:е. далее будем рассматривать только системы, полученные следующим образом:
+Без потери общности предположим, что система дизъюнктов Хорна $\prog$ имеет единственный предикат для запроса $Q$, т.\:е. далее будем рассматривать только системы, полученные следующим образом:
 $$ \prog' \eqdef \rules{\prog}\cup\left\{ \body{C}(\overline{x})\rightarrow Q(\overline{x})\mid C \text{ является запросом }\prog\right\}\cup\{Q(\overline{x})\rightarrow\bot\}.$$
 Система дизъюнктов определяет свойство для системы переходов так: $\property(Q)\eqdef\bot$ и для каждого $P\in\relations$, $\property(P)\eqdef\top$.
 

@@ -306,7 +306,7 @@ In particular, its initial states $\init'$ are $\post{A} \setminus A$, i.e., the
 % Иными словами, путём построения остаточной системы алгоритм берёт безопасную, но неиндуктивную часть текущего кандидата в инварианты и передаёт её сотрудничающему верификатору, чтобы он дополнил её до неподвижной точки, т.\:е. индуктивного инварианта.
 The main idea of the \ourCEGAR{} algorithm is to use an additional verifier $\oracle$ to \emph{weaken} the non-inductive state set $A$ to some fixed point in the combined class.
 If the second verifier finds an inductive invariant of the residual system, i.e. some inductive approximation $B$ of non-inductive states, then $A \ccup B$ will be an inductive invariant of the original system.
-In other words, by constructing a residual system, the algorithm takes the safe but non-inductive part of the current invariant candidate and passes it to a collaborating verifier to complete it to a fixed point, i.e. inductive invariant.
+In other words, by building a residual system, the algorithm takes the safe but non-inductive part of the current invariant candidate and passes it to a collaborating verifier to complete it to a fixed point, i.e. inductive invariant.
 
 % Современные подходы к выводу индуктивных инвариантов программ, такие как \pdr{} (который можно рассматривать как усложнённый вариант \cegar{}), монотонно \emph{усиливают} кандидат в инварианты $A$ до тех пор, пока он не станет индуктивным.
 % Из-за этого проблемой таких подходов является выбор стратегии усиления~\cite{krishnan2020global}: из-за слишком резкого усиления могут быть пропущены нужные неподвижные точки, в то время как из-за медленного усиления алгоритм может сходиться к неподвижной точке слишком долго или вовсе расходиться.
@@ -403,7 +403,7 @@ First, let us define the representation of the class of combined invariants.
 For each tree language $\formallang\subseteq\huniv{\sigma_1}\times\dots\times\huniv{\sigma_m}$, define a predicate membership symbol for the language ``$\in\!\formallang$'' with arity $\sigma_1 \times\dots\times\sigma_m$. \emph{Membership constraint} is an atomic formula with a predicate language membership symbol.
 Its semantics is defined by an extension of the Herbrand semantics $\hs$ as follows:
 $\hs(\in\formallang)= \formallang.$
-The ADT constraint language extended by such atoms is called \emph{first order language with membership constraints}. This language defines a class of invariants denoted by $\regelemclass{}$ and an abstract domain of functions from $\relations$ predicates to formulas of the language with element-wise operations.
+The ADT constraint language extended with such predicates is called \emph{first order language with membership constraints}. This language defines a class of invariants denoted by $\regelemclass{}$ and an abstract domain of functions from $\relations$ predicates to formulas of the language with element-wise operations.
 \end{define}
 
 \begin{example}\label{exmp:running-example}
@@ -425,7 +425,7 @@ However, it has a \regelemclass{} invariant
 $$ok(p) \Leftrightarrow p \in \evenInv{},\quad tr(p, t) \Leftrightarrow \neg(p = t) \lor t \in \overline{\evenInv{}},$$
 % где $\evenInv{}$~--- язык деревьев, задаваемый автоматом из примера~\ref{ex:fork-join-chcs},
 % а $\overline{\evenInv{}}$ является его дополнением.
-where $\evenInv{}$ is a tree language given by the automaton from Example~\ref{ex:fork-join-chcs},
+where $\evenInv{}$ is a tree language of the tree automaton from Example~\ref{ex:fork-join-chcs},
 and $\overline{\evenInv{}}$ is its complement.
 \end{example}
 
@@ -441,7 +441,7 @@ $$ \states \eqdef \text{a set of all mappings from every } P\in\relations \text{
 \end{align*}
 
 % Система дизъюнктов Хорна $\prog$ задаёт систему переходов 
-The Horn clause system $\prog$ defines the transition system$\tuple{\states, \init, \thepost}$:
+The Horn clause system $\prog$ defines the transition system $\tuple{\states, \init, \thepost}$:
 \begin{align*}
     \init&\eqdef\post{\cbot}\\
     \post{s}(P)&\eqdef\left\{\overline{t} \mid
@@ -450,7 +450,7 @@ s \models B \right\}.
 \end{align*}
 
 % Без потери общности предположим, что система дизъюнктов Хорна $\prog$ имеет единственный предикат в запросе $Q$, т.\:е. далее будем рассматривать только системы полученные следующим образом:
-Assume without loss of generality that the Horn clause system $\prog$ has a single predicate in the query $Q$, i.e. further, we will consider only systems obtained as follows:
+Assume without loss of generality that the Horn clause system $\prog$ has a single query predicate $Q$, i.e. further, we will consider only systems obtained as follows:
 $$ \prog' \eqdef \rules{\prog}\cup\left\{ \body{C}(\overline{x})\rightarrow Q(\overline{x})\mid C \text{ is a query of }\prog\right\}\cup\{Q(\overline{x})\rightarrow\bot\}.$$
 % Система дизъюнктов определяет свойство для системы переходов как: $\property(Q)\eqdef\bot$ и для каждого $P\in\relations$, $\property(P)\eqdef\top$.
 The clause system defines a property for the transition system as: $\property(Q)\eqdef\bot$ and for each $P\in\relations$, $\property(P)\eqdef\top$.
@@ -458,14 +458,13 @@ The clause system defines a property for the transition system as: $\property(Q)
 \begin{proposition}
 % Система дизъюнктов Хорна $\prog$ выполнима, если соответствующая система переходов
 % $\tuple{\states, \init, \thepost}$ безопасна относительно $\property$.
-A system of Horn clauses $\prog$ is satisfiable if the corresponding transition system
-$\tuple{\states, \init, \thepost}$ is safe with respect to $\property$.
+A CHC system $\prog$ is satisfiable if the corresponding transition system $\tuple{\states, \init, \thepost}$ is safe with respect to $\property$.
 \end{proposition}
 
-\subsection{Residual System Generation}\label{sec:subst_lemmas}
+\subsection{Generating Residual System}\label{sec:subst_lemmas}
 
 % Процедура \RunBlackBox{} начинает с построения остаточной системы $$\tuple{\post{A}\ccap \cneg A, \lambda B. \left(\post{B}\ccap \cneg A\right)},$$ которая передаётся коллаборирующему верификатору.
-The \RunBlackBox{} procedure starts by constructing the residual system $$\tuple{\post{A}\ccap \cneg A, \lambda B. \left(\post{B}\ccap \cneg A\right)},$$ which is passed to the collaborating verifier.
+The \RunBlackBox{} procedure starts by building the residual system $$\tuple{\post{A}\ccap \cneg A, \lambda B. \left(\post{B}\ccap \cneg A\right)},$$ which is passed to the collaborating verifier.
 % Процедура $\substituteLemmas$ с листинга~\ref{code:residual-chc} строит систему, эквивалентную такой остаточной системе, преобразуя исходную систему дизъюнктов Хорна $\prog$ в два шага.
 % Она принимает на вход исходную систему дизъюнктов $\prog$ и элемент абстрактного домена $a$, функцию из предикатных символов в формулы языка \regelemclass{}.
 The $\substituteLemmas$ procedure from Listing~\ref{code:residual-chc} constructs a system equivalent to such a residual system by transforming the original Horn clause system $\prog$ in two steps.
@@ -479,7 +478,7 @@ It takes as input the original system $\prog$ and an elementary model $a$ as inp
     $\Phi \gets \prog\text{ with atoms }P(\overline{t})\text{ replaced by }a(P)(\overline{t})\lor P(\overline{t})$\label{line:subst-residual}\;
     \Return $КНФ(\Phi)$\label{line:cnf}\;
 
-\caption{Algorithm for constructing a residual Horn system \substituteLemmas{}.}
+\caption{\substituteLemmas{} algorithm for generation of a residual CHC system.}
 \label{code:residual-chc}
 \end{algorithm2e}
 
@@ -538,7 +537,7 @@ Consider abstract state $a(tr)(p, t) \equiv \neg(p = t) \lor t = Join(Seq)$, $a(
   \end{align*}
 % в \autoref{fig:exmp-transformed},
 % которая может быть упрощена до системы дизъюнктов
-which can be simplified down to the clause system
+which can be simplified to
 \begin{align*}
   p = Fork(Join(Seq)) &\rightarrow ok(p)\\
   p' = Fork(Join(p)) \land ok(p) &\rightarrow ok(p')\\
@@ -548,16 +547,16 @@ which can be simplified down to the clause system
   \end{align*}
 \end{example}
 
-\subsection{\ourCEGAR{} for Clauses: Recovery of Counterexamples}\label{sec:recover-cex}
+\subsection{\ourCEGAR{} for CHCs: Recovering Counterexamples}\label{sec:recover-cex}
 
 % В данном разделе представлена процедура построения абстрактного контрпримера исходной системы по конкретному контрпримеру для остаточной системы, получаемой как $\prog'=\substituteLemmas(\prog, a)$. Иными словами, представлена инстанциация процедуры \textsc{RecoverCex} из листинга~\ref{code:runblackbox}.
 
-This section presents a procedure for constructing an abstract counterexample of the original system from a concrete counterexample for the residual system obtained as $\prog'=\substituteLemmas(\prog, a)$. In other words, this is the instantiation of the \textsc{RecoverCex} procedure from Listing~\ref{code:runblackbox}.
+This section presents a procedure for building an abstract counterexample of the original system from a concrete counterexample for the residual system obtained as $\prog'=\substituteLemmas(\prog, a)$. In other words, we present the instantiation of the \textsc{RecoverCex} procedure from Listing~\ref{code:runblackbox}.
 
 \paragraph{Abstract counterexamples.}
 % Определим абстрактный контрпример к системе дизъюнктов Хорна как дерево опровержений, некоторые листья которого могут быть абстрактными состояниями.
 % Для формально определения введём трансформацию дизъюнктов $\simplifiedSubstituteLemmas{\prog, a}$, которая для каждого предиката $P \in \relations$ добавляет к системе $\prog$ новые дизъюнкты $ a(P)(\overline{x}) \rightarrow P(\overline{x}) $.
-We define an abstract counterexample of a Horn clause system as a refutation tree, some of whose leaves may be abstract states.
+An abstract counterexample of a Horn clause system is a refutation tree, some of whose leaves may be abstract states.
 For a formal definition, we introduce the transformation of clauses $\simplifiedSubstituteLemmas{\prog, a}$, which for each predicate $P \in \relations$ adds new clauses $ a(P)(\overline{x})\rightarrow P(\overline{x}) $ to the system $\prog$.
 
 
@@ -569,7 +568,7 @@ An \emph{abstract counterexample} of a Horn system $\prog$ with respect to the a
 % Пусть $T$~--- дерево опровержений $\prog' = \substituteLemmas(\prog, a)$.
 % Далее приведена рекурсивная процедура построения дерева опровержений $T'$ для $\prog'' = \simplifiedSubstituteLemmas{\prog, a}$ по дереву $T$.
 Let $T$ be a refutation tree of $\prog' = \substituteLemmas(\prog, a)$.
-The following is a recursive procedure for constructing a refutation tree $T'$ for $\prog'' = \simplifiedSubstituteLemmas{\prog, a}$ given the tree $T$.
+Let us present a recursive procedure for building a refutation tree $T'$ for $\prog'' = \simplifiedSubstituteLemmas{\prog, a}$ given the tree $T$.
 
 % \textbf{База рекурсии}. Пусть $T$ является листом $\tuple{C, \Phi}$, где $C \in \prog'$. Поскольку $\Phi=\body{C}$~--- формула без предикатов, то $C$~--- это
 \textbf{Recursion base}. Let $T$ be a leaf $\tuple{C, \Phi}$, where $C \in \prog'$. Since $\Phi=\body{C}$ is a predicate-free formula, then $C$ is
@@ -599,26 +598,24 @@ C' &\equiv \phi\land R_1(\overline{y}_1) \land \ldots \land R_m(\overline{y}_m) 
 \end{align*}
 
 % Для каждого предиката $R_j$ добавим потомков: $\tuple{C_{n+j}', a(R_j)(\overline{y}_j)}$, где 
-
 For each predicate $R_j$, add children: $\tuple{C_{n+j}', a(R_j)(\overline{y}_j)}$, where
 $C_{n+j}'\equiv a(R_i)(\overline{y}_i)\rightarrow R_j(\overline{y}_j)$.
 % Для каждого $i$, $\hs\models\Phi_i\rightarrow\Phi_i'$ по индукции, поэтому для их конъюнкции имеем $\hs\models\Phi\rightarrow\Phi'$.
-
 For each $i$, $\hs\models\Phi_i\rightarrow\Phi_i'$ by induction, so for their conjunction we have $\hs\models\Phi\rightarrow\Phi'$.
 
 % В конце концов рекурсия придёт к корню дерева $T$, некоторой вершине $\tuple{C, \Phi}$, где $C$~--- запрос из системы $\prog'$.
 % Для него рекурсивно построено дерево $T'$ с корнем $\tuple{C', \Phi'}$. Также по индукции имеем: $\hs\models\Phi\rightarrow\Phi'$. Поскольку $\Phi$ является выполнимой $\signature$-формулой, то $\Phi'$ тоже.
 % Таким образом, $T'$ является деревом опровержения системы $\prog''$.
-Eventually the recursion will come to the root of the tree $T$, some vertex $\tuple{C, \Phi}$, where $C$ is a query from the system $\prog'$.
-A tree $T'$ with root $\tuple{C', \Phi'}$ is recursively built for it. Also by induction we have $\hs\models\Phi\rightarrow\Phi'$. Since $\Phi$ is a satisfiable $\signature$-formula, so is $\Phi'$.
+Eventually the recursion will come to the root of the tree $T$, which is some vertex $\tuple{C, \Phi}$, where $C$ is a query from the system $\prog'$.
+A tree $T'$ with root $\tuple{C', \Phi'}$ is recursively built for it. By induction we have $\hs\models\Phi\rightarrow\Phi'$. Since $\Phi$ is a satisfiable $\signature$-formula, so is $\Phi'$.
 Thus, $T'$ is the refutation tree of the $\prog''$ system.
 
 \begin{proposition}
 % Приведённая процедура \textsc{RecoverCex} является линейной по числу узлов входного дерева опровержения.
-The procedure \textsc{RecoverCex} is linear in the number of nodes in the input refutation tree.
+The procedure \textsc{RecoverCex} is linear in the number of nodes of the input refutation tree.
 \end{proposition}
 
-\subsection{Approach Instantiation Within \pdr{}}\label{sec:beyond-cegar}
+\subsection{Instantiating Approach within \pdr{}}\label{sec:beyond-cegar}
 
 % Приведённый алгоритм позволяет выводить комбинированные инварианты в классе $\elemclass{}\uplus\regclass{}$, т.\:е. индуктивные инварианты, выразимые формулами вида
 % $\phi(\overline{x})\,\lor\,\overline{x}\!\in\!L$,
@@ -626,15 +623,14 @@ The procedure \textsc{RecoverCex} is linear in the number of nodes in the input 
 % Реализация подхода в рамках \pdr{} как сложной инстанциации \cegar{} может быть обобщена для автоматического вывода инвариантов в полном бескванторном фрагменте $\regelemclass{}$, состоящем из формул следующего вида:
 The above algorithm allows inferring combined invariants in the class $\elemclass{}\uplus\regclass{}$, i.e. inductive invariants expressible by formulas of the form
 $\phi(\overline{x})\,\lor\,\overline{x}\!\in\!L$,
-where $\phi$ is a first-order formula over an ADT and $L$ is a tree language.
-The implementation of the \pdr{} approach as a complex instantiation of \cegar{} can be generalized for the automatic inference of invariants in the full quantifier-free fragment $\regelemclass{}$, consisting of formulas of the following form:
+where $\phi$ is a first-order formula over ADTs and $L$ is a tree language.
+The implementation of the \pdr{} approach as a complex instantiation of \cegar{} can be generalized for the automatic invariant inference in the full quantifier-free fragment $\regelemclass{}$ with formulas of the following form:
 \begin{align}\label{eq:inv-general-form}
     \bigwedge_i(\phi_i(\overline{x})\,\lor\,\overline{x}\!\in\!L_i).
 \end{align}
 
 % \pdr{} представляет абстрактное состояние в виде конъюнкции формул (называемых \emph{леммами}). Другими словами, в процедуре $\substituteLemmas(\prog, a)$ (см. раздел~\ref{sec:subst_lemmas}) функция $a$ отображает каждый неинтерпретированный символ $P$ в некоторую конъюнкцию $\bigwedge_i \phi_i$. Обобщение подхода получается путём замены в этой процедуре применений неинтерпретированного предикатного символа $P$ на \emph{конъюнкции дизъюнкций} $\bigwedge_i (\phi_i(\overline{t})\lor L_i(\overline{t}))$ с новыми предикатными символами $L_i$. Таким образом, будут выводиться индуктивные инварианты вида~\ref{eq:inv-general-form} выше.
-
-\pdr{} represents an abstract state as a conjunction of formulas (called \emph{lemmas}). In other words, in the procedure $\substituteLemmas(\prog, a)$ (see section~\ref{sec:subst_lemmas}), the function $a$ maps each uninterpreted symbol $P$ to some conjunction $\bigwedge_i \phi_i$. A generalization of the approach is obtained by replacing in this procedure the uninterpreted predicate symbol $P$ with \emph{disjunction conjunction} $\bigwedge_i (\phi_i(\overline{t})\lor L_i(\overline{t}))$ with new predicate symbols $L_i$. Thus, inductive invariants of the form~\ref{eq:inv-general-form} above will be inferred.
+\pdr{} represents its abstract state as a conjunction of formulas (called \emph{lemmas}). In other words, in the procedure $\substituteLemmas(\prog, a)$ (see section~\ref{sec:subst_lemmas}), the function $a$ maps each uninterpreted symbol $P$ to some conjunction $\bigwedge_i \phi_i$. We generalize the approach by replacing each uninterpreted predicate symbol $P$ with \emph{disjunction of conjunctions} $\bigwedge_i (\phi_i(\overline{t})\lor L_i(\overline{t}))$ with fresh predicate symbols $L_i$. Thus, inductive invariants of the above form~\ref{eq:inv-general-form} will be inferred by the modified \pdr{}.
 
 \section{Conclusion}
 % Предложенный класс комбинированных инвариантов, построенный на регулярных инвариантах, позволяет выражать как классические символьные инварианты, так и сложные рекурсивные отношения.
@@ -642,6 +638,6 @@ The implementation of the \pdr{} approach as a complex instantiation of \cegar{}
 % Кроме того, для него предложен эффективный метод вывода инвариантов, позволяющий путём небольшой модификации переиспользовать существующие эффективные алгоритмы вывода инвариантов для комбинируемых классов.
 % В следующей главе на теоретическом уровне сопоставлены существующие и предложенные классов индуктивных инвариантов.
 The proposed class of combined invariants, built on regular invariants, allows one to express both classical symbolic invariants and complex recursive relations.
-Thus, the proposed class of invariants is expressive enough for practice.
-Additionally, an efficient method for inferring invariants has been proposed for it, which allows the reuse of existing efficient invariant inference algorithms for combined classes with a minor modification.
-In the next chapter, existing and proposed classes of inductive invariants are theoretically compared.
+Thus, the proposed class of invariants should be expressive enough for practice.
+Additionally, an efficient invariant inference method in the class has been proposed. The method reuses existing efficient invariant inference algorithms for combined classes by a minor modification of one of them.
+The next chapter is dedicated to a theoretical comparison of existing and proposed classes of inductive invariants.
