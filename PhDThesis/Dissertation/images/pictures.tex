@@ -116,27 +116,39 @@
 
 \newcommand{\defPumpLemmaElem}{%
 \begin{restatable}[\textbf{Лемма о <<накачке>> для класса \elemclass{}}]{lemma}{pumplemmaelem}\label{lemm:pump-elem}
-Для любого элементарного языка $n$-кортежей $\formallang{}$ существует константа $K > 0$, такая что для каждого кортежа термов $\tuple{g_1,\ldots,g_n} \in \formallang{}$,
-для любого $i$, такого что $\height{g_i} > K$,
-для всех бесконечных сортов $\sigma \in \sorts$ и для всех путей $p$ в терме $g$ с глубиной большей $K$,
-существует набор конечных последовательностей путей $P_j$, где $p \in P_i$
-и для всех $p_1, p_2 \in \bigcup_j P_j$ верно что $p_1(g) = p_2(g)$,
-и найдётся константа $N \geq 0$, такие что для любого терма $t$ сорта $\sigma$ c $\height{t} > N$, имеет место следующее:
-$$\tuple{g_1[P_1\leftarrow t],\ldots,g_i[P_i\leftarrow t],\ldots,g_n[P_n\leftarrow t]} \in \formallang{}.$$
+$ $
+
+\begin{itemize}
+\item Для любого элементарного языка $n$-кортежей $\formallang{}$
+\item существует константа $K > 0$ такая, что
+\item для каждого кортежа термов $\tuple{g_1,\ldots,g_n} \in \formallang{}$,
+\item для любого $i$ такого, что $\height{g_i} > K$,
+\item для всех бесконечных сортов $\sigma \in \sorts$ и
+\item для всех путей $p$ в терме $g$ с глубиной большей $K$
+\item существует набор конечных последовательностей путей $P_j$,
+\item где $p \in P_i$ и для всех $p_1, p_2 \in \bigcup_j P_j$ верно, что $p_1(g) = p_2(g)$,
+\item и найдётся константа $N \geq 0$ такая, что
+\item для любого терма $t$ сорта $\sigma$ c $\height{t} > N$ имеет место следующее:
+\end{itemize}
+$$\tuple{g_1[P_1\leftarrow t], \ldots, g_i[P_i\leftarrow t], \ldots, g_n[P_n\leftarrow t]} \in \formallang{}.$$
 \end{restatable}
 }
 
 \newcommand{\defPumpLemmaSizeElem}{%
 \begin{restatable}[\textbf{Лемма о <<накачке>> для класса \sizeelemclass{}}]{lemma}{pumplemmasizeelem}\label{lemm:pump-sizeelem}
-Пусть есть некоторая расширяющая АТД-сигнатура и $\formallang{}$~--- элементарный язык $n$-кортежей с ограничениями на размер теремов. Существует константа $K > 0$, такая что:
-для каждого кортежа термов $\tuple{g_1,\ldots,g_n} \in \formallang{}$,
-для любого $i$, такого что $\height{g_i} > K$,
-для всех бесконечных сортов $\sigma \in \sorts$ и для всех путей $p$ в терме $g$ с глубиной большей $K$,
-существует бесконечное линейное множество $T \subseteq \sizesOfSort{\sigma}$, такое что
-для любых термов $t$ сорта $\sigma$ с размером $\sizename{}(t) \in T$,
-существует набор последовательностей путей $P_j$, ни один путь из которых не является суффиксом пути $p$
-и набор последовательностей термов $U_j$, такие что
-$$\tuple{g_1[P_1\!\leftarrow\! U_1],\ldots,g_i[p \!\leftarrow\! t, P_i \!\leftarrow\! U_i],\ldots,g_n[P_n \!\leftarrow\! U_n]} \in \formallang{}.$$
+Пусть есть некоторая расширяющая АТД-сигнатура и $\formallang{}$~--- элементарный язык $n$-кортежей с ограничениями на размер теремов. Тогда
+\begin{itemize}
+\item существует константа $K > 0$ такая, что
+\item для каждого кортежа термов $\tuple{g_1,\ldots,g_n} \in \formallang{}$,
+\item для любого $i$ такого, что $\height{g_i} > K$,
+\item для всех бесконечных сортов $\sigma \in \sorts$ и
+\item для всех путей $p$ в терме $g$ с глубиной большей $K$
+\item существует бесконечное линейное множество $T \subseteq \sizesOfSort{\sigma}$ такое, что
+\item для любых термов $t$ сорта $\sigma$ с размером $\sizename{}(t) \in T$,
+\item существует набор последовательностей путей $P_j$, в котором ни один путь не является суффиксом пути $p$,
+\item и набор последовательностей термов $U_j$ такие, что
+\end{itemize}
+$$\tuple{g_1[P_1\!\leftarrow\! U_1], \ldots, g_i[p \!\leftarrow\! t, P_i \!\leftarrow\! U_i], \ldots, g_n[P_n \!\leftarrow\! U_n]} \in \formallang{}.$$
 \end{restatable}
 }
 
@@ -173,7 +185,7 @@ $$\tuple{g_1[P_1\!\leftarrow\! U_1],\ldots,g_i[p \!\leftarrow\! t, P_i \!\leftar
 
 \newcommand{\toolplotOne}{
 \pgfplotstableread[col sep = comma]{Dissertation/images/experiments1.csv}\all
-\begin{figure}[t!]
+\begin{figure}[h]
 \begin{center}
 \begin{tikzpicture}[scale=1.2]
 \begin{axis}[xmode=log, ymode=log, legend pos= north west, xlabel={Время работы \ringen{\cvc{}}, мс}, xlabel style = {align=center,font=\footnotesize}, ylabel style = {align=center,font=\footnotesize}, ylabel={Время работы {\color{red}\racer{}}, {\color{blue}\eldarica{}},\\{\color{brown}\cvcind{}} и {\color{cyan}\verimap{}}, мс}]

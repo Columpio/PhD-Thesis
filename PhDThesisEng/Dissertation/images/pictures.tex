@@ -116,29 +116,38 @@
 
 \newcommand{\defPumpLemmaElem}{%
 \begin{restatable}[Pumping Lemma for \elemclass{}]{lemma}{pumplemmaelem}\label{lemm:pump-elem}
-Let $\formallang{}$ be an elementary language of $n$-tuples. Then, there exists a constant $K > 0$ satisfying: for every $n$-tuples of ground terms $\tuple{g_1,\ldots,g_n} \in \formallang{}$,
-for any $i$ such that $\height{g_i} > K$,
-for all infinite sorts $\sigma \in \sorts$ and for all paths $p$ with a length greater than $K$,
-there exist finite sets of paths $P_j$ such that $p \in P_i$,
-for all $p_1, p_2 \in \bigcup_j P_j$ it is true that $p_1(g) = p_2(g)$,
-and there is $N \geq 0$, such that for all $t$ of sort $\sigma$ with $\height{t} > N$ it holds that:
+Let $\formallang{}$ be an elementary language of $n$-tuples. Then,
+\begin{itemize}
+    \item there exists a constant $K > 0$ satisfying:
+    \item for every $n$-tuples of ground terms $\tuple{g_1,\ldots,g_n} \in \formallang{}$,
+    \item for any $i$ such that $\height{g_i} > K$,
+    \item for all infinite sorts $\sigma \in \sorts$ and
+    \item for all paths $p$ with a length greater than $K$,
+    \item there exist finite sets of paths $P_j$ such that $p \in P_i$,
+    \item for all $p_1, p_2 \in \bigcup_j P_j$ it is true that $p_1(g) = p_2(g)$,
+    \item and there is $N \geq 0$, such that
+    \item for all $t$ of sort $\sigma$ with $\height{t} > N$ it holds that:
+\end{itemize}
 $$\tuple{g_1[P_1\leftarrow t],\ldots,g_i[P_i\leftarrow t],\ldots,g_n[P_n\leftarrow t]} \in \formallang{}.$$
 \end{restatable}
 }
 
 \newcommand{\defPumpLemmaSizeElem}{%
 \begin{restatable}[Pumping Lemma for \sizeelemclass{}]{lemma}{pumplemmasizeelem}\label{lemm:pump-sizeelem}
-Let the ADT signature be expanding and let $\formallang{}$ be an elementary language of $n$-tuples with size constraints. Then, there exists a constant $K > 0$ satisfying:
-for every $n$-tuple of ground terms $\tuple{g_1,\ldots,g_n} \in \formallang{}$,
-for any $i$, such that $\height{g_i} > K$,
-for all infinite sorts $\sigma \in \sorts$,
-and for all paths $p \in \leafpos{\sigma}{g_i}$ with length greater than $K$,
-there exists an infinite linear set $T \subseteq \sizesOfSort{\sigma}$, such that
-for all terms $t$ of sort $\sigma$ with sizes $\sizename{}(t) \in T$,
-there exist sequences of paths $P_j$, with no path in them being a suffix of path $p$,
-and sequences of terms $U_j$, such that
+Let the ADT signature be expanding and let $\formallang{}$ be an elementary language of $n$-tuples with size constraints. Then,
+\begin{itemize}
+\item there exists a constant $K > 0$ satisfying:
+\item for every $n$-tuple of ground terms $\tuple{g_1,\ldots,g_n} \in \formallang{}$,
+\item for any $i$, such that $\height{g_i} > K$,
+\item for all infinite sorts $\sigma \in \sorts$, and
+\item for all paths $p \in \leafpos{\sigma}{g_i}$ with length greater than $K$,
+\item there exists an infinite linear set $T \subseteq \sizesOfSort{\sigma}$, such that
+\item for all terms $t$ of sort $\sigma$ with sizes $\sizename{}(t) \in T$,
+\item there exist sequences of paths $P_j$, with no path in them being a suffix of path $p$,
+\item and sequences of terms $U_j$, such that
+\end{itemize}
 $$\tuple{g_1[P_1\!\leftarrow\! U_1],\ldots,g_i[p \!\leftarrow\! t, P_i \!\leftarrow\! U_i],\ldots,g_n[P_n \!\leftarrow\! U_n]} \in \formallang{}.$$
-    \end{restatable}
+\end{restatable}
 }
 
 \newcommand{\invariantreprclasses}[1]

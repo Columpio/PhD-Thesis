@@ -5,7 +5,7 @@
 % Метод, представленный в разделе~\cref{sec:cici/inference}, позволяет модифицировать любой основанный на направляемом контрпримерами уточнении абстракций (\cegar{}) алгоритм вывода инвариантов в языке ограничений таким образом, чтобы он эффективно выводил комбинированные инварианты. Модификация этого метода  состоит в коллаборативном взаимообмене информацией с алгоритмом вывода инвариантов в классе, с которым производится комбинация (эта идея описана в  разделе~\cref{sec:cici/idea}).
 This chapter proposes a method for the combined invariant inference.
 Combined invariants (Section~\cref{sec:cici/combinedInvs}) are invariants expressible in the extension of the constraint language with predicates checking term membership in a set from some fixed class.
-The method presented in Section~\cref{sec:cici/inference} is an extension of a counterexample-guided abstraction refinement (\cegar{}) algorithm for inference of combined invariants. The modification involves a collaborative information exchange with the invariant inference algorithm for the class with which it is combined (the core idea is described in Section~\cref{sec:cici/idea}).
+The method presented in Section~\cref{sec:cici/inference} is an extension of a counterexample-guided abstraction refinement (\cegar{})~\cite{cegar} algorithm for inference of combined invariants. The modification involves a collaborative information exchange with the invariant inference algorithm for the class with which it is combined (the core idea is described in Section~\cref{sec:cici/idea}).
 The chapter is based on~\cite{LPAR2023:Collaborative_Inference_of_Combined}.
 
 \section{Core Idea of Collaborative Inference}\label{sec:cici/idea}
@@ -70,7 +70,7 @@ $\invClass$ is called the \emph{domain} of the verifier. Note that in general a 
 Let there be a complete lattice $\abstrDomain = \tuple{\theAbstrDomain, \asubseteq, \abot, \atop, \acap, \acup}$, which will be called an \emph{abstract domain} and its elements will be called \emph{abstract states}.
 
 % \emph{Связка Галуа} (Galois connection) или \emph{абстракция}~--- это пара отображений $\tuple{\alpha,\gamma}$ между частично упорядоченными множествами $\tuple{\states, \csubseteq}$ и $\tuple{\abstrDomain, \asubseteq}$, таких что:
-A \emph{Galois connection} or an \emph{abstraction} is a pair of mappings $\tuple{\alpha,\gamma}$ between posets $\tuple{\states, \csubseteq}$ and $\tuple{\abstrDomain, \asubseteq}$ such that:
+A \emph{Galois connection}~\cite{loiseaux1995property} or an \emph{abstraction} is a pair of mappings $\tuple{\alpha,\gamma}$ between posets $\tuple{\states, \csubseteq}$ and $\tuple{\abstrDomain, \asubseteq}$ such that:
 \begin{align*}
   \alpha &: \states \mapsto \abstrDomain \qquad \gamma :\abstrDomain \mapsto \states\\
   \forall x \in \states\ &\forall y \in \abstrDomain\ \alpha\left(x\right) \asubseteq y \Leftrightarrow x \csubseteq \gamma\left(y\right).
@@ -84,7 +84,7 @@ In what follows, it is assumed that checks of the form $\gamma(a) \csubseteq \pr
 
 \begin{define}
 % \emph{Абстрактная функция перехода} $\theapost : \abstrDomain \mapsto \abstrDomain$ <<поднимает>> функцию перехода в абстрактный домен, т.\:е. для всех $a\in\abstrDomain$ справедливо
-An \emph{abstract transition function} $\theapost : \abstrDomain \mapsto \abstrDomain$ ``lifts'' a transition function to the abstract domain, i.e., for all $a\in\abstrDomain$ holds
+An \emph{abstract transition function} $\theapost : \abstrDomain \mapsto \abstrDomain$ ``lifts'' a transition function to the abstract domain, i.e., for all $a\in\abstrDomain$ holds:
 \[\alpha(\post{\gamma(a)})\asubseteq\apost{a}.\]
 \end{define}
 
@@ -93,7 +93,7 @@ The following classical theorem from~\cite{10.1145/512950.512973} shows how abst
 
 \begin{theorem}
 % Пусть дана программа $TS=\tuple{\states, \init, \thepost}$ и свойство $\property$. Тогда $\gamma(a)$ является индуктивным инвариантом $\tuple{TS, \property}$, если существует элемент $a \in \abstrDomain$, такой, что
-Let $TS=\tuple{\states, \init, \thepost}$ be the program and $\property$ be the property. Then $\gamma(a)$ is an inductive invariant of $\tuple{TS, \property}$ if there exists an element $a \in \abstrDomain$ such that
+Let $TS=\tuple{\states, \init, \thepost}$ be the program and $\property$ be the property. Then $\gamma(a)$ is an inductive invariant of $\tuple{TS, \property}$ if there exists an element $a \in \abstrDomain$ such that:
 \[
     \alpha(\init)\asubseteq a,\quad
     \apost{a} \asubseteq a,\quad
@@ -227,7 +227,7 @@ The \texttt{tr} function performs the transformation on the representation of th
 % Однако у неё есть комбинированные инварианты в $\elemclass{}\uplus\regclass{}$.
 % Так, для любых программ $p, t : Prog$, функция $\texttt{ok}(p)$ возвращает \texttt{true}, если имеем
 This program is safe with respect to the property but it has no inductive invariants expressible in the \elemclass{} or \regclass{} classes.
-However, it has combined invariants in $\elemclass{}\uplus\regclass{}$. That is, for any programs $p, t : Prog$ function $\texttt{ok}(p)$ returns \texttt{true} if we have
+However, it has combined invariants in $\elemclass{}\uplus\regclass{}$. That is, for any programs $p, t : Prog$ function $\texttt{ok}(p)$ returns \texttt{true} iff the following holds:
 \begin{align}\label{eq:for-join-ok-inv}
     p \in \evenInv{}.
 \end{align}
@@ -575,13 +575,14 @@ The following is a recursive procedure for constructing a refutation tree $T'$ f
 \textbf{Recursion base}. Let $T$ be a leaf $\tuple{C, \Phi}$, where $C \in \prog'$. Since $\Phi=\body{C}$ is a predicate-free formula, then $C$ is
 $$ \phi\land a(P_1)(\overline{x}_1)\land\ldots\land a(P_n)(\overline{x}_n)\land \neg a(P)(\overline{x})\rightarrow P(\overline{x}),$$
 % Построим $T'$ как $\tuple{C', \Phi'}$, где
-We construct $T'$ as $\tuple{C', \Phi'}$, where
+Let us build $T'$ as $\tuple{C', \Phi'}$, where
 \[
     C' \equiv \phi\land P_1(\overline{x}_1)\land\ldots\land P_n(\overline{x}_n) \rightarrow P(\overline{x})\quad\text{ and }\quad \Phi' \equiv \phi \land a(P_1)(\overline{x}_1) \land 
 \ldots \land a(P_n)(\overline{x}_n),
 \]
 %с $n$ дочерними листьями $\tuple{C_i', a(P_i)(\overline{x}_i)}$, где $C_i'\equiv a(P_i)(\overline{x}_i)\rightarrow P_i(\overline{x}_i)$. Определение дерева опровержения для $T'$ тривиально выполняется. Заметим, что $\hs\models\Phi\rightarrow\Phi'$.
-!!!
+with $n$ leaf children $\tuple{C_i', a(P_i)(\overline{x}_i)}$, where $C_i'\equiv a(P_i)(\overline{x}_i)\rightarrow P_i(\overline{x}_i)$. 
+The definition of the refutation tree is trivially satisfied. Note that $\hs\models\Phi\rightarrow\Phi'$.
 
 % \textbf{Итерация рекурсии}. Пусть $T$~--- узел $\tuple{C,\Phi}$ с детьми $\tuple{C_1, \Phi_1},\ldots,\tuple{C_n, \Phi_n}$, все $C_i \in \rules{P_i}$ из $\prog'$ и
 \textbf{Recursion step}. Let $T$ be a of node $\tuple{C,\Phi}$ with children $\tuple{C_1, \Phi_1},\ldots,\tuple{C_n, \Phi_n}$, all $C_i \in \rules{P_i}$ from $\prog'$ and
