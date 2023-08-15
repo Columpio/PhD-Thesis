@@ -305,8 +305,8 @@ In particular, its initial states $\init'$ are $\post{A} \setminus A$, i.e., the
 % Если второй верификатор найдёт индуктивный инвариант остаточной системы, т.\:е. некую индуктивную аппроксимацию $B$ неиндуктивных состояний, то $A \ccup B$ будет индуктивным инвариантом исходной системы.
 % Иными словами, путём построения остаточной системы алгоритм берёт безопасную, но неиндуктивную часть текущего кандидата в инварианты и передаёт её сотрудничающему верификатору, чтобы он дополнил её до неподвижной точки, т.\:е. индуктивного инварианта.
 The main idea of the \ourCEGAR{} algorithm is to use an additional verifier $\oracle$ to \emph{weaken} the non-inductive state set $A$ to some fixed point in the combined class.
-If the second verifier finds an inductive invariant of the residual system, i.e. some inductive approximation $B$ of non-inductive states, then $A \ccup B$ will be an inductive invariant of the original system.
-In other words, by building a residual system, the algorithm takes the safe but non-inductive part of the current invariant candidate and passes it to a collaborating verifier to complete it to a fixed point, i.e. inductive invariant.
+If the second verifier finds an inductive invariant of the residual system, i.e., some inductive approximation $B$ of non-inductive states, then $A \ccup B$ will be an inductive invariant of the original system.
+In other words, by building a residual system, the algorithm takes the safe but non-inductive part of the current invariant candidate and passes it to a collaborating verifier to complete it to a fixed point, i.e., inductive invariant.
 
 % Современные подходы к выводу индуктивных инвариантов программ, такие как \pdr{} (который можно рассматривать как усложнённый вариант \cegar{}), монотонно \emph{усиливают} кандидат в инварианты $A$ до тех пор, пока он не станет индуктивным.
 % Из-за этого проблемой таких подходов является выбор стратегии усиления~\cite{krishnan2020global}: из-за слишком резкого усиления могут быть пропущены нужные неподвижные точки, в то время как из-за медленного усиления алгоритм может сходиться к неподвижной точке слишком долго или вовсе расходиться.
@@ -450,7 +450,7 @@ s \models B \right\}.
 \end{align*}
 
 % Без потери общности предположим, что система дизъюнктов Хорна $\prog$ имеет единственный предикат в запросе $Q$, т.\:е. далее будем рассматривать только системы полученные следующим образом:
-Assume without loss of generality that the Horn clause system $\prog$ has a single query predicate $Q$, i.e. further, we will consider only systems obtained as follows:
+Assume without loss of generality that the Horn clause system $\prog$ has a single query predicate $Q$, i.e., further, we will consider only systems obtained as follows:
 $$ \prog' \eqdef \rules{\prog}\cup\left\{ \body{C}(\overline{x})\rightarrow Q(\overline{x})\mid C \text{ is a query of }\prog\right\}\cup\{Q(\overline{x})\rightarrow\bot\}.$$
 % Система дизъюнктов определяет свойство для системы переходов как: $\property(Q)\eqdef\bot$ и для каждого $P\in\relations$, $\property(P)\eqdef\top$.
 The clause system defines a property for the transition system as: $\property(Q)\eqdef\bot$ and for each $P\in\relations$, $\property(P)\eqdef\top$.
@@ -621,7 +621,7 @@ The procedure \textsc{RecoverCex} is linear in the number of nodes of the input 
 % $\phi(\overline{x})\,\lor\,\overline{x}\!\in\!L$,
 % где $\phi$~--- формула первого порядка над АТД, а $L$~--- язык деревьев.
 % Реализация подхода в рамках \pdr{} как сложной инстанциации \cegar{} может быть обобщена для автоматического вывода инвариантов в полном бескванторном фрагменте $\regelemclass{}$, состоящем из формул следующего вида:
-The above algorithm allows inferring combined invariants in the class $\elemclass{}\uplus\regclass{}$, i.e. inductive invariants expressible by formulas of the form
+The above algorithm allows inferring combined invariants in the class $\elemclass{}\uplus\regclass{}$, i.e., inductive invariants expressible by formulas of the form
 $\phi(\overline{x})\,\lor\,\overline{x}\!\in\!L$,
 where $\phi$ is a first-order formula over ADTs and $L$ is a tree language.
 The implementation of the \pdr{} approach as a complex instantiation of \cegar{} can be generalized for the automatic invariant inference in the full quantifier-free fragment $\regelemclass{}$ with formulas of the following form:

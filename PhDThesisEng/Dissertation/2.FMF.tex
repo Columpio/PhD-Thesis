@@ -63,7 +63,7 @@ This formula is satisfied by the following finite model $\structure$.
 % ограничений в дизъюнктах выполняется в некоторой модели $\structure$, т.\:е. $\structure\models C$ для всех $C\in\prog$. Пусть также справедливо следующее:
 % \[X_i\eqdef \{\tuple{t_1,\ldots,t_n} \mid \tuple{\interprets{\structure}{t_1},\ldots,\interprets{\structure}{t_n}} \in \structure(P_i)\}.\]
 % Тогда $\tuple{\hs,X_1,\ldots,X_k}$ является индуктивным инвариантом $\prog$.
-Assume that a Horn clause system without constraints $\prog$ with uninterpreted predicates $\relations=\{P_1,\ldots,P_k\}$ is satisfied in some model $\structure$, i.e. $\structure\models C$ for all $C\in\prog$. Let the following be true:
+Assume that a Horn clause system without constraints $\prog$ with uninterpreted predicates $\relations=\{P_1,\ldots,P_k\}$ is satisfied in some model $\structure$, i.e., $\structure\models C$ for all $C\in\prog$. Let the following be true:
 \[X_i\eqdef \{\tuple{t_1,\ldots,t_n} \mid \tuple{\interprets{\structure}{t_1},\ldots,\interprets{\structure}{t_n}} \in \structure(P_i)\}.\]
 Then $\tuple{\hs,X_1,\ldots,X_k}$ is an inductive invariant of $\prog$.
 \end{lemma}
@@ -231,7 +231,7 @@ However, this CHC system has a less obvious regular invariant based on two $ 2 $
 \exampleOne
 
 % Автомат для $ inc $ проверяет, что $ (x \, \mathit{mod} \, 3, \, y \, \mathit{mod} \, 3) \in \{(0,1), (1 , 2), (2,0) \} $, а автомат для $ dec $ проверяет, что $ (x \, \mathit{mod} \, 3, \, y \, \mathit{mod} \, 3) \in \{(1,0), (2,1), (0,2) \} $. Эти отношения аппроксимируют сверху денотационную семантику $ inc $ и $ dec $ и при этом доказывают невыполнимость формулы $ inc (x, y) \land dec (x, y) $.
-The automaton for $inc$ predicate checks that $ (x \, \mathit{mod} \, 3, \, y \, \mathit{mod} \, 3) \in \{(0,1), (1 , 2 ), (2,0) \} $, and the automaton for $ dec $ checks that $ (x \, \mathit{mod} \, 3, \, y \, \mathit{mod} \, 3) \in \{(1,0),(2,1),(0,2)\}$. These relations overapproximate the denotational semantics of $inc$ and $dec$ and prove the unsatisfiability of the formula $inc(x, y) \land dec(x, y)$.
+The automaton for $inc$ predicate checks that $ (x \, \mathit{mod} \, 3, \, y \, \mathit{mod} \, 3) \in \{(0,1), (1, 2 ), (2,0) \} $, and the automaton for $ dec $ checks that $ (x \, \mathit{mod} \, 3, \, y \, \mathit{mod} \, 3) \in \{(1,0),(2,1),(0,2)\}$. These relations overapproximate the denotational semantics of $inc$ and $dec$ and prove the unsatisfiability of the formula $inc(x, y) \land dec(x, y)$.
 % Таким образом, хотя многие отношения нерегулярны, у программ могут существовать неочевидные регулярные инварианты.
 Therefore, although many relations might be not regular, programs still may have non-obvious regular invariants.
 \end{example}
