@@ -53,7 +53,7 @@
 
 \newcolumntype{x}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}p{#1}}
 
-\usepackage[vlined,linesnumbered,boxruled,algo2e]{algorithm2e}
+\usepackage[vlined,linesnumbered]{algorithm2e}
 \DontPrintSemicolon{}
 \SetNlSty{bfseries}{\color{black}}{}
 \SetKwIF{If}{ElseIf}{Else}{если}{то}{elif}{иначе}{}
@@ -92,3 +92,21 @@
 \newtheorem{define}{Определение}
 \newtheorem{rewriting}{Правило переписывания}
 \newtheorem{resquest}{Исследовательский вопрос}
+
+\usepackage{float}
+\floatstyle{boxed}
+\newfloat{mylisting}{tbph}{lol}[chapter]
+\floatname{mylisting}{Листинг}
+
+\makeatletter
+\renewcommand*{\float@listhead}[1]{%
+  \@ifundefined{chapter}{%
+    \section*{#1}%
+    \addcontentsline{toc}{section}{#1}%
+  }{%
+    \chapter*{#1}%
+    \addcontentsline{toc}{chapter}{#1}%
+  }%
+  \@mkboth{\MakeUppercase{#1}}{\MakeUppercase{#1}}%
+}
+\makeatother

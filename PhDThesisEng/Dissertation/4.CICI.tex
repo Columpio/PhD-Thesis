@@ -101,7 +101,8 @@ Let $TS=\tuple{\states, \init, \thepost}$ be the program and $\property$ be the 
 \]
 \end{theorem}
 
-\begin{algorithm2e}[t]
+\begin{mylisting}
+\begin{algorithm}[H]
 	\KwIn{program $TS$ and property $\property$.}
 	\KwOut{$SAFE$ and inductive invariant\\\quad or $UNSAFE$ and counterexample.}
 	\BlankLine
@@ -115,9 +116,10 @@ Let $TS=\tuple{\states, \init, \thepost}$ be the program and $\property$ be the 
 	    }
         $\tuple{\alpha, \gamma} \leftarrow \textsc{Refine}(\tuple{\alpha, \gamma}, cex)$\;
 	}
+\end{algorithm}
 \caption{\cegar{} for transition systems}
 \label{code:oldcegar}
-\end{algorithm2e}
+\end{mylisting}
 
 % Псевдокод подхода \cegar{} для систем переходов представлен на листинге~\ref{code:oldcegar}.
 % Алгоритм начинается с построения начальной абстракции $\tuple{\alpha, \gamma}$, например, с помощью тривиальных отображений $\alpha(s) = \abot$ и $\gamma(a) = \ctop$.
@@ -193,10 +195,8 @@ For example, the term \texttt{Fork(Join(Seq))} represents a program that forks n
 % Это свойство вместе с самой трансформацией может быть представлено функциональной программой на листинге~\ref{fig:ex-fork-join}.
 The described transformation has a property that if the source program consists of a sequence of consecutive forks and joins of threads, then it can never be transformed into itself.
 This property together with the transformation itself can be represented by the functional program in Listing~\ref{fig:ex-fork-join}.
-{\renewcommand{\figurename}{Listing}
-\begin{figure}
-    \centering
-\begin{minted}[breaklines,escapeinside=@@,linenos,frame=single,framesep=10pt]{fsharp}
+\begin{mylisting}
+\begin{minted}[breaklines,escapeinside=@@,linenos,xleftmargin=25pt]{fsharp}
 type Prog = Seq | Fork of Prog | Join of Prog
 fun randomTransform() : Prog
 fun nondet() : bool
@@ -216,9 +216,9 @@ fun ok(p : Prog) : bool =
 (* for any program p : Prog *)
 assert (not ok(p) or tr(p) <> p)
 \end{minted}
-    \caption{Example of a functional program with algebraic data types}
-    \label{fig:ex-fork-join}
-\end{figure}}
+\caption{Example of a functional program with algebraic data types}
+\label{fig:ex-fork-join}
+\end{mylisting}
 
 % Функция \texttt{tr} выполняет описанную выше трансформацию над представлением программы алгебраическим типом данных $Prog$, в частности, вводит произвольные преобразования потоков, вызывая функцию \texttt{randomTransform}. Функция \texttt{ok} проверяет, что программа является последовательностью подряд идущих операций разветвления (\texttt{Fork}) и объединения (\texttt{Join}) потоков. Утверждение в конце кодирует свойство, которое необходимо проверить.
 The \texttt{tr} function performs the transformation on the representation of the program by the $Prog$ algebraic data type, in particular, it introduces arbitrary thread transformations by calling the \texttt{randomTransform} function. The \texttt{ok} function checks that the program is a sequence of consecutive forks (\texttt{Fork}) and joins (\texttt{Join}) of threads. The statement at the end encodes the property to be checked.
@@ -243,7 +243,8 @@ where $t \not\in \evenInv{}$ means that the ADT term $t$ \emph{is not} contained
 % \end{figure}
 \end{example}
 
-\begin{algorithm2e}[t!]
+\begin{mylisting}
+\begin{algorithm}[H]
 	\KwData{verifier $\oracle$ over domain $\blackBoxDomain$}
 	\KwIn{a program $TS$ and a property $\property$}
 	\KwOut{$SAFE$ with a combined invariant in $\abstrDomain\uplus\blackBoxDomain$\\or $UNSAFE$ with counterexample $cex$}
@@ -260,15 +261,17 @@ where $t \not\in \evenInv{}$ means that the ADT term $t$ \emph{is not} contained
 	    }
         $\tuple{\alpha, \gamma} \leftarrow \textsc{Refine}(\tuple{\alpha, \gamma}, cex)$\;
 	}
+\end{algorithm}
 \caption{\ourCEGAR{}}
 \label{code:cegar}
-\end{algorithm2e}
+\end{mylisting}
 
 \paragraph{\textbf{Description of \ourCEGAR{}.}}
 % Предлагаемый подход представлен на листинге~\ref{code:cegar}. Алгоритм работает аналогично классическому \cegar{}, представленному в разделе~\ref{sec:cici/origCEGAR}, но также в начале каждой итерации он асинхронно опрашивает коллаборирующий верификатор $\oracle$ путём вызова процедуры \RunBlackBox{} (строка~\ref{line:call-bb}). Вызовы делаются асинхронно, чтобы предотвратить зацикливание алгоритма.
 The proposed approach is shown in Listing~\ref{code:cegar}. The algorithm works similarly to the classic \cegar{} presented in Section~\ref{sec:cici/origCEGAR}, but it also asynchronously polls the collaborating verifier $\oracle$ by calling the \RunBlackBox{} procedure (line~\ref{line:call-bb}) at the beginning of each iteration. The calls are made asynchronously to prevent the algorithm from diverging if $\oracle$ diverges.
 
-\begin{algorithm2e}[t!]
+\begin{mylisting}
+\begin{algorithm}[H]
 	\KwData{Verifier $\oracle$ over domain $\blackBoxDomain$}
 	\KwIn{Program $TS = \tuple{\states, \init, \thepost}$, property $\property$, abstraction $\tuple{\alpha, \gamma}$, state set $A$ such that $A=\cbot$ or $\init \subseteq A \subseteq \property$}
 % \KwOut{$SAFE$ с комбинированным инвариантом}
@@ -280,9 +283,10 @@ The proposed approach is shown in Listing~\ref{code:cegar}. The algorithm works 
 	}
 	$\widehat{cex} \leftarrow \textsc{RecoverCex}\left(TS, \property, \tuple{\alpha, \gamma}, A, cex\right)$\label{line:recover-cex}\;
 	$\tuple{\alpha, \gamma}\leftarrow \textsc{Refine}(\tuple{\alpha, \gamma}, \widehat{cex})$\label{line:overwrite-abstraction}\;
+\end{algorithm}
 \caption{The \RunBlackBox{} subroutine.}
 \label{code:runblackbox}
-\end{algorithm2e}
+\end{mylisting}
 
 % Процедура {\textbf{\RunBlackBox}} представлена на листинге~\ref{code:runblackbox}. По исходную проблему безопасности, текущей абстракции и множеству состояний $A = \gamma(a)$ для некоторого $a\in\abstrDomain$ она строит новую \emph{остаточную} систему переходов:
 The {\textbf{\RunBlackBox}} procedure is shown in Listing~\ref{code:runblackbox}. Given the original safety problem, the current abstraction, and the set of states $A = \gamma(a)$ for some $a\in\abstrDomain$, it constructs a new \emph{residual} transition system:
@@ -470,17 +474,18 @@ The \RunBlackBox{} procedure starts by building the residual system $$\tuple{\po
 The $\substituteLemmas$ procedure from Listing~\ref{code:residual-chc} constructs a system equivalent to such a residual system by transforming the original Horn clause system $\prog$ in two steps.
 It takes as input the original system $\prog$ and an elementary model $a$ as input.
 
-\begin{algorithm2e}[h]
+\begin{mylisting}
+\begin{algorithm}[H]
 	\KwIn{Horn clause system $\prog$, elementary model $a$.}
 	\KwOut{Residual Horn system $\prog'$.}
 	\BlankLine
 
     $\Phi \gets \prog\text{ with atoms }P(\overline{t})\text{ replaced by }a(P)(\overline{t})\lor P(\overline{t})$\label{line:subst-residual}\;
-    \Return $КНФ(\Phi)$\label{line:cnf}\;
-
+    \Return $CNF(\Phi)$\label{line:cnf}\;
+\end{algorithm}
 \caption{\substituteLemmas{} algorithm for generation of a residual CHC system.}
 \label{code:residual-chc}
-\end{algorithm2e}
+\end{mylisting}
 
 
 % Процедура заменяет каждый атом $P(t_1,\ldots,t_m)$ в головках и телах Хорн-системы дизъюнкцией $a(P)(t_1,\ldots,t_m)\lor P(t_1,\ldots,t_m)$ (стр.~\ref{line:subst-residual}). Затем она перемещает $\signature$-формулу из головы в тело с отрицанием и разделяет дизъюнкт по дизъюнкции в теле, приводя его в КНФ. Например, дизъюнкт 
