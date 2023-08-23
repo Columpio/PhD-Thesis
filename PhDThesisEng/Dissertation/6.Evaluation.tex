@@ -61,7 +61,7 @@ This implementation will be referred to as $\ringenCICI{\verifier{}}$ in the fut
 % При этом поддерживаются следующие возможности: если набор лемм $\{\phi_i\}$ был построен на уровне $n$, то $\bigwedge_i \phi_i$ аппроксимирует сверху все состояния, достижимые менее чем за $n$ шагов перехода, и аппроксимирует снизу свойство безопасности.
 % Таким образом, леммы в PDR выполняют требование абстракции в процедуре \RunBlackBox{} (алгоритм~\ref{code:runblackbox}).
 % Хорн-решатель \racer{} был модифицирован в рамках данного диссертационного исследования таким образом, чтобы в конце каждой итерации набор лемм последнего уровня асинхронно передавался новому процессу инструмента $\ringen{\verifier{}}$.
-The \racer{} Horn solver was developed by Arie Gurfinkel and Hari Govind Vediramana Krishnan from the University of Waterloo. It is based on an approach called Property-Directed Reachability (PDR)~\cite{komuravelli2016smt}, which can be considered a complex instance of \cegar{}. PDR builds abstract states in the form of conjunctions of formulas (referred to as \emph{lemmas}) at various \emph{levels} by iteratively increasing the level in a loop. The following capabilities are supported: if a set of lemmas $\{\phi_i\}$ was constructed at level $n$, then $\bigwedge_i \phi_i$ overapproximates all states reachable in less than $n$ transition steps, and under-approximates the safety property. Thus, in PDR, lemmas fulfill the requirement of abstraction in the \RunBlackBox{} procedure (algorithm~\ref{code:runblackbox}). As part of this thesis, \racer{} was modified to asynchronously pass the set of lemmas from the last level to a new process of $\ringen{\verifier{}}$ at the end of each iteration.
+The \racer{} Horn solver was developed by Arie Gurfinkel and Hari Govind Vediramana Krishnan from the University of Waterloo. It is based on an approach called Property-Directed Reachability (PDR)~\cite{komuravelli2016smt}, which can be considered a complex instance of \cegar{}. PDR builds abstract states in the form of conjunctions of formulas (referred to as \emph{lemmas}) at various \emph{levels} by iteratively increasing the level in a loop. The following capabilities are supported: if a set of lemmas $\{\phi_i\}$ was constructed at level $n$, then $\bigwedge_i \phi_i$ overapproximates all states reachable in less than $n$ transition steps, and under-approximates the safety property. Thus, in PDR, lemmas fulfill the requirement of abstraction in the \RunBlackBox{} procedure (Listing~\ref{code:runblackbox}). As part of this thesis, \racer{} was modified to asynchronously pass the set of lemmas from the last level to a new process of $\ringen{\verifier{}}$ at the end of each iteration.
 
 
 \paragraph{$\ringen{\verifier{}}$.}
@@ -71,12 +71,12 @@ The \racer{} Horn solver was developed by Arie Gurfinkel and Hari Govind Vediram
 % Так, имея $a(P) = \bigwedge_i \phi_i$,
 % мы заменяем все атомы $P(\overline{t})$ на \emph{конъюнкцию дизъюнкций} $\bigwedge_i (\phi_i(\overline{t})\lor L_i(\overline{t}))$ с новыми предикатными символами $L_i$.
 % Это позволяет выводить более общие инварианты, чем инварианты из объединения классов $\elemclass{}$ и $\abstrDomain$ (см. определение~\ref{def:combined-class}), которое состоит только из формул вида $\phi(\overline{x})\,\lor\,\overline{x}\!\in\!L$.
-The \RunBlackBox{} procedure (algorithm~\ref{code:runblackbox}) is implemented based on the $\ringen{\verifier{}}$. The following generalization was carried out in the $\substituteLemmas(\prog, a)$ procedure (see~\autoref{sec:subst_lemmas}). The conjunctive form of lemmas from \racer{} is used to infer more general invariants: $\bigwedge_i(\phi_i(\overline{x})\,\lor\,\overline{x}\!\in\!L_i)$. Hence, given $a(P) = \bigwedge_i \phi_i$, we replace all atoms $P(\overline{t})$ with a \emph{conjunction of disjunctions} $\bigwedge_i (\phi_i(\overline{t})\lor L_i(\overline{t}))$ with new predicate symbols $L_i$. This allows inferring more general invariants than those from the union of $\elemclass{}$ and $\abstrDomain$ (see Definition~\ref{def:combined-class}), which consists only of formulas of the form $\phi(\overline{x})\,\lor\,\overline{x}\!\in\!L$.
+The \RunBlackBox{} procedure (Listing~\ref{code:runblackbox}) is implemented based on the $\ringen{\verifier{}}$. The following generalization was carried out in the $\substituteLemmas(\prog, a)$ procedure (see~\autoref{sec:subst_lemmas}). The conjunctive form of lemmas from \racer{} is used to infer more general invariants: $\bigwedge_i(\phi_i(\overline{x})\,\lor\,\overline{x}\!\in\!L_i)$. Hence, given $a(P) = \bigwedge_i \phi_i$, we replace all atoms $P(\overline{t})$ with a \emph{conjunction of disjunctions} $\bigwedge_i (\phi_i(\overline{t})\lor L_i(\overline{t}))$ with new predicate symbols $L_i$. This allows inferring more general invariants than those from the union of $\elemclass{}$ and $\abstrDomain$ (see Definition~\ref{def:combined-class}), which consists only of formulas of the form $\phi(\overline{x})\,\lor\,\overline{x}\!\in\!L$.
 
 % После преобразований модифицированный $\ringen{\verifier{}}$ вызывает сторонний решатель $\verifier{}$ с ограничением по времени в 30 секунд.
 % Затем его результаты передаются обратно в Хорн-решатель \racer{}, где они асинхронно обрабатываются.
 % Кроме того, реализация не выполняет дорогостоящее преобразование в КНФ из алгоритма~\ref{code:residual-chc}, так как реализация $\ringen{\verifier{}}$ позволяет принимать на вход дизъюнкты Хорна в произвольном виде, поскольку он полагается на сторонний решатель $\verifier{}$ с полной поддержкой логики первого порядка.
-After the transformations, the modified $\ringen{\verifier{}}$ calls the external solver $\verifier{}$ with a time limit of 30 seconds. Then its results are passed back to \racer{}, where they are processed asynchronously. Moreover, the implementation does not perform the costly transformation into CNF from algorithm~\ref{code:residual-chc}, as the $\ringen{\verifier{}}$ implementation allows inputting Horn clauses in arbitrary form, since it relies on the external solver $\verifier{}$ with full first-order logic support.
+After the transformations, the modified $\ringen{\verifier{}}$ calls the external solver $\verifier{}$ with a time limit of 30 seconds. Then its results are passed back to \racer{}, where they are processed asynchronously. Moreover, the implementation does not perform the costly transformation into CNF from Listing~\ref{code:residual-chc}, as the $\ringen{\verifier{}}$ implementation allows inputting Horn clauses in arbitrary form, since it relies on the external solver $\verifier{}$ with full first-order logic support.
 
 \section{Related Work}\label{ch:relatedWork}
 
@@ -207,19 +207,20 @@ The number of problems from the benchmark suite solved by the existing and propo
     \label{table:eval-all}
     \small
     \centering
-    \begin{tabular}{ |l|c|c| }
-    \hline
-    Tool & SAT & UNSAT\\\hline
-    \cvcind{} & 0 & 13\\
-    \eldarica{} & 46 & 12\\
+    \begin{tabular}{ |l||c|c| }
+    \hline\hline
+    Tool & SAT & UNSAT\\\hline\hline
     \racer{} & 26 & 22\\
+    \eldarica{} & 46 & 12\\
+    \vericat{} & 16 & 10\\
+    \cvcind{} & 0 & 13\\
+    \hline
     \ringen{\cvc{}} & 25 & 21\\
     \ringen{\vampire{}} & 135 & 46\\
+    \ringenSync{} & 43 & 21\\
     \ringenCICI{\cvc{}} & 117 & 19\\
     \ringenCICI{\vampire{}} & 189 & 28\\
-    \ringenSync{} & 43 & 21\\
-    \vericat{} & 16 & 10\\
-    \hline
+    \hline\hline
     \end{tabular}
 \end{table}
 

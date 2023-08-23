@@ -116,9 +116,8 @@
 
 \newcommand{\defPumpLemmaElem}{%
 \begin{restatable}[Pumping Lemma for \elemclass{}]{lemma}{pumplemmaelem}\label{lemm:pump-elem}
-Let $\formallang{}$ be an elementary language of $n$-tuples. Then,
+Let $\formallang{}$ be an elementary language of $n$-tuples. Then, there exists a constant $K > 0$ satisfying:
 \begin{itemize}
-    \item there exists a constant $K > 0$ satisfying:
     \item for every $n$-tuples of ground terms $\tuple{g_1,\ldots,g_n} \in \formallang{}$,
     \item for any $i$ such that $\height{g_i} > K$,
     \item for all infinite sorts $\sigma \in \sorts$ and
@@ -134,9 +133,8 @@ $$\tuple{g_1[P_1\leftarrow t],\ldots,g_i[P_i\leftarrow t],\ldots,g_n[P_n\leftarr
 
 \newcommand{\defPumpLemmaSizeElem}{%
 \begin{restatable}[Pumping Lemma for \sizeelemclass{}]{lemma}{pumplemmasizeelem}\label{lemm:pump-sizeelem}
-Let the ADT signature be expanding and let $\formallang{}$ be an elementary language of $n$-tuples with size constraints. Then,
+Let the ADT signature be expanding and let $\formallang{}$ be an elementary language of $n$-tuples with size constraints. Then, there exists a constant $K > 0$ satisfying:
 \begin{itemize}
-\item there exists a constant $K > 0$ satisfying:
 \item for every $n$-tuple of ground terms $\tuple{g_1,\ldots,g_n} \in \formallang{}$,
 \item for any $i$, such that $\height{g_i} > K$,
 \item for all infinite sorts $\sigma \in \sorts$, and

@@ -427,7 +427,7 @@ Let us trace the proposed transformation $\Delta$ on the following example with 
 \begin{align*}
     \top &\rightarrow lt(Z, S(x)), \tag{C1}\\
     lt(x, y) &\rightarrow lt(S(x), S(y)),\tag{C2}\\
-    lt(x, y) \land lt(y, x) &\rightarrow \bot.\tag{C3}
+    lt(x, y) \land lt(y, x) &\rightarrow \bot\tag{C3}
 \end{align*}
 
 % Дизъюнкт $C1$ эквивалентен атомарной формуле $A_1 = lt(Z, S(x))$.
@@ -451,7 +451,7 @@ For the clause $C1$ $\Delta(\prog)$ will build the automaton $(\delta_{C1}, Fina
 Moreover, the following conditions describing the emptiness of the automaton language for the clause $C1$ and guaranteeing its satisfaction will be included in $\Delta(\prog)$.
 \begin{align*}
     Reach_{C1}(q) &\rightarrow Reach_{C1}(delta_{C1}(f, q))\\
-    Reach_{C1}(q) \land Final_{C1}(q)) &\rightarrow \bot.
+    Reach_{C1}(q) \land Final_{C1}(q)) &\rightarrow \bot
 \end{align*}
 
 % Дизъюнкт $C2$ состоит из двух атомарных формул: $A_2 = lt(x, y)$ и $A_3 = lt(S(x), S(y))$. Автомат для атомарной формулы $A_2$ совпадает с автоматом предикатного символа $lt$, для атомарной формулы $A_3$ добавим в $\Delta(\prog{})$ автомат $delta_{A_3}$, $Final_{A_3})$, сконструированный на основе автомата для предикатного символа $lt$:
@@ -472,7 +472,7 @@ For the clause $C2$, we add to $\Delta(\prog{})$ the automaton $(delta_{C2}, Fin
 We add to $\Delta(\prog{})$ the conditions for the emptiness of the language of the automaton $(delta_{C2},$ $Final_{C2})$ in order to guarantee the satisfaction of clause $C2$.
 \begin{align*}
 Reach_{C2}(q) &\rightarrow Reach_{C2}(delta_{C2}(f, g, q))\\
-Reach_{C2}(q) \land Final_{C2}(q)) &\rightarrow \bot.
+Reach_{C2}(q) \land Final_{C2}(q)) &\rightarrow \bot
 \end{align*}
 
 % Дизъюнкт $C3$ состоит из двух атомарных формул $A4 = lt(x,y)$ и $A5 = lt(y, x)$. Автомат для атомарной формулы $A4$ полностью совпадает с автоматом для предикатного символа $lt$. Автомат для атомарной формулы $A5$ отличается от автомата для предикатного символа $lt$ только порядком аргументов, и после взятия остатка по такому линейному паттерну получается автомат, идентичный $lt$.
@@ -489,7 +489,7 @@ For $C3$, we add to $\Delta(\prog{})$ an automaton $(delta_{C3}, Final_{C3})$ bu
 We add to $\Delta(\prog{})$ the conditions for the emptiness of the language of $(delta_{C3}, Final_{C3})$ to ensure the satisfaction of $C3$:
 \begin{align*}
 Reach_{C3}(q) \rightarrow Reach_{C3}(delta_{C3}(f, g, q))\\
-Reach_{C3}(q) \land Final_{C3}(q) &\rightarrow \bot.
+Reach_{C3}(q) \land Final_{C3}(q) &\rightarrow \bot
 \end{align*}
 
 % Запустив на формуле $\Delta(\prog)$ инструмент поиска конечных моделей, можно извлечь из интерпретаций $delta_{lt}$ и $Final_{lt}$ синхронный регулярный инвариант исходной системы дизъюнктов Хорна, основанный на автомате $A_{lt} = \Automaton{0,1,2}{1}$, где для $q\in\{1,2\}$, $\autTrans =$

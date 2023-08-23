@@ -543,7 +543,7 @@ which can be simplified to
   p' = Fork(Join(p)) \land ok(p) &\rightarrow ok(p')\\
   t = Fork(Join(Join(Seq))) &\rightarrow tr(p, t)\\
   p' = Fork(Join(p)) \land t' = Fork(Join(t)) \land p' = t'\land tr(p, t) &\rightarrow tr(p', t')\\
-  \big(p = Seq \lor ok(p)\big) \land \big(p = Join(Seq) \lor tr(p, p)\big) &\rightarrow \bot.
+  \big(p = Seq \lor ok(p)\big) \land \big(p = Join(Seq) \lor tr(p, p)\big) &\rightarrow \bot
   \end{align*}
 \end{example}
 

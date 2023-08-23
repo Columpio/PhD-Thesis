@@ -11,7 +11,7 @@
 Пусть $\tuple{\states, \csubseteq, \cbot, \ctop, \ccap, \ccup, \cneg}$~--- это полная булева решётка, представляющая множества состояний программы. 
 
 \begin{define}
-\emph{Система переходов (программа)} является тройкой $TS = \tuple{\states, \init, \thepost}$, где  $\init \in \states$~--- это начальные состояния, а функция $\thepost : \states \mapsto \states$ называется \emph{функцией перехода} и  имеет  следующие свойства:
+\emph{Система переходов (программа)} является тройкой $TS = \tuple{\states, \init, \thepost}$, где  $\init \in \states$~--- это \emph{начальные состояния}, а функция $\thepost : \states \mapsto \states$ называется \emph{функцией перехода} и  имеет  следующие свойства:
 \begin{itemize}
     \item $\thepost$ монотонна, т.\:е. из $s_1 \csubseteq s_2$ следует $\post{s_1} \csubseteq \post{s_2}$;
     \item $\thepost$ аддитивна, т.\:е. $\post{s_1 \ccup s_2} = \post{s_1}\ccup\post{s_2}$;
@@ -240,7 +240,7 @@ assert (not ok(p) or tr(p) <> p)
 Иными словами, путём построения остаточной системы алгоритм берёт безопасную, но неиндуктивную часть текущего кандидата в инварианты и передаёт её сотрудничающему верификатору, чтобы он дополнил её до неподвижной точки, т.\:е. индуктивного инварианта.
 
 Современные подходы к выводу индуктивных инвариантов программ, такие как \pdr{} (который можно рассматривать как усложнённый вариант \cegar{}), монотонно \emph{усиливают} кандидат в инварианты $A$ до тех пор, пока он не станет индуктивным.
-Из-за этого проблемой таких подходов является выбор стратегии усиления~\cite{krishnan2020global}: из-за слишком резкого усиления могут быть пропущены нужные неподвижные точки, в то время как из-за медленного усиления алгоритм может сходиться к неподвижной точке слишком долго или вовсе расходиться.
+В силу этого проблемой таких подходов является выбор стратегии усиления~\cite{krishnan2020global}: из-за слишком резкого усиления могут быть пропущены нужные неподвижные точки, в то время как из-за медленного усиления алгоритм может сходиться к неподвижной точке слишком долго или вовсе расходиться.
 
 Так как предлагаемый подход не является монотонным, он позволяет строить инварианты, невыводимые верификаторами по отдельности. Кроме того, он (эвристически) может ускорить построение инварианта даже в том случае, если один из верификаторов может вывести его самостоятельно (эта гипотеза проверена в разделе~\ref{sec:evaluation/performance}). Вероятность пропуска неподвижных точек из-за слишком резкого усиления уменьшается: даже если первый верификатор чрезмерно усиливает кандидата в инварианты, второй верификатор всё равно может обнаружить более слабую неподвижную точку.
 
@@ -341,7 +341,7 @@ $$ok(p) \Leftrightarrow p \in \evenInv{},\quad tr(p, t) \Leftrightarrow \neg(p =
     \init&\eqdef\post{\cbot}\\
     \post{s}(P)&\eqdef\left\{\overline{t} \mid
 \left(B \rightarrow P(\overline{t})\right) \text{--- замкнутый экземпляр некоторого } C\in\prog,
-s \models B \right\}.
+s \models B \right\}
 \end{align*}
 
 Без потери общности предположим, что система дизъюнктов Хорна $\prog$ имеет единственный предикат для запроса $Q$, т.\:е. далее будем рассматривать только системы, полученные следующим образом:
@@ -376,10 +376,10 @@ $\tuple{\states, \init, \thepost}$ безопасна относительно $
 $$P(x)\land \phi(x, x')\rightarrow P(x')$$ 
 сначала превратится в формулу
 $$ (a(P)(x) \lor P(x)) \land \phi(x, x') \rightarrow (a(P)(x') \lor P(x')), $$
-которая после преобразования в КНФ (стр.~\ref{line:cnf}) будет разбита на дизъюнкты:
+которая после преобразования в КНФ (стр.~\ref{line:cnf}) будет разбита на следующие дизъюнкты:
 \begin{align*}
   a(P)(x) \land \phi(x, x') \land \neg a(P)(x') &\rightarrow P(x')\\%\label{clause:tr-init}\\
-  P(x) \land \phi(x, x') \land \neg a(P)(x') &\rightarrow P(x').%\label{clause:tr-trans}
+  P(x) \land \phi(x, x') \land \neg a(P)(x') &\rightarrow P(x')%\label{clause:tr-trans}
 \end{align*}
 Таким образом, в результате преобразования в КНФ мы получаем систему дизъюнктов, которая семантически соответствует остаточной системе из прошлого раздела.
 
@@ -415,7 +415,7 @@ $$ (a(P)(x) \lor P(x)) \land \phi(x, x') \rightarrow (a(P)(x') \lor P(x')), $$
   p' = Fork(Join(p)) \land t' = Fork(Join(t)) &\land&\\
   \land\big(\neg(p = t) \lor t = Join(Seq) \lor tr(p, t)\big)
   &\rightarrow\big(\neg(p' = t') \lor t' = Join(Seq) \lor tr(p', t')\big)&\\
-  \big(p = Seq \lor ok(p)\big) \land \big(\neg(p = p)  &\lor p = Join(Seq) \lor tr(p, p)\big) \rightarrow \bot,
+  \big(p = Seq \lor ok(p)\big) \land \big(\neg(p = p)  &\lor p = Join(Seq) \lor tr(p, p)\big) \rightarrow \bot
   \end{align*}
 % в \autoref{fig:exmp-transformed}.
 Эта формула может быть упрощена до следующей системы дизъюнктов:
@@ -424,7 +424,7 @@ $$ (a(P)(x) \lor P(x)) \land \phi(x, x') \rightarrow (a(P)(x') \lor P(x')), $$
   p' = Fork(Join(p)) \land ok(p) &\rightarrow ok(p')\\
   t = Fork(Join(Join(Seq))) &\rightarrow tr(p, t)\\
   p' = Fork(Join(p)) \land t' = Fork(Join(t)) \land p' = t'\land tr(p, t) &\rightarrow tr(p', t')\\
-  \big(p = Seq \lor ok(p)\big) \land \big(p = Join(Seq) \lor tr(p, p)\big) &\rightarrow \bot.
+  \big(p = Seq \lor ok(p)\big) \land \big(p = Join(Seq) \lor tr(p, p)\big) &\rightarrow \bot
   \end{align*}
 \end{example}
 
@@ -473,7 +473,7 @@ $C_{n+j}'\equiv a(R_i)(\overline{y}_i)\rightarrow R_j(\overline{y}_j)$.
 Таким образом, $T'$ является деревом опровержения системы $\prog''$.
 
 \begin{proposition}
-Приведённая процедура \textsc{RecoverCex} является линейной по числу узлов входного дерева опровержения.
+Процедура \textsc{RecoverCex} имеет линейную сложность от числа узлов входного дерева опровержения.
 \end{proposition}
 
 \subsection{Инстанцирование подхода в рамках \pdr{}}\label{sec:beyond-cegar}
