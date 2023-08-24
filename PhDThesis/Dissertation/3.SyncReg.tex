@@ -29,7 +29,7 @@
 \begin{example}
     Рассмотрим следующее применение стандартной свёртки к кортежу термов:
     \begin{align*}
-        \flatConv\big(n(p, q), S(Z), T(u, v)\big) &= \tuple{n, S, T}\big(\flatConv(p, Z, u), \flatConv(q, v)\big)\\&= \tuple{n, S, T}\big(\tuple{p, Z, u}, \tuple{q, v}\big)
+        \flatConv\big(n(p, q), S(Z), T(u, v)\big) &= \tuple{n, S, T}\big(\flatConv(p, Z, u), \flatConv(q, v)\big)\\&= \tuple{n, S, T}\big(\tuple{p, Z, u}, \tuple{q, v}\big).
     \end{align*}
 \end{example}
 
@@ -394,11 +394,11 @@ Reach_{C2}(q) \land Final_{C2}(q)) &\rightarrow \bot
 
 Добавим в $\Delta(\prog{})$ условия пустоты языка автомата $(delta_{C3},$ $Final_{C3})$ для гарантии выполнения дизъюнкта $C3$:
 \begin{align*}
-Reach_{C3}(q) \rightarrow Reach_{C3}(delta_{C3}(f, g, q))\\
+Reach_{C3}(q) &\rightarrow Reach_{C3}(delta_{C3}(f, g, q))\\
 Reach_{C3}(q) \land Final_{C3}(q) &\rightarrow \bot
 \end{align*}
 
-Запустив на формуле $\Delta(\prog)$ инструмент поиска конечных моделей, можно извлечь из интерпретаций $delta_{lt}$ и $Final_{lt}$ синхронный регулярный инвариант исходной системы дизъюнктов Хорна, основанный на автомате $A_{lt} = \Automaton{0,1,2}{1}$, где для $q\in\{1,2\}$
+Запустив на формуле $\Delta(\prog)$ инструмент поиска конечных моделей, можно извлечь из интерпретаций $delta_{lt}$ и $Final_{lt}$ синхронный регулярный инвариант исходной системы дизъюнктов Хорна, основанный на автомате $A_{lt} = \Automaton{0,1,2}{1}$, где для $q\in\{1,2\}$:
 \begin{align*}
 \autTrans = \left\{\begin{array}{rl}
         Z &\mapsto 0\\

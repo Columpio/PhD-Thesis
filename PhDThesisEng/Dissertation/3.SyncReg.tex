@@ -488,7 +488,7 @@ For $C3$, we add to $\Delta(\prog{})$ an automaton $(delta_{C3}, Final_{C3})$ bu
 % Добавим в $\Delta(\prog{})$ условия пустоты языка автомата $(delta_{C3},$ $Final_{C3})$для гарантии выполнения дизъюнкта $C3$:
 We add to $\Delta(\prog{})$ the conditions for the emptiness of the language of $(delta_{C3}, Final_{C3})$ to ensure the satisfaction of $C3$:
 \begin{align*}
-Reach_{C3}(q) \rightarrow Reach_{C3}(delta_{C3}(f, g, q))\\
+Reach_{C3}(q) &\rightarrow Reach_{C3}(delta_{C3}(f, g, q))\\
 Reach_{C3}(q) \land Final_{C3}(q) &\rightarrow \bot
 \end{align*}
 
@@ -499,7 +499,7 @@ By running a finite-model finder on the formula $\Delta(\prog)$, from interpreta
             Z &\mapsto 0\\
             \tuple{Z, S}(0) &\mapsto 1\\
             \tuple{S, Z}(0) &\mapsto 2\\
-            \tuple{S, S}(q) &\mapsto q.
+            \tuple{S, S}(q) &\mapsto q
             \end{array}\right.
     \end{align*}
 % Языком этого автомата является  множество пар чисел Пеано, где первое число строго меньше второго.

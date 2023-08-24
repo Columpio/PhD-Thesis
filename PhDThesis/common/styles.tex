@@ -15,7 +15,7 @@
 \captionsetup[table]{
         format=\tabformat,                % формат подписи (plain|hang)
         font=normal,                      % нормальные размер, цвет, стиль шрифта
-        skip=.0pt,                        % отбивка под подписью
+        skip=10.0pt,                        % отбивка под подписью
         parskip=.0pt,                     % отбивка между параграфами подписи
         position=above,                   % положение подписи
         justification=\tabjust,           % центровка
@@ -30,7 +30,17 @@
 \captionsetup[figure]{
         format=plain,                     % формат подписи (plain|hang)
         font=normal,                      % нормальные размер, цвет, стиль шрифта
-        skip=.0pt,                        % отбивка под подписью
+        skip=10.0pt,                        % отбивка под подписью
+        parskip=.0pt,                     % отбивка между параграфами подписи
+        position=below,                   % положение подписи
+        singlelinecheck=true,             % выравнивание по центру, если умещается в одну строку
+        justification=centerlast,         % центровка
+        labelsep=figsep,                  % разделитель
+}
+\captionsetup[mylisting]{
+        format=plain,                     % формат подписи (plain|hang)
+        font=normal,                      % нормальные размер, цвет, стиль шрифта
+        skip=10.0pt,                        % отбивка под подписью
         parskip=.0pt,                     % отбивка между параграфами подписи
         position=below,                   % положение подписи
         singlelinecheck=true,             % выравнивание по центру, если умещается в одну строку
