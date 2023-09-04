@@ -9,7 +9,7 @@ All the approaches proposed in this work have been implemented in a Horn solver 
 
 % Общая архитектура реализованного инструмента представлена на рисунке~\ref{fig:ringen-arch}.
 % Инструмент \theringen{} принимает на вход систему дизъюнктов Хорна с ограничениями в формате SMTLIB2~\cite{BarFT-RR-17}.
-% После парсинга дизъюнктов выполняется их  упрощение, в частности, устранение равенств, селекторов и тестеров. Затем, в зависимости от поданных Хорн-решателю опций, запускается один из алгоритмов, предложенных в данной работе. Результатом работы каждого из них является формула над неинтерпретированными функциями, которая передаётся в сторонний логический решатель~--- \vampire{} или \cvc{}.
+% После парсинга дизъюнктов выполняется их упрощение, в частности, устранение равенств, селекторов и тестеров. Затем, в зависимости от поданных Хорн-решателю опций, запускается один из алгоритмов, предложенных в данной работе. Результатом работы каждого из них является формула над неинтерпретированными функциями, которая передаётся в сторонний логический решатель~--- \vampire{} или \cvc{}.
 % В итоге инструмент возвращает безопасный индуктивный инвариант, если система безопасна, в противном случае~--- резолютивное опровержение.
 The overall architecture of the tool is presented in Figure~\ref{fig:ringen-arch}.
 \theringen{} takes as input a Horn clause system with constraints in the SMTLIB2 format~\cite{BarFT-RR-17}.
@@ -40,7 +40,7 @@ Specifically, \vampire{}~\cite{reger2017instantiation} and the SMT solver \cvc{}
 Both tools allow for both proving the safety of the system and finding counterexamples.
 
 \textbf{\ringenSync{}.}
-% Этот подход представленный в  главе~\ref{ch:SyncReg}, реализован как надстройка над $\ringen{\verifier}$.
+% Этот подход представленный в главе~\ref{ch:SyncReg}, реализован как надстройка над $\ringen{\verifier}$.
 % В качестве стороннего решателя $\verifier$ в экспериментах использовался \cvc{}, поскольку \ringenSync{} порождает символы с большой арностью, которые не поддерживаются инструментом \vampire{}\footnote{\url{https://github.com/vprover/vampire/issues/348\#issuecomment-1091782513}}.
 % Эта реализация в дальнейшем будет обозначаться \ringenSync{}\footnote{\url{https://github.com/Columpio/RInGen/releases/tag/ringen-tta}}.
 The approach presented in Chapter~\ref{ch:SyncReg} has been implemented as an extension of $\ringen{\verifier}$.
@@ -48,7 +48,7 @@ In the experiments, \cvc{} was used as the external solver $\verifier$, as \ring
 This implementation will be hereinafter referred to as \ringenSync{}\footnote{\url{https://github.com/Columpio/RInGen/releases/tag/ringen-tta}}.
 
 \textbf{\theringenCICI{}.}
-% Данный подход, представленный  в главе~\ref{ch:cici}, реализован в рамках кодовой базы Хорн-решателей \racer{}~\cite{10.1145/3498722} (развитие Хорн-решателя \spacer{}~\cite{komuravelli2016smt}, реализованное в логическом решателе \zprover{}\footnote{\url{https://github.com/Columpio/z3/tree/racer-solver-interaction}}) и Хорн-решателя $\ringen{\verifier{}}$\footnote{\url{https://github.com/Columpio/RInGen/releases/tag/chccomp22}}, описанного выше.
+% Данный подход, представленный в главе~\ref{ch:cici}, реализован в рамках кодовой базы Хорн-решателей \racer{}~\cite{10.1145/3498722} (развитие Хорн-решателя \spacer{}~\cite{komuravelli2016smt}, реализованное в логическом решателе \zprover{}\footnote{\url{https://github.com/Columpio/z3/tree/racer-solver-interaction}}) и Хорн-решателя $\ringen{\verifier{}}$\footnote{\url{https://github.com/Columpio/RInGen/releases/tag/chccomp22}}, описанного выше.
 % Эта реализация в дальнейшем будет обозначаться $\ringenCICI{\verifier{}}$. Далее описаны обе части этой реализации в Хорн-решателях \racer{} и $\ringen{\verifier{}}$, соответственно, которые далее называются \emph{базовыми} относительно инструмента $\ringenCICI{\verifier{}}$.
 The approach presented in Chapter~\ref{ch:cici} has been implemented within the codebase of the Horn solvers \racer{}\cite{10.1145/3498722} (a development of the Horn solver \spacer{}\cite{komuravelli2016smt}, implemented in the logical solver \zprover{}\footnote{\url{https://github.com/Columpio/z3/tree/racer-solver-interaction}}) and the Horn solver $\ringen{\verifier{}}$\footnote{\url{https://github.com/Columpio/RInGen/releases/tag/chccomp22}}, which was described earlier.
 This implementation will be referred to as $\ringenCICI{\verifier{}}$ in the future. The following describes both parts of this implementation in the Horn solvers \racer{} and $\ringen{\verifier{}}$, respectively, which are subsequently referred to as \emph{basic} relative to the tool $\ringenCICI{\verifier{}}$.
@@ -65,7 +65,7 @@ The \racer{} Horn solver was developed by Arie Gurfinkel and Hari Govind Vediram
 
 
 \paragraph{$\ringen{\verifier{}}$.}
-% Процедура \RunBlackBox{} (алгоритм~\ref{code:runblackbox}) реализована на основе инструмента  $\ringen{\verifier{}}$. Было выполнено  следующее обобщение в процедуре $\substituteLemmas(\prog, a)$ (см.~\autoref{sec:subst_lemmas}).
+% Процедура \RunBlackBox{} (алгоритм~\ref{code:runblackbox}) реализована на основе инструмента  $\ringen{\verifier{}}$. Было выполнено следующее обобщение в процедуре $\substituteLemmas(\prog, a)$ (см.~\autoref{sec:subst_lemmas}).
 % Конъюнктивная форма лемм инструмента \racer{} используется для вывода инвариантов более общего вида:
 % $\bigwedge_i(\phi_i(\overline{x})\,\lor\,\overline{x}\!\in\!L_i)$.
 % Так, имея $a(P) = \bigwedge_i \phi_i$,
@@ -142,13 +142,13 @@ Further on, we provide a short comparartive descrition of the existing tools.
 \section{Evaluation}
 \subsection{Tool Selection}
 % В качестве инструментов для сравнения были выбраны \racer{}~\cite{10.1145/3498722} и \eldarica{}~\cite{8603013}~--- Хорн-решатели с поддержкой алгебраических типов данных, лидирующие на соревнованиях \chccomp{}~\cite{De_Angelis_2022}.
-% Также  были выбраны инструменты \cvcind{} (\cvc{} в режиме индукции)~\cite{reynolds2015induction} и \vericat{}~\cite{10.1093/logcom/exab090}.
+% Также были выбраны инструменты \cvcind{} (\cvc{} в режиме индукции)~\cite{reynolds2015induction} и \vericat{}~\cite{10.1093/logcom/exab090}.
 % Несмотря на то, что эти инструменты не строят индуктивные инварианты \emph{явно}, из-за чего невозможно проверить их корректность, их запуск на эквивалентном бенчмарке добавлен в экспериментальное сравнение, поскольку они решают родственную задачу.
 We have selected the \racer{}~\cite{10.1145/3498722} and \eldarica{}~\cite{8603013} tools for compassion, which are Horn solvers with support for algebraic data types leading in the \chccomp{} competition~\cite{De_Angelis_2022}. We also selected \cvcind{} (\cvc{} in induction mode)~\cite{reynolds2015induction} and \vericat{}~\cite{10.1093/logcom/exab090}. Although these tools do not build inductive invariants explicitly, making it impossible to check their correctness, their launch on an equivalent benchmark is added to the experimental comparison as they solve a related task.
 
 
 % В представленных здесь экспериментах не участвовал Хорн-решатель \hoice{}~\cite{10.1007/978-3-030-02768-1_8}, поскольку он работает не быстрее \racer{}~\cite{10.1145/3498722} и при этом ищет инварианты в том же классе инвариантов \elemclass{}.
-% Другой известный Хорн-решатель \rchc{}~\cite{haude2020} не участвовал в экспериментах, поскольку он работает нестабильно и  часто либо завершается с ошибкой, либо возвращает некорректные результаты.
+% Другой известный Хорн-решатель \rchc{}~\cite{haude2020} не участвовал в экспериментах, поскольку он работает нестабильно и часто либо завершается с ошибкой, либо возвращает некорректные результаты.
 
 \subsection{Benchmark Suite}
 % Эксперименты проводились на наборе данных \emph{TIP} (Tons of Inductive Problems)~\cite{claessen2015tip}, тестового набора с трека соревнования \chccomp{} 2022\footnote{\url{https://github.com/chc-comp/ringen-adt-benchmarks}}, посвящённого алгебраическим типам данных. Набор \emph{TIP} состоит из 454 систем дизъюнктов Хорна, полученных из \haskell{}-программ с АТД и рекурсией.

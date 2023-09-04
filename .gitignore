@@ -16,6 +16,8 @@ _minted-dissertation/
 *.run.xml
 *.pyg
 *.pdf
-!/dissertation.pdf
 .vscode/
 *.lol
+!/dissertation.pdf
+!/PhDThesis/dissertation.pdf
+!/PhDThesisEng/dissertation.pdf

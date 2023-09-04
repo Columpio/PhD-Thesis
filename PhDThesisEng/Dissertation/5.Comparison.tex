@@ -1,12 +1,12 @@
 \chapter{Theoretical Comparison of Inductive Invariant Classes}\label{ch:comparison}
 
 % В данной главе приведено теоретическое сопоставление существующих и предложенных классов индуктивных инвариантов для программ с алгебраическими типами данных.
-% Рассмотрены только те классы, известные из  литературы, для которых существуют полностью автоматические методы вывода инвариантов: элементарные инварианты (\elemclass{}, выводятся с помощью инструментов \spacer{}~\cite{komuravelli2016smt} и \hoice{}~\cite{10.1007/978-3-030-02768-1_8}), элементарные инварианты с ограничениями размера термов (\sizeelemclass{}, выводятся с помощью инструмента \eldarica{}~\cite{8603013}), регулярные инварианты (\regclass{}, выводятся с помощью инструмента \rchc{}~\cite{haude2020}, а также методом из главы~\cref{ch:fmf}), синхронные регулярные инварианты (\syncRegFlatClass{}, \syncRegFullClass{}, выводятся с помощью инструмента \rchc{}~\cite{haude2020}, а также методом из главы~\cref{ch:SyncReg}) и комбинированные инварианты (\regelemclass{}, выводятся методом из главы~\cref{ch:cici}).
+% Рассмотрены только те классы, известные из литературы, для которых существуют полностью автоматические методы вывода инвариантов: элементарные инварианты (\elemclass{}, выводятся с помощью инструментов \spacer{}~\cite{komuravelli2016smt} и \hoice{}~\cite{10.1007/978-3-030-02768-1_8}), элементарные инварианты с ограничениями размера термов (\sizeelemclass{}, выводятся с помощью инструмента \eldarica{}~\cite{8603013}), регулярные инварианты (\regclass{}, выводятся с помощью инструмента \rchc{}~\cite{haude2020}, а также методом из главы~\cref{ch:fmf}), синхронные регулярные инварианты (\syncRegFlatClass{}, \syncRegFullClass{}, выводятся с помощью инструмента \rchc{}~\cite{haude2020}, а также методом из главы~\cref{ch:SyncReg}) и комбинированные инварианты (\regelemclass{}, выводятся методом из главы~\cref{ch:cici}).
 This chapter provides a theoretical comparison of existing and proposed classes of inductive invariants for programs with algebraic data types.
 We consider only classes for which there are fully automatic invariant inference methods: elementary invariants (\elemclass{}, inferred by \spacer{}~\cite{komuravelli2016smt} and \hoice{}~\cite{10.1007/978-3-030-02768-1_8}), elementary invariants with term size constraints (\sizeelemclass{}, inferred by \eldarica{}~\cite{8603013}), regular invariants (\regclass{}, inferred by \rchc{}~\cite{haude2020}, as well as the method from Chapter~\cref{ch:fmf}), synchronous regular invariants (\syncRegFlatClass{}, \syncRegFullClass{}, inferred by \rchc{}~\cite{haude2020}, as well as by the method from Chapter~\cref{ch:SyncReg}) and combined invariants (\regelemclass{}, inferred by the method from Chapter~\cref{ch:cici}).
 The chapter is partly based on~\cite{10.1145/3453483.3454055}.
 
-% Сопоставление выполнено на базе свойств, которые являются ключевыми для классов инвариантов: замкнутость относительно булевых операций,  разрешимость задачи принадлежности кортежа термов инварианту, разрешимость  проверки инварианта на пустоту (раздел~\cref{sec:comparison/boolean}),  выразительная сила (раздел~\cref{sec:comparison/expressivity}).
+% Сопоставление выполнено на базе свойств, которые являются ключевыми для классов инвариантов: замкнутость относительно булевых операций,  разрешимость задачи принадлежности кортежа термов инварианту, разрешимость проверки инварианта на пустоту (раздел~\cref{sec:comparison/boolean}),  выразительная сила (раздел~\cref{sec:comparison/expressivity}).
 % Результаты теоретического сравнения приведены в таблицах~\cref{tab:boolClasses} и~\cref{tab:invClasses}.
 The comparison is based on the key properties of invariant classes: closure with respect to Boolean operations, decidability of the term membership problem, decidability of checking an invariant for emptiness (Section~\cref{sec:comparison/boolean}), and expressive power (Section~\cref{sec:comparison/expressivity}).
 The results of the theoretical comparison are shown in Tables~\cref{tab:boolClasses} and~\cref{tab:invClasses}.
@@ -101,7 +101,7 @@ It is important to distinguish  invariant classes for the analysis of invariant 
 
 % Для класса $A$ в строке и класса $B$ в столбце в соответствующей им ячейке находится сноска, а также либо символ $\emptyset$, либо $\infty$, или название некоторой системы дизъюнктов из данной работы.
 % Каждую ячейку следует читать как ответ на вопрос: <<Что находится в классе $A\setminus B$?>> Если в ячейке находится $\emptyset$, значит $A\setminus B = \emptyset$. Если в ячейке находится $\infty$, значит $B \subseteq A$. Наконец, если в ячейке находится название системы $\prog$, значит, классы $A$ и $B$ несравнимы, т.\:е. $\prog \in A \setminus B \neq \emptyset$ и при этом $B \setminus A \neq \emptyset$.
-% Сноска отсылает к соответствующей теореме, представленной в данной  работе. Отсутствие сноски означает очевидность приводимого факта.
+% Сноска отсылает к соответствующей теореме, представленной в данной работе. Отсутствие сноски означает очевидность приводимого факта.
 % Например, в ячейке $\sizeelemclass{}\setminus\elemclass{}$ находится $\infty$ без сноски, т.\:к. класс $\sizeelemclass{}$ является синтаксическим расширением класса $\elemclass{}$, следовательно, включает, как минимум, те же инварианты.
 For class $A$ in the row and class $B$ in the column, the corresponding cell contains a footnote, and either the symbol $\emptyset$, or $\infty$, or the name of a certain clause system from this work.
 Each cell should be read as an answer to the question: ``What does the class $A\setminus B$ contain?'' If the cell contains $\emptyset$, then $A\setminus B = \emptyset$. If the cell contains $\infty$, then $B \subseteq A$. Finally, if the cell contains the name $\prog$ of some system, then the classes $A$ and $B$ are incomparable, i.e., $\prog \in A \setminus B \neq \emptyset$ and $B \setminus A \neq \emptyset$.
@@ -207,7 +207,7 @@ For every ADT $ \tuple{\sigma, C}$ and every constructor $ f \in C $ of arity $ 
 Let us give some auxiliary definitions.
 
 \begin{define}
-% Высоту замкнутого терма определим  индуктивно следующим образом:
+% Высоту замкнутого терма определим индуктивно следующим образом:
 We define the height of a closed term inductively as follows:
 \begin{align*}
     \height{c} & \eqdef 1\\
@@ -223,7 +223,7 @@ For closed terms $ g $, we redefine $ \subterm{g}{s}$ as a computed subterm of $
 In what follows, paths will be denoted by letters $ p, q, r, s $.
 
 % Мы говорим, что два пути $ p $ и $ q $ \emph{перекрываются}, если один из них является суффиксом другого.
-% Для попарно неперекрывающихся путей $ p_1, \ldots, p_n $ с помощью записи  $ t [p_1 \leftarrow u_1, \ldots, p_n \leftarrow u_n] $ будем понимать  терм, полученный одновременной заменой  в $ t $ подтермов $ \subterm{t}{p_i} $ на термы $ u_i $. Для конечной последовательности попарно различных путей $ P = (p_1, \ldots, p_n) $ и некоторого множества термов $ U = (u_1, \ldots, u_n) $ мы переопределяем обозначения и пишем $ t [P \leftarrow U] $ вместо $ t [p_1 \leftarrow u_1, \ldots, p_n \leftarrow u_n] $, а также $ t [P \leftarrow t] $ вместо $ t [p_1 \leftarrow t, \ldots, p_n \leftarrow t ] $.
+% Для попарно неперекрывающихся путей $ p_1, \ldots, p_n $ с помощью записи  $ t [p_1 \leftarrow u_1, \ldots, p_n \leftarrow u_n] $ будем понимать терм, полученный одновременной заменой в $ t $ подтермов $ \subterm{t}{p_i} $ на термы $ u_i $. Для конечной последовательности попарно различных путей $ P = (p_1, \ldots, p_n) $ и некоторого множества термов $ U = (u_1, \ldots, u_n) $ мы переопределяем обозначения и пишем $ t [P \leftarrow U] $ вместо $ t [p_1 \leftarrow u_1, \ldots, p_n \leftarrow u_n] $, а также $ t [P \leftarrow t] $ вместо $ t [p_1 \leftarrow t, \ldots, p_n \leftarrow t ] $.
 We say that two paths $ p $ and $ q $ \emph{overlap} if one of them is a suffix of the other.
 For pairwise non-overlapping paths $ p_1, \ldots, p_n $, by the notation $ t [p_1 \leftarrow u_1, \ldots, p_n \leftarrow u_n] $ we mean the term obtained by simultaneously replacing subterms $ \subterm{t}{p_i} $ in $ t $ with terms $ u_i $. For a finite sequence of pairwise distinct paths $ P = (p_1, \ldots, p_n) $ and some set of terms $ U = (u_1, \ldots, u_n) $ we redefine the notation and write $ t [P \leftarrow U] $ instead of $ t [p_1 \leftarrow u_1, \ldots, p_n \leftarrow u_n]$, and also $ t [P \leftarrow t]$ instead of $ t [p_1 \leftarrow t, \ldots, p_n \leftarrow t ]$.
 
@@ -253,7 +253,7 @@ This lemma formalizes the fact that a constraint language over an ADT theory can
 There are regular but non-elementary invariants, i.e., $\regclass{} \setminus \elemclass{} \neq \emptyset$.
 \end{theorem}
 \begin{proof}
-    % Рассмотрим  систему дизъюнктов Хорна над алгебраическим типом целых чисел Пеано  \natDef{}, которая проверяет чётность чисел и утверждает, что никакие два соседних числа не могут быть чётными:
+    % Рассмотрим систему дизъюнктов Хорна над алгебраическим типом целых чисел Пеано  \natDef{}, которая проверяет чётность чисел и утверждает, что никакие два соседних числа не могут быть чётными:
     Consider the Horn clause system over the algebraic type of Peano integers \natDef{}, which checks the parity of numbers and states that no two successive numbers can be even:
     \begin{align*}
         x = Z &\rightarrow ev(x)\\
@@ -287,7 +287,7 @@ Next, we introduce a similar lemma for a first-order language with term size con
 \begin{define}
 % Заимствуя обозначения из работы~\cite{hojjat2017deciding}, обозначим $ \termsOfSize{\sigma}{k} = \{t \text{ имеет сорт } \sigma \mid \sizename(t) = k \} $.
 % Для каждого  $ \sigma $, являющегося АТД-сортом,  определим множество размеров термов $ \sizesOfSort{\sigma} = \{\sizename(t) \mid t \in \huniv{\sigma} \} $.
-% \emph{Линейное множество}~--- это множество вида $ \{\mathbf{v} + \sum_{i = 1} ^ n k_i \mathbf{v_i} \mid k_i \in \mathbb{N} _0 \}$, где все $\mathbf{v}$  и $\mathbf{v_i}$ являются  векторами над $ \mathbb{N} _0 = \mathbb{N} \cup \{0 \} $.
+% \emph{Линейное множество}~--- это множество вида $ \{\mathbf{v} + \sum_{i = 1} ^ n k_i \mathbf{v_i} \mid k_i \in \mathbb{N} _0 \}$, где все $\mathbf{v}$  и $\mathbf{v_i}$ являются векторами над $ \mathbb{N} _0 = \mathbb{N} \cup \{0 \} $.
 % 
 Borrowing notation from~\cite{hojjat2017deciding}, we denote $ \termsOfSize{\sigma}{k} = \{t \text{ has sort } \sigma \mid \sizename(t) = k \} $.
 For each ADT sort $ \sigma $ we define the set of term sizes as $ \sizesOfSort{\sigma} = \{\sizename(t) \mid t \in \huniv{\sigma} \} $.
@@ -311,7 +311,7 @@ The proof is given in~\cite{10.1145/3453483.3454055}.
 The core idea of Lemma~\ref{lemm:pump-sizeelem} is that having a language from the \sizeelemclass{} class, a sufficiently large term $ g $ from it, and a sufficiently large path $ p $, one can replace $ \subterm{g} {p} $ by an arbitrary term $ t $ (limited only by the size, which must be in some linear infinite set $ T $), and again get the term from the same language. This fact, in turn, means that in each infinite language from the \sizeelemclass{} class there are subterms that are indistinguishable by its formulas.
 
 \begin{example}[\exEvenLeft{}]\label{ex:even}
-    % Рассмотрим систему дизъюнктов Хорна над алгебраическим типом бинарных деревьев $Tree ::= left\,|\,node(Tree, Tree)$, которая проверяет, является ли  количество узлов в самой левой ветви дерева чётным.
+    % Рассмотрим систему дизъюнктов Хорна над алгебраическим типом бинарных деревьев $Tree ::= left\,|\,node(Tree, Tree)$, которая проверяет, является ли количество узлов в самой левой ветви дерева чётным.
     Consider the Horn clause system over the binary tree algebraic type $Tree ::= left\,|\,node(Tree, Tree)$, which checks whether the number of nodes in the leftmost branch of the tree is even.
 \begin{align*}
     x = leaf & \rightarrow even(x) \\

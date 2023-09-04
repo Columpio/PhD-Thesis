@@ -2,7 +2,7 @@
 
 % В данной главе предложен метод вывода комбинированных инвариантов.
 % Комбинированные инварианты (раздел~\cref{sec:cici/combinedInvs}),~--- это инварианты, выраженные в расширении языка ограничений предикатами принадлежности терма языку из произвольного класса.
-% Метод, представленный в разделе~\cref{sec:cici/inference}, позволяет модифицировать любой основанный на направляемом контрпримерами уточнении абстракций (\cegar{}) алгоритм вывода инвариантов в языке ограничений таким образом, чтобы он эффективно выводил комбинированные инварианты. Модификация этого метода  состоит в коллаборативном взаимообмене информацией с алгоритмом вывода инвариантов в классе, с которым производится комбинация (эта идея описана в  разделе~\cref{sec:cici/idea}).
+% Метод, представленный в разделе~\cref{sec:cici/inference}, позволяет модифицировать любой основанный на направляемом контрпримерами уточнении абстракций (\cegar{}) алгоритм вывода инвариантов в языке ограничений таким образом, чтобы он эффективно выводил комбинированные инварианты. Модификация этого метода состоит в коллаборативном взаимообмене информацией с алгоритмом вывода инвариантов в классе, с которым производится комбинация (эта идея описана в разделе~\cref{sec:cici/idea}).
 This chapter proposes a method for the combined invariant inference.
 Combined invariants (Section~\cref{sec:cici/combinedInvs}) are invariants expressible in the extension of the constraint language with predicates checking term membership in a set from some fixed class.
 The method presented in Section~\cref{sec:cici/inference} is an extension of a counterexample-guided abstraction refinement (\cegar{})~\cite{cegar} algorithm for inference of combined invariants. The modification involves a collaborative information exchange with the invariant inference algorithm for the class with which it is combined (the core idea is described in Section~\cref{sec:cici/idea}).
@@ -17,7 +17,7 @@ For simplicity, the key idea of collaborative inference is presented as a modifi
 Let $\tuple{\states, \csubseteq, \cbot, \ctop, \ccap, \ccup, \cneg}$ be a complete Boolean lattice representing sets of concrete program states.
 
 \begin{define}
-% \emph{Система переходов (программа)} является тройкой $TS = \tuple{\states, \init, \thepost}$, где  $\init \in \states$~--- это начальные состояния, а функция $\thepost : \states \mapsto \states$ называется \emph{функцией перехода},  имеет  следующие свойства:
+% \emph{Система переходов (программа)} является тройкой $TS = \tuple{\states, \init, \thepost}$, где  $\init \in \states$~--- это начальные состояния, а функция $\thepost : \states \mapsto \states$ называется \emph{функцией перехода},  имеет следующие свойства:
 % \begin{itemize}
 %     \item $\thepost$ монотонна, т.\:е. из $s_1 \csubseteq s_2$ следует $\post{s_1} \csubseteq \post{s_2}$;
 %     \item $\thepost$ аддитивна, т.\:е. $\post{s_1 \ccup s_2} = \post{s_1}\ccup\post{s_2}$;
@@ -330,7 +330,7 @@ Note that the sets of states $A$ and $B$ themselves are not enough to prove the 
 If the procedure $\RunBlackBox\left(TS, \property, \tuple{\alpha, \gamma}, a\right)$ halts with the result $SAFE(A \ccup B)$ (p.~\ref{line:halt-combined-safe}), then $A \ccup B$ is a combined invariant of the $\tuple{TS, \property}$ problem.
 \end{lemma}
 \begin{proof}
-% Докажем, что $A \ccup B$ является индуктивным инвариантом, показав, что для него выполняются все три признака индуктивных инвариантов из определения~\ref{defn:ind-invariant}: в этом множестве содержатся все начальные состояния, оно сохраняет отношение перехода и оно является подмножеством  свойства.
+% Докажем, что $A \ccup B$ является индуктивным инвариантом, показав, что для него выполняются все три признака индуктивных инвариантов из определения~\ref{defn:ind-invariant}: в этом множестве содержатся все начальные состояния, оно сохраняет отношение перехода и оно является подмножеством свойства.
 Let us prove that $A \ccup B$ is an inductive invariant by showing that it satisfies all three criteria of inductive invariants from Definition~\ref{defn:ind-invariant}: this set contains all initial states, it preserves the transition relation, and it is a subset of the property.
 
 \textit{Initial states.}
