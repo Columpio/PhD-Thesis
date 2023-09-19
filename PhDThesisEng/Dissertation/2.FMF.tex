@@ -63,7 +63,7 @@ This formula is satisfied by the following finite model $\structure$.
 % ограничений в дизъюнктах выполняется в некоторой модели $\structure$, т.\:е. $\structure\models C$ для всех $C\in\prog$. Пусть также справедливо следующее:
 % \[X_i\eqdef \{\tuple{t_1,\ldots,t_n} \mid \tuple{\interprets{\structure}{t_1},\ldots,\interprets{\structure}{t_n}} \in \structure(P_i)\}.\]
 % Тогда $\tuple{\hs,X_1,\ldots,X_k}$ является индуктивным инвариантом $\prog$.
-Assume that a Horn clause system without constraints $\prog$ with uninterpreted predicates $\relations=\{P_1,\ldots,P_k\}$ is satisfied in some model $\structure$, i.e., $\structure\models C$ for all $C\in\prog$. Let the following be true:
+Assume that a Horn clause system without constraints $\prog$ with uninterpreted predicates $\relations=\{P_1,\ldots,P_k\}$ is satisfied in some model $\structure$, i.\:e., $\structure\models C$ for all $C\in\prog$. Let the following be true:
 \[X_i\eqdef \{\tuple{t_1,\ldots,t_n} \mid \tuple{\interprets{\structure}{t_1},\ldots,\interprets{\structure}{t_n}} \in \structure(P_i)\}.\]
 Then $\tuple{\hs,X_1,\ldots,X_k}$ is an inductive invariant of $\prog$.
 \end{lemma}
@@ -177,7 +177,7 @@ $\tuple{\hs, X_1,\ldots, X_k}\models C$ for each $C\in\prog$, so $\tuple{X_1,\ld
 % Однако насыщения не дают эффективный класс инвариантов, поскольку даже проверка принадлежности кортежа замкнутых термов множеству, выраженному насыщением, неразрешима~\cite{4556689}.
 % По этой причине насыщения в качестве основы для самостоятельного класса инвариантов не рассматриваются в данной работе. Однако изучение их подклассов, как и создание процедур автоматического вывода для инвариантов в них многообещающи.
 % О применении метода для вывода более узкого класса регулярных инвариантов повествует следующий раздел.
-Arbitrary automated theorem provers, e.g., saturation-based, such as \vampire{}~\cite{kovacs2013first}, \eprover{}~\cite{10.5555/1218615.1218621} and \zipperposition{}~\cite{10.1007/978-3-319-66167-4_10}, can be used as a backend to check the satisfiability of first-order formulas.
+Arbitrary automated theorem provers, e.\:g., saturation-based, such as \vampire{}~\cite{kovacs2013first}, \eprover{}~\cite{10.5555/1218615.1218621} and \zipperposition{}~\cite{10.1007/978-3-319-66167-4_10}, can be used as a backend to check the satisfiability of first-order formulas.
 However, saturations do not provide an effective class of invariants, since even checking whether a tuple of closed terms belongs to the set expressed by a saturation is undecidable~\cite{4556689}.
 For this reason, possible saturation-based inductive invariant classes are not considered in this thesis. However, the study of their subclasses and automatic invariant inference procedures for them are promising.
 
@@ -224,7 +224,7 @@ Consider the following clause system with a number of different invariants.
 % Этот инвариант является наиболее сильным из возможных, т.\:к. выражает денотационную семантику $ inc $ и $ dec $ соответственно. Эти отношения нерегулярны, то есть не существует 2-автоматов представляющих эти отношения~\cite{tata}.
 This system has an obvious elementary invariant
 $$ inc (x, y) \equiv (y = S (x)), dec (x, y) \equiv (x = S (y)).$$
-This invariant is the strongest possible, since it expresses the denotational semantics of $inc$ and $dec$. Yet these relations are not regular, i.e., there are no tree automata representing these relations~\cite{tata}.
+This invariant is the strongest possible, since it expresses the denotational semantics of $inc$ and $dec$. Yet these relations are not regular, i.\:e., there are no tree automata representing these relations~\cite{tata}.
 
 % Однако эта система дизъюнктов имеет другой, менее очевидный, регулярный инвариант, порождённый двумя $ 2 $-ДКАД $ \automaton{\{s_0, s_1, s_2, s_3\}}{\autStates_*}{\autTrans} $ с конечными состояниями соответственно $ \autStates_{inc} = \{\tuple{s_0, s_1}, \tuple{s_1, s_2}, \tuple{s_2, s_0} \} $, $ \autStates_{dec} = \{\tuple{s_1, s_0}, \tuple{s_2, s_1}, \tuple{s_0, s_2} \} $ и с правилами перехода, имеющими следующий вид:
 However, this CHC system has a less obvious regular invariant based on two $ 2 $-tree automata $ \automaton{\{s_0, s_1, s_2, s_3\}}{\autStates_*}{\autTrans}$ with two sets of finite states, respectively, $ \autStates_{inc} = \{\tuple{s_0, s_1}, \tuple{s_1, s_2}, \tuple{s_2, s_0} \} $, $ \autStates_{dec} = \{\tuple{s_1, s_0}, \tuple{s_2, s_1}, \tuple{s_0, s_2} \} $ and with transition rules of the following form:

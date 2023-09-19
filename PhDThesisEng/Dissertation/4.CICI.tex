@@ -24,8 +24,8 @@ Let $\tuple{\states, \csubseteq, \cbot, \ctop, \ccap, \ccup, \cneg}$ be a comple
 %     \item $\post{\cbot}=\init$.
 A \emph{transition system (program)} is a triple $TS = \tuple{\states, \init, \thepost}$, where $\init \in \states$ are the initial states, and a \emph{transition function} $\thepost : \states \mapsto \states$ is a function, which has the following properties:
 \begin{itemize}
-    \item $\thepost$ is monotonous, i.e.,  $s_1 \csubseteq s_2$ implies $\post{s_1} \csubseteq \post{s_2}$;
-    \item $\thepost$ is additive, i.e., $\post{s_1 \ccup s_2} = \post{s_1}\ccup\post{s_2}$;
+    \item $\thepost$ is monotonous, i.\:e.,  $s_1 \csubseteq s_2$ implies $\post{s_1} \csubseteq \post{s_2}$;
+    \item $\thepost$ is additive, i.\:e., $\post{s_1 \ccup s_2} = \post{s_1}\ccup\post{s_2}$;
     \item $\post{\cbot}=\init$.
 \end{itemize}
 \end{define}
@@ -84,7 +84,7 @@ In what follows, it is assumed that checks of the form $\gamma(a) \csubseteq \pr
 
 \begin{define}
 % \emph{Абстрактная функция перехода} $\theapost : \abstrDomain \mapsto \abstrDomain$ <<поднимает>> функцию перехода в абстрактный домен, т.\:е. для всех $a\in\abstrDomain$ справедливо
-An \emph{abstract transition function} $\theapost : \abstrDomain \mapsto \abstrDomain$ ``lifts'' a transition function to the abstract domain, i.e., for all $a\in\abstrDomain$ holds:
+An \emph{abstract transition function} $\theapost : \abstrDomain \mapsto \abstrDomain$ ``lifts'' a transition function to the abstract domain, i.\:e., for all $a\in\abstrDomain$ holds:
 \[\alpha(\post{\gamma(a)})\asubseteq\apost{a}.\]
 \end{define}
 
@@ -303,14 +303,14 @@ The \RunBlackBox{} procedure overwrites the abstraction used in \cegar{} (p.~\re
 % В частности, её начальные состояния $\init'$~--- это $\post{A} \setminus A$, т.\:е. образ неиндуктивных состояний. Достижимые за один шаг в остаточной системе состояния $\thepost'(\init') = \post{\post{A} \setminus A} \setminus A$~--- это $\thepost$-образ неиндуктивных состояний.
 The residual system is structured as follows.
 Its states in the original system are reachable from states that violate the inductiveness of $A$.
-In particular, its initial states $\init'$ are $\post{A} \setminus A$, i.e., the image of non-inductive states. The states $\thepost'(\init') = \post{\post{A} \setminus A} \setminus A$ are reachable in one step in the residual system is the $\thepost$-image of non-inductive states.
+In particular, its initial states $\init'$ are $\post{A} \setminus A$, i.\:e., the image of non-inductive states. The states $\thepost'(\init') = \post{\post{A} \setminus A} \setminus A$ are reachable in one step in the residual system is the $\thepost$-image of non-inductive states.
 
 % Основная идея алгоритма \ourCEGAR{} состоит в том, чтобы использовать дополнительный верификатор $\oracle$ для \emph{ослабления} неиндуктивного множества состояний $A$ до некоторой неподвижной точки в комбинированном классе.
 % Если второй верификатор найдёт индуктивный инвариант остаточной системы, т.\:е. некую индуктивную аппроксимацию $B$ неиндуктивных состояний, то $A \ccup B$ будет индуктивным инвариантом исходной системы.
 % Иными словами, путём построения остаточной системы алгоритм берёт безопасную, но неиндуктивную часть текущего кандидата в инварианты и передаёт её сотрудничающему верификатору, чтобы он дополнил её до неподвижной точки, т.\:е. индуктивного инварианта.
 The main idea of the \ourCEGAR{} algorithm is to use an additional verifier $\oracle$ to \emph{weaken} the non-inductive state set $A$ to some fixed point in the combined class.
-If the second verifier finds an inductive invariant of the residual system, i.e., some inductive approximation $B$ of non-inductive states, then $A \ccup B$ will be an inductive invariant of the original system.
-In other words, by building a residual system, the algorithm takes the safe but non-inductive part of the current invariant candidate and passes it to a collaborating verifier to complete it to a fixed point, i.e., inductive invariant.
+If the second verifier finds an inductive invariant of the residual system, i.\:e., some inductive approximation $B$ of non-inductive states, then $A \ccup B$ will be an inductive invariant of the original system.
+In other words, by building a residual system, the algorithm takes the safe but non-inductive part of the current invariant candidate and passes it to a collaborating verifier to complete it to a fixed point, i.\:e., inductive invariant.
 
 % Современные подходы к выводу индуктивных инвариантов программ, такие как \pdr{} (который можно рассматривать как усложнённый вариант \cegar{}), монотонно \emph{усиливают} кандидат в инварианты $A$ до тех пор, пока он не станет индуктивным.
 % Из-за этого проблемой таких подходов является выбор стратегии усиления~\cite{krishnan2020global}: из-за слишком резкого усиления могут быть пропущены нужные неподвижные точки, в то время как из-за медленного усиления алгоритм может сходиться к неподвижной точке слишком долго или вовсе расходиться.
@@ -337,7 +337,7 @@ Let us prove that $A \ccup B$ is an inductive invariant by showing that it satis
 From the invariant~\eqref{prop:cegar-inv-A} of the \cegar{} algorithm we have the following cases. Either $\init\csubseteq A\csubseteq A\ccup B$, qed. Either $A=\cbot$, so by definition $\post{\cbot}$, $\init=\post{\cbot}\csetminus \cbot=\post{A}\csetminus A \csubseteq B\csubseteq A \ccup B$.
 
 \textit{Preservation of the transition relation.}
-From soundness of the $\oracle$ verifier we know that $B$ is an inductive invariant $\left( \tuple{\states, \init', \thepost'}, \property \right)$, i.e., $\post{A}\csetminus A\csubseteq B$ ($\init'$ definition) and $\post{B}\csetminus A \csubseteq B$ ($\thepost'$ definition).
+From soundness of the $\oracle$ verifier we know that $B$ is an inductive invariant $\left( \tuple{\states, \init', \thepost'}, \property \right)$, i.\:e., $\post{A}\csetminus A\csubseteq B$ ($\init'$ definition) and $\post{B}\csetminus A \csubseteq B$ ($\thepost'$ definition).
 Thus, $\left(\post{A}\ccup \post{B}\right)\csetminus A\csubseteq B$, and so $\post{A}\ccup \post{B}\csubseteq A\ccup B$, hence, as the function $\thepost$ is additive, $\post{A\ccup B} \csubseteq A\ccup B$.
 
 \textit{Property subset}
@@ -393,7 +393,7 @@ In this section, the collaborative inference approach for CHC systems over ADTs 
 % Во-вторых, подход позволяет расширить Хорн-решатели запросами к решателям для логики первого порядка, например, основанным на насыщении~\cite{kovacs2013first}, и инструментам поиска конечных моделей~\cite{claessen2003new,reynolds2013finite}.
 The approach has two following properties.
 Firstly, it infers inductive invariants expressed in the extension of the first-order logic over ADTs with constraints on term membership in tree languages $\overline{x}\in L$.
-Secondly, the approach extends Horn solvers with queries to first-order logic solvers, e.g., saturation-based~\cite{kovacs2013first} and finite-model finders~\cite{claessen2003new,reynolds2013finite}.
+Secondly, the approach extends Horn solvers with queries to first-order logic solvers, e.\:g., saturation-based~\cite{kovacs2013first} and finite-model finders~\cite{claessen2003new,reynolds2013finite}.
 
 % Прежде всего, определим, как будет выражаться класс комбинированных инвариантов.
 First, let us define the representation of the class of combined invariants.
@@ -454,7 +454,7 @@ s \models B \right\}.
 \end{align*}
 
 % Без потери общности предположим, что система дизъюнктов Хорна $\prog$ имеет единственный предикат в запросе $Q$, т.\:е. далее будем рассматривать только системы полученные следующим образом:
-Assume without loss of generality that the Horn clause system $\prog$ has a single query predicate $Q$, i.e., further, we will consider only systems obtained as follows:
+Assume without loss of generality that the Horn clause system $\prog$ has a single query predicate $Q$, i.\:e., further, we will consider only systems obtained as follows:
 $$ \prog' \eqdef \rules{\prog}\cup\left\{ \body{C}(\overline{x})\rightarrow Q(\overline{x})\mid C \text{ is a query of }\prog\right\}\cup\{Q(\overline{x})\rightarrow\bot\}.$$
 % Система дизъюнктов определяет свойство для системы переходов как: $\property(Q)\eqdef\bot$ и для каждого $P\in\relations$, $\property(P)\eqdef\top$.
 The clause system defines a property for the transition system as: $\property(Q)\eqdef\bot$ and for each $P\in\relations$, $\property(P)\eqdef\top$.
@@ -626,7 +626,7 @@ The procedure \textsc{RecoverCex} is linear in the number of nodes of the input 
 % $\phi(\overline{x})\,\lor\,\overline{x}\!\in\!L$,
 % где $\phi$~--- формула первого порядка над АТД, а $L$~--- язык деревьев.
 % Реализация подхода в рамках \pdr{} как сложной инстанциации \cegar{} может быть обобщена для автоматического вывода инвариантов в полном бескванторном фрагменте $\regelemclass{}$, состоящем из формул следующего вида:
-The above algorithm allows inferring combined invariants in the class $\elemclass{}\uplus\regclass{}$, i.e., inductive invariants expressible by formulas of the form
+The above algorithm allows inferring combined invariants in the class $\elemclass{}\uplus\regclass{}$, i.\:e., inductive invariants expressible by formulas of the form
 $\phi(\overline{x})\,\lor\,\overline{x}\!\in\!L$,
 where $\phi$ is a first-order formula over ADTs and $L$ is a tree language.
 The implementation of the \pdr{} approach as a complex instantiation of \cegar{} can be generalized for the automatic invariant inference in the full quantifier-free fragment $\regelemclass{}$ with formulas of the following form:

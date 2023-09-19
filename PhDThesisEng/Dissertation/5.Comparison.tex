@@ -104,7 +104,7 @@ It is important to distinguish  invariant classes for the analysis of invariant 
 % Сноска отсылает к соответствующей теореме, представленной в данной работе. Отсутствие сноски означает очевидность приводимого факта.
 % Например, в ячейке $\sizeelemclass{}\setminus\elemclass{}$ находится $\infty$ без сноски, т.\:к. класс $\sizeelemclass{}$ является синтаксическим расширением класса $\elemclass{}$, следовательно, включает, как минимум, те же инварианты.
 For class $A$ in the row and class $B$ in the column, the corresponding cell contains a footnote, and either the symbol $\emptyset$, or $\infty$, or the name of a certain clause system from this work.
-Each cell should be read as an answer to the question: ``What does the class $A\setminus B$ contain?'' If the cell contains $\emptyset$, then $A\setminus B = \emptyset$. If the cell contains $\infty$, then $B \subseteq A$. Finally, if the cell contains the name $\prog$ of some system, then the classes $A$ and $B$ are incomparable, i.e., $\prog \in A \setminus B \neq \emptyset$ and $B \setminus A \neq \emptyset$.
+Each cell should be read as an answer to the question: ``What does the class $A\setminus B$ contain?'' If the cell contains $\emptyset$, then $A\setminus B = \emptyset$. If the cell contains $\infty$, then $B \subseteq A$. Finally, if the cell contains the name $\prog$ of some system, then the classes $A$ and $B$ are incomparable, i.\:e., $\prog \in A \setminus B \neq \emptyset$ and $B \setminus A \neq \emptyset$.
 The footnote refers to the corresponding theorem presented in this thesis. The absence of a footnote indicates that the stated fact is obvious.
 For example, the cell $\sizeelemclass{}\setminus\elemclass{}$ contains $\infty$ without a footnote, because the $\sizeelemclass{}$ class is a syntactic extension of the $\elemclass{}$ class, and therefore includes at least the same invariants.
 
@@ -124,7 +124,7 @@ This example allows us to separate classes of synchronous regular invariants wit
 
 \begin{lemma}\label{lemm:node-not-in-reg-flat}
 % Существуют синхронные регулярные инварианты с полной свёрткой, которые невыразимы при помощи только стандартной свёртки, т.\:е. $\exNode{}\in\syncRegFullClass{}\setminus\syncRegFlatClass{}$.
-There are synchronous regular invariants with full convolution that are inexpressible using only standard convolution, i.e., $\exNode{}\in\syncRegFullClass{}\setminus\syncRegFlatClass{}$.
+There are synchronous regular invariants with full convolution that are inexpressible using only standard convolution, i.\:e., $\exNode{}\in\syncRegFullClass{}\setminus\syncRegFlatClass{}$.
 \end{lemma}
 \begin{proof}
 % $\exNode{}\in\syncRegFullClass{}$, что следует из примера~\ref{ex:node-in-reg-full} и теоремы~\ref{theorem:anyPatternClosure} для языка равенства двух термов $L$.
@@ -143,7 +143,7 @@ $$ \exLR{} \eqdef \big\{ x \mid \exists t\ .\ x = node(t, t) \big\}.$$
 This set lies in the class of elementary invariants, yet it cannot be expressed by any synchronous tree automaton even with full convolution, as the next lemma shows.
 \begin{lemma}\label{lemm:lr-not-in-reg-full}
 % Существуют элементарные инварианты, которые не являются инвариантами, выразимыми регулярно с полной синхронизацией, т.\:е. 
-There are elementary invariants which are not expressible regularly with full synchronization, i.e., $\exLR{}\not\in\syncRegFullClass{}$.
+There are elementary invariants which are not expressible regularly with full synchronization, i.\:e., $\exLR{}\not\in\syncRegFullClass{}$.
 \end{lemma}
 \begin{proof}
 % В~\cite[упр.~1.4]{tata} применением леммы о <<накачке>> к языку $\exLR{}$ показано, что $\exLR{}\not\in\regclass{}$. По лемме~\ref{lemma:reg-full-one-is-reg}, из этого следует $\exLR{}\not\in\syncRegFullClass{}$.
@@ -152,7 +152,7 @@ In~\cite[Ex.~1.4]{tata}, by application of the pumping lemma to $\exLR{}$, it is
 
 \subsection{Inexpressivity in Combined Languages}
 \begin{theorem}\label{thm:exLt}
-The intersection of classes \sizeelemclass{} and \syncRegFlatClass{} does not belong to the class \regelemclass{}, i.e., $\exLt{} \in \sizeelemclass{}$, $\exLt{}\in\syncRegFlatClass{}$, $\exLt{}\not\in\regelemclass{}$.
+The intersection of classes \sizeelemclass{} and \syncRegFlatClass{} does not belong to the class \regelemclass{}, i.\:e., $\exLt{} \in \sizeelemclass{}$, $\exLt{}\in\syncRegFlatClass{}$, $\exLt{}\not\in\regelemclass{}$.
 \end{theorem}
 \begin{proof}
 % Множество $\exLt{}$ выражается следующей \sizeelemclass{}-формулой:  $$\phi(x, y) \eqdef \sizename(x) < \sizename(y).$$
@@ -191,7 +191,7 @@ This section introduces pumping lemmas for first-order languages: the ADT constr
 % Первые леммы о <<накачке>> возникли в теории формальных языков в связи с конечными автоматами и контекстно-свободными грамматиками.
 % В общем виде любая лемма о <<накачке>> должна показывать, что для всех языков в некотором классе (например, регулярных или контекстно-свободных языков) любое достаточно большое слово может быть <<накачано>>. Иными словами, некоторые части слова могут быть неограниченно увеличены, и <<накачанное>> слово при этом останется в языке. Леммы о <<накачке>> полезны для доказательства невыразимости инварианта в некотором классе: предположив, что инвариант принадлежит классу, можно применить специализированную лемму о <<накачке>> для этого класса и получить некоторый <<накачанный>> элемент. Если он не может лежать в инварианте, то получено противоречие, следовательно, инвариант невыразим в данном классе.
 First pumping lemmas arose in the theory of formal languages~\cite{BARHILLELPERLESSHAMIR} applied to finite automata and context-free grammars.
-In general, a pumping lemma claims that for all languages in some class (e.g., regular or context-free languages), any sufficiently large word can be ``pumped''. In other words, some parts of the word can be indefinitely enlarged, and the pumped word will still be a part of the language. Pumping lemmas are useful to prove that an invariant is not expressible in some class: you assume that the invariant belongs to a class, and then you apply a specialized pumping lemma for this class and get some pumped set. If the set cannot be an inductive invariant, then a contradiction has been obtained; therefore, the invariant is inexpressible in the given class.
+In general, a pumping lemma claims that for all languages in some class (e.\:g., regular or context-free languages), any sufficiently large word can be ``pumped''. In other words, some parts of the word can be indefinitely enlarged, and the pumped word will still be a part of the language. Pumping lemmas are useful to prove that an invariant is not expressible in some class: you assume that the invariant belongs to a class, and then you apply a specialized pumping lemma for this class and get some pumped set. If the set cannot be an inductive invariant, then a contradiction has been obtained; therefore, the invariant is inexpressible in the given class.
 
 % Для формулировки лемм о <<накачке>> в начале определим следующее расширение $\elemextclass{}$ языка ограничений, которое допускает устранение кванторов.
 % Для каждого АТД $ \tuple{\sigma, C} $ и каждого конструктора $ f \in C $, имеющего арность $ \sigma_1 \times \dots \times \sigma_n \rightarrow \sigma $ для некоторых сортов $ \sigma_1, \ldots, \sigma_n $, введём \emph{селекторы} $ g_i \in S $ с арностью $ \sigma \rightarrow \sigma_i $ для каждого $ i \leq n $ со стандартной семантикой, заданной так: $ g_i (f (t_1, \ldots, t_n)) \eqdef t_i $.
@@ -250,7 +250,7 @@ This lemma formalizes the fact that a constraint language over an ADT theory can
 
 \begin{theorem}
 % Существуют регулярные, но неэлементарные инварианты, т.\:е. $\regclass{} \setminus \elemclass{} \neq \emptyset$.
-There are regular but non-elementary invariants, i.e., $\regclass{} \setminus \elemclass{} \neq \emptyset$.
+There are regular but non-elementary invariants, i.\:e., $\regclass{} \setminus \elemclass{} \neq \emptyset$.
 \end{theorem}
 \begin{proof}
     % Рассмотрим систему дизъюнктов Хорна над алгебраическим типом целых чисел Пеано  \natDef{}, которая проверяет чётность чисел и утверждает, что никакие два соседних числа не могут быть чётными:
@@ -325,7 +325,7 @@ The core idea of Lemma~\ref{lemm:pump-sizeelem} is that having a language from t
 
 \begin{theorem}\label{thm:exEvenLeft}
 % Существуют регулярные инварианты, которые не являются инвариантами, выразимыми элементарно с ограничениями на размер термов, т.\:е. $\exEvenLeft{} \in \regclass{} \setminus \sizeelemclass{}$.
-There are regular invariants that are not elementary invariants with term size constraints, i.e., $\exEvenLeft{} \in \regclass{} \setminus \sizeelemclass{}$.
+There are regular invariants that are not elementary invariants with term size constraints, i.\:e., $\exEvenLeft{} \in \regclass{} \setminus \sizeelemclass{}$.
 
 \end{theorem}
 \begin{proof}
