@@ -41,6 +41,7 @@
 \usepackage{mathtools}
 \usepackage{listings}
 \usepackage{tikz}
+\usepackage{tikzpagenodes}
 \usetikzlibrary{matrix, patterns, patterns.meta, backgrounds, automata, positioning, tikzmark, calc, arrows, arrows.meta, shapes, shadows.blur, shapes.misc, shapes.callouts}
 \usepackage{minted}
 \usepackage{advdate}
@@ -78,7 +79,7 @@
 {%\setbeamercolor{background canvas}{bg=red}\begin{frame}{FAST COMPILATION MOCK}\end{frame}
 }}{#1}}
 
-\newcommand{\btVFill}{\vskip0pt plus 1filll}
+\newcommand{\btVFill}{\vskip0pt plus 1fill}
 
 
 \newcommand\blfootnote[1]{%
@@ -89,7 +90,7 @@
 }
 
 \tikzset{
-    onslide/.code args={<#1>#2}{\only<#1>{\pgfkeysalso{#2}}}, 
+    onslide/.code args={<#1>#2}{\only<#1>{\pgfkeysalso{#2}}},
 }
 \tikzset{/handlers/.provide style/.code={%
     \pgfkeysifdefined{\pgfkeyscurrentpath/.@cmd}{}%
@@ -102,25 +103,25 @@
 \pgfkeys{%
     /calloutquote/.cd,
     width/.code                   =  {\def\calloutquotewidth{#1}},
-    position/.code                =  {\def\calloutquotepos{#1}}, 
-    bubblePosition/.code          =  {\def\calloutquoteBubblePos{#1}}, 
+    position/.code                =  {\def\calloutquotepos{#1}},
+    bubblePosition/.code          =  {\def\calloutquoteBubblePos{#1}},
     author/.code                  =  {\def\calloutquoteauthor{#1}},
     /calloutquote/.unknown/.code   =  {\let\searchname=\pgfkeyscurrentname
-                                 \pgfkeysalso{\searchname/.try=#1,                                
+                                 \pgfkeysalso{\searchname/.try=#1,
     /tikz/\searchname/.retry=#1},\pgfkeysalso{\searchname/.try=#1,
                                   /pgf/\searchname/.retry=#1}}
-                            }  
+                            }
 
 \newcommand\calloutquote[2][]{%
        \pgfkeys{/calloutquote/.cd,
          width               = 5cm,
          position            = {(0,-1)},
          author              = {}}
-  \pgfqkeys{/calloutquote}{#1}                   
+  \pgfqkeys{/calloutquote}{#1}
   \node [rectangle callout,callout relative pointer={\calloutquotepos},/calloutquote/.cd,
      #1] (tmpcall) at \calloutquoteBubblePos {#2};
-  \node at (tmpcall.pointer){\calloutquoteauthor};    
-}  
+  \node at (tmpcall.pointer){\calloutquoteauthor};
+}
 
 \newenvironment<>{framesection}[1]{\section{#1}\begin{frame}{#1}#2}{\end{frame}}
 
@@ -184,7 +185,7 @@
     invisible/.style={opacity=0,text opacity=0},
     visible on/.style={alt=#1{}{invisible}},
     alt/.code args={<#1>#2#3}{%
-      \alt<#1>{\pgfkeysalso{#2}}{\pgfkeysalso{#3}} 
+      \alt<#1>{\pgfkeysalso{#2}}{\pgfkeysalso{#3}}
     },
     beameralert/.style={alt=<#1>{fill=red!30,rounded corners}{},anchor=base},
     BeamerAlert/.style={alt=#1{fill=red!30,rounded corners}{},anchor=base}
@@ -219,10 +220,10 @@
 
 \lstdefinelanguage{CSharp}
 {
- morecomment = [l]{//}, 
+ morecomment = [l]{//},
  morecomment = [l]{///},
  morecomment = [s]{/*}{*/},
- morestring=[b]", 
+ morestring=[b]",
  sensitive = true,
  morekeywords = {abstract,  event,  new,  struct,
   as,  explicit,  null,  switch,
@@ -241,8 +242,8 @@
   default,  interface,  sealed,  volatile,
   delegate,  internal,  short,  void,
   do,  is,  sizeof,  while, where,
-  double,  lock,  stackalloc,   
-  else,  long,  static,   
+  double,  lock,  stackalloc,
+  else,  long,  static,
   enum,  namespace,  string, Span, var,
   ValueListBuilder}
 }
@@ -345,10 +346,10 @@
 \newtheorem{exmp}{Пример}
 
 \newcommand\encircle[1]{%
-  \tikz[baseline=(X.base)] 
+  \tikz[baseline=(X.base)]
     \node (X) [draw, shape=circle, inner sep=0] {\strut #1};}
-    
-    
+
+
 
 \definecolor{dgreen}{rgb}{0.,0.6,0.}
 \definecolor{focusGreen}{RGB}{7,225,19}

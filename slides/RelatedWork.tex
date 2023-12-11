@@ -1,26 +1,89 @@
 \section{Обзор предметной области}% 3-5 слайдов, очень лайтово
 
-\begin{frame}[fragile]{Дизъюнкты Хорна над АТД}
-\begin{exampleblock}{Пример программы на языке \textsc{Haskell}:}
-% \begin{minipage}[t][][t]{\textwidth}
-\begin{minted}[tabsize=4,escapeinside=@@]{haskell}
-data Nat = Z | S Nat
-data List = nil | cons Nat List
-drop Z xs = xs
-drop _ nil = nil
-drop (S n) (cons(_, xs)) = drop n xs
-assert (@$\neg\exists$@ n xs . xs /= nil && drop n xs == drop (S n) xs)
-\end{minted}
-% \end{minipage}
-\end{exampleblock}
-\begin{exampleblock}{Условия верификации в виде дизъюнктов Хорна над АТД:}
-\begin{align*}
-\top &\rightarrow drop(Z, xs, xs)\\
-\top &\rightarrow drop(S(n), nil, nil)\\
-drop(n, xs, rs) &\rightarrow drop(S(n), cons(x, xs), rs)\\
-\neg (xs = nil) \land drop(n, xs, ys) \land drop(S(n), xs, ys) &\rightarrow \bot
+\begin{frame}[fragile,t]{Верификация программ путём вывода индуктивных инвариантов}%
+\vspace*{-4mm}
+\begin{tikzpicture}[ampersand replacement=\&,
+  column 1/.style={anchor=base west},
+  column 2/.style={anchor=base east}]
+\only<-6>{\node at (0, -0.3) {\begin{minipage}{5cm}
+\begin{align*}%
+    &\Alt<2->{\{x = 0 \land y = 0\}}{x, y := 0, 0}\\
+    &\texttt{\textcolor{blue}{while }} * \texttt{ \textcolor{blue}{do}}\\
+    &\qquad y := y + x\\
+    &\qquad x := x + 1\\
+    &\Alt<2->{\{y\geq 0\}}{\texttt{\textcolor{blue}{assert}} (y\geq 0)}
 \end{align*}
-\end{exampleblock}
+\end{minipage}};}
+\node at (0, -1.5) {};
+\begin{scope}[rounded corners=3mm,opacity=0.95]
+\onslide<3->{\draw[fill=blue!30] (-6.5,-2.5) rectangle +(8.5,.6) node[midway] {Как доказать корректность этой тройки Хоара?};}
+\only<4->{\draw[fill=green!40] (-3.5,-3.2) rectangle +(11,.6) node[midway] {При помощи \emph{пользовательского} \textbf{индуктивного инварианта} $\phi$};}
+\only<5->{\draw[fill=blue!30] (-6.5,-3.9) rectangle +(9,.6) node[midway] {\textbf{Пользователь}: $y\geq 0$~--- индуктивный инвариант?};}
+\only<8->{\draw[fill=green!40] (-3.5,-4.6) rectangle +(11,.6) node[midway] {\textbf{SMT решатель}: Нет, индутивность нарушается при $x \mapsto -1$};}
+\only<9->{\draw[fill=blue!30] (-6.5,-5.3) rectangle +(9.6,.6) node[midway] {\textbf{Пользователь}: А усиленная формула: $x \geq 0 \land y \geq 0$?};}
+\only<10->{\draw[fill=green!40] (-5.0,-6.0) rectangle +(12.5,.6) node[midway] {\textbf{SMT решатель}: Да, эта формула является индуктивным инвариантом};}
+\end{scope}
+\only<7-8>{
+\begin{scope}[shift={(-8,-6)}]
+\node at (5,0.5) (formula) {$VC$};
+\node [rectangle, draw,
+    text width=6em, text centered, rounded corners, minimum height=3em] at (8,0.5) (smt) {SMT решатель};
+\node at (12,1) (ok) {$\color{green}\checkmark$ (безопасно)};
+\node at (12.55,0)  (bad) {$\color{red}\xmark$
+% $\mathbin{\tikz [x=1.4ex,y=1.4ex,line width=.2ex, red] \draw (0,0) -- (1,1) (0,1) -- (1,0);}$
+($\phi(\overline{x})$~--- не инд. инв.)};
+%
+\path [->] (formula) edge node {} (smt);
+\path [->] (smt) edge node {} (ok);
+\alt<8->{\path [->] [line width=0.4mm, red] (smt) edge node {} (bad);}{\path [->] (smt) edge node {} (bad);}
+\end{scope}}
+% \onslide<7-8>{
+% \draw[draw=red!70,ultra thick] (-1.5, -4.3) rectangle ++(7.8, 0.6);
+% \calloutquote[width=4.1cm,position={(1,-2.08)},bubblePosition={(-2,-1.4)},callout pointer width=.4cm,fill=red!70,rounded corners]{Can be violated for $x < 0$}
+% }
+% \onslide<8>{\node[draw,fill=green!55,text width=5cm] at (-2,-2.5) {Should be \textbf{strengthened}, e.g.,$$I(x,y)\equiv x \geq 0 \land y \geq 0$$};}
+\end{tikzpicture}
+\begin{tikzpicture}[remember picture,overlay]
+\node (bot) at (current page text area.south) {};
+\node[above=-4mm of bot] {
+\onslide<4->{
+% \btVFill
+\begin{minipage}{10cm}
+% \hspace*{-5mm}
+\begin{align*}
+\onslide<6-8>{VC := \left\{}
+\begin{array}{rl}
+    \onslide<6-8>{\forall x, y.\big(}x = 0 \land y = 0 &\rightarrow \Alt<6-8>{y\geq 0}{\phi(x, y)}\onslide<6-8>{\big)\land}\\
+    \onslide<6-8>{\forall x, y, x', y'. \big(} \Alt<6-8>{y\geq 0}{\phi(x, y)}\land x' = x + 1 \land y' = y + x &\rightarrow \Alt<6-8>{y'\geq 0}{\phi(x', y')}\onslide<6-8>{\big)\land}\\
+    \onslide<6-8>{\forall x, y.\big(}\Alt<6-8>{y\geq 0}{\phi(x, y)} &\rightarrow y \geq 0\onslide<6-8>{\big)}
+\end{array}
+\onslide<6-8>{\right.}%
+\end{align*}
+}
+\end{minipage}
+};
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Дизъюнкты Хорна с ограничениями}
+\begin{tikzpicture}
+\onslide<1->{\node[draw,fill=blue!30,opacity=0.95,rounded rectangle,minimum height=6mm] at (0, 0) {\textbf{Как автоматизировать} вывод индуктивных инвариантов?};}
+\onslide<2->{\node[draw,fill=green!40,opacity=0.95,rounded rectangle] at (2, -0.7) {Заменить пользовательскую формулу на \textbf{неинтерпретированный} символ $I$};}
+\begin{scope}[shift={(-1,+2)}]
+\node (chcs) at (2, -5) {\begin{minipage}{10cm}
+\begin{align*}
+x = 0 \land y = 0 &\rightarrow I(x, y)\\
+I(x, y)\land x' = x + 1 \land y' = y + x &\rightarrow I(x', y')\\
+I(x, y) &\rightarrow y \geq 0
+\end{align*}
+\end{minipage}};
+\onslide<3->{
+\draw[draw=nicegreen!70,ultra thick] (-0.15, -4.2) rectangle ++(4, -1.1);
+\calloutquote[width=30mm,position={(-2.0,-0.5)},bubblePosition={(5.1, -3.4)},callout pointer width=6mm,fill=nicegreen!70,rounded corners]{\Large с\Alt<2>{О}{}ограничениями}
+\calloutquote[width=30mm,position={(2.2,-0.75)},bubblePosition={(.9, -3.4)},callout pointer width=6mm,fill=red!60,rounded corners]{\Large Дизъюнкты Хорна}
+}
+\end{scope}
+\end{tikzpicture}
 \end{frame}
 
 \begin{frame}{Применения Хорн решателей}
@@ -42,6 +105,29 @@ drop(n, xs, rs) &\rightarrow drop(S(n), cons(x, xs), rs)\\
 \blfootnote{$^3$ Alt и др. SolCMC: Solidity Compiler’s Model Checker. CAV'22}
 \blfootnote{$^4$ Hoenicke и др. Thread Modularity at Many Levels. POPL'17}
 \blfootnote{$^5$ Shemer и др. Property Directed Self Composition. CAV'19}
+\end{frame}
+
+\begin{frame}[fragile]{Дизъюнкты Хорна над АТД}
+\begin{exampleblock}{Пример программы на языке \textsc{Haskell}:}
+% \begin{minipage}[t][][t]{\textwidth}
+\begin{minted}[tabsize=4,escapeinside=@@]{haskell}
+data Nat = Z | S Nat
+data List = nil | cons Nat List
+drop Z xs = xs
+drop _ nil = nil
+drop (S n) (cons(_, xs)) = drop n xs
+assert (@$\neg\exists$@ n xs . xs /= nil && drop n xs == drop (S n) xs)
+\end{minted}
+% \end{minipage}
+\end{exampleblock}
+\begin{exampleblock}{Условия верификации в виде дизъюнктов Хорна над АТД:}
+\begin{align*}
+\top &\rightarrow drop(Z, xs, xs)\\
+\top &\rightarrow drop(S(n), nil, nil)\\
+drop(n, xs, rs) &\rightarrow drop(S(n), cons(x, xs), rs)\\
+\neg (xs = nil) \land drop(n, xs, ys) \land drop(S(n), xs, ys) &\rightarrow \bot
+\end{align*}
+\end{exampleblock}
 \end{frame}
 
 % \section{Constrained Horn Clauses}
@@ -96,7 +182,7 @@ drop(n, xs, rs) &\rightarrow drop(S(n), cons(x, xs), rs)\\
 % \only<7-8>{
 % \begin{scope}[shift={(-8,-6)}]
 % \node at (5,0.5) (formula) {$VC$};
-% \node [rectangle, draw, 
+% \node [rectangle, draw,
 %     text width=6em, text centered, rounded corners, minimum height=3em] at (8,0.5) (smt) {SMT solver};
 % \node at (12,1) (ok) {$\color{green}\checkmark$ (safe)};
 % \node at (12.55,0)  (bad) {$\color{red}\xmark$
