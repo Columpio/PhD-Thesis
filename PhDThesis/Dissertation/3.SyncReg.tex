@@ -169,7 +169,7 @@ $$C = \sautomatonGen{\autStates^A \times \autStates^B}{k}{\autFinStates^A \times
 
 
 \begin{define}
-\emph{Подстановкой замкнутых термов} $u = \tuple{u_1, \dots, u_n}$ в $(n, k)$-шаблон $t = \tuple{t_1, \dots, t_k}$ назовем кортеж замкнутых термов, полученный подстановкой термов $u_i$ на место переменных $x_i$ для $i = 1, \dots, n$: 
+\emph{Подстановкой замкнутых термов} $u = \tuple{u_1, \dots, u_n}$ в $(n, k)$-шаблон $t = \tuple{t_1, \dots, t_k}$ назовем кортеж замкнутых термов, полученный подстановкой термов $u_i$ на место переменных $x_i$ для $i = 1, \dots, n$:
 \begin{center}
     $t[u] = \tuple{t_1\{x_1 \leftarrow u_1, \dots, x_n \leftarrow u_n\}, \dots, t_k\{x_1 \leftarrow u_1, \dots, x_n \leftarrow u_n\}} $.
 \end{center}
@@ -180,7 +180,7 @@ $$C = \sautomatonGen{\autStates^A \times \autStates^B}{k}{\autFinStates^A \times
 \end{define}
 
 \begin{example}
-Рассмотрим сигнатуру чисел Пеано, содержащую два функциональных символа $Z$ и $S$, имеющих арность 0 и 1 соответственно. 
+Рассмотрим сигнатуру чисел Пеано, содержащую два функциональных символа $Z$ и $S$, имеющих арность 0 и 1 соответственно.
 
 Кортеж $\tuple{x_1, S(x_2), Z}$ является линейным $(2,3)$-шаблоном.
 
@@ -205,7 +205,7 @@ $t[u] = \tuple{S(Z),\ S(S(S(Z))), Z}$.
 \end{define}
 
 \begin{theorem}\label{theorem:semantics}
-Формула в СНФ выполнима в языковой семантике тогда и только тогда, когда она выполнима в семантике Тарского. 
+Формула в СНФ выполнима в языковой семантике тогда и только тогда, когда она выполнима в семантике Тарского.
 \end{theorem}
 \begin{proof}
 Возьмём $\Phi = \forall x_1 \dots \forall x_n.\phi(x_1, \dots, x_n)$. По теореме Эрбрана формула $\Phi$ выполнима в семантике Тарского тогда и только тогда, когда у нее существует эрбрановская модель $\hs$.
@@ -234,7 +234,7 @@ $t[u] = \tuple{S(Z),\ S(S(S(Z))), Z}$.
     &\Leftrightarrow \interprets{L}{\neg(\psi_1\land\psi_2)} = \emptyset &&\Leftrightarrow L\models \psi_1\land\psi_2
 \end{align*}
 
-Для доказательства индукционного перехода для дизъюнкции можно воспользоваться законом Де Моргана. 
+Для доказательства индукционного перехода для дизъюнкции можно воспользоваться законом Де Моргана.
 \end{proof}
 
 \begin{theorem}~\label{theorem:patternClosure}
@@ -268,7 +268,7 @@ A[\fullConv(f(\overline{u}), g_2(\overline{s}_2), \ldots, g_n(\overline{s}_n))] 
 {\scriptsize
 $$
     \overline{a}' = \left( A'\left[\fullConv\left(\overline{t},\overline{h})\right)\right] \mid \left(\overline{t},\overline{h}\right) = \left(\overline{t},h_2(\overline{s}_2),\ldots,h_n(\overline{s}_n)\right)\in\left(\overline{t}_1\times\ldots\times\overline{t}_m\right)\times\left(\overline{u}_2\times\ldots\times\overline{u}_n\right) \right)=$$
-    $$= \left( \tuple{\tuple{h_2,\ldots,h_n}, \left( A\left[\fullConv\left( 
+    $$= \left( \tuple{\tuple{h_2,\ldots,h_n}, \left( A\left[\fullConv\left(
 \overline{b} \right)\right] \mid \overline{b}\in\overline{t}\times\overline{s}_2\times\ldots\times\overline{s}_n \right) } \mid \left(\overline{t},h_2(\overline{s}_2),\ldots,h_n(\overline{s}_n)\right)\in\left(\overline{t}_1\times\ldots\times\overline{t}_m\right)\times\left(\overline{u}_2\times\ldots\times\overline{u}_n\right) \right).$$
 }
 Для того, чтобы выполнялось свойство~\ref{inductionResult}, левая часть равенства~\ref{eq:sync-aut-unfold} должна быть равна следующей паре:
@@ -317,7 +317,7 @@ $$\left( \autTrans\left( \tuple{f_i, h_2,\ldots,h_n},\left(A\left[\fullConv\left
 Определим автомат для дизъюнкта $C$ с символами $\tuple{delta_C, Final_C}$ при помощи конструкции из доказательства теоремы~\ref{theorem:automataIntersect} о замкнутости автоматов относительно пересечения.
 Декларативное описание для дизъюнкта является конъюнкцией универсальных замыканий по всем свободным переменным следующих четырёх формул:
 \begin{align*}
-    &Final_C(q) \leftrightarrow Final_{A_1}(q_1) \land \ldots Final_{A_{n-1}}(q_{n-1}) \land \neg Final_{A_n}(q_n)\\
+    &Final_C(prod(q_1, \ldots, q_n)) \leftrightarrow Final_{A_1}(q_1) \land \ldots Final_{A_{n-1}}(q_{n-1}) \land \neg Final_{A_n}(q_n)\\
     &delta_C(x_1, \ldots, x_k, prod(q^1_1, \ldots, q^n_1), \ldots, prod(q^1_l, \ldots, q^n_l)) = \\
     &\qquad= prod(delta_{A_1}(x_1, \ldots, x_k, q^1_1, \ldots, q^1_l), \ldots, delta_{A_n}(x_1, \ldots, x_k, q^n_1, \ldots, q^n_l))\\
     &Reach_C(q_1) \land \ldots \land Reach_C(q_l) \rightarrow Reach_C(delta_C(x_1, \ldots, x_k, q_1, \ldots, q_l))\\
@@ -363,12 +363,12 @@ $$\left( \autTrans\left( \tuple{f_i, h_2,\ldots,h_n},\left(A\left[\fullConv\left
 Также в $\Delta(\prog)$ будут входить следующие условия пустоты языка автомата дизъюнкта $C1$, которые служат гарантом его выполнения:
 \begin{align*}
     Reach_{C1}(q) &\rightarrow Reach_{C1}(delta_{C1}(f, q))\\
-    Reach_{C1}(q) \land Final_{C1}(q)) &\rightarrow \bot
+    Reach_{C1}(q) \land Final_{C1}(q) &\rightarrow \bot
 \end{align*}
 
 Дизъюнкт $C2$ состоит из двух атомарных формул: $A_2 = lt(x, y)$ и $A_3 = lt(S(x), S(y))$. Автомат для атомарной формулы $A_2$ совпадает с автоматом предикатного символа $lt$, для атомарной формулы $A_3$ добавим в $\Delta(\prog{})$ автомат $delta_{A_3}$, $Final_{A_3})$, сконструированный на основе автомата для предикатного символа $lt$:
 \begin{align*}
-    delta_{A_3}(f,g,q) &= delta_{lt}\\
+    delta_{A_3}(f,g,q) &= delta_{lt}(f,g,q)\\
     Final_{A_3} (q) &\leftrightarrow Final_{lt}(delta_{lt}(S, S, q))
 \end{align*}
 
