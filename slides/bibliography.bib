@@ -1,0 +1,120 @@
+@inproceedings{oppen1978reasoning,
+  title={Reasoning about recursively defined data structures},
+  author={Oppen, Derek C},
+  booktitle={Proceedings of the 5th ACM SIGACT-SIGPLAN symposium on Principles of programming languages},
+  pages={151--157},
+  year={1978}
+}
+
+@inproceedings{10.1145/3453483.3454055,
+author = {Kostyukov, Yurii and Mordvinov, Dmitry and Fedyukovich, Grigory},
+title = {Beyond the Elementary Representations of Program Invariants over Algebraic Data Types},
+year = {2021},
+isbn = {9781450383912},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+doi = {10.1145/3453483.3454055},
+abstract = {First-order logic is a natural way of expressing properties of computation. It is traditionally used in various program logics for expressing the correctness properties and certificates. Although such representations are expressive for some theories, they fail to express many interesting properties of algebraic data types (ADTs). In this paper, we explore three different approaches to represent program invariants of ADT-manipulating programs: tree automata, and first-order formulas with or without size constraints. We compare the expressive power of these representations and prove the negative definability of both first-order representations using the pumping lemmas. We present an approach to automatically infer program invariants of ADT-manipulating programs by a reduction to a finite model finder. The implementation called RInGen has been evaluated against state-of-the-art invariant synthesizers and has been experimentally shown to be competitive. In particular, program invariants represented by automata are capable of expressing more complex properties of computation and their automatic construction is often less expensive.},
+booktitle = {Proceedings of the 42nd ACM SIGPLAN International Conference on Programming Language Design and Implementation},
+pages = {451–465},
+numpages = {15},
+keywords = {tree automata, first-order definability, invariants, finite models, algebraic data types, invariant representation},
+location = {Virtual, Canada},
+authorscopus = {true},
+addendum = {(Scopus)},
+series = {PLDI 2021}
+}
+
+@inproceedings{LPAR2023:Collaborative_Inference_of_Combined,
+  author    = {Yurii Kostyukov and Dmitry Mordvinov and Grigory Fedyukovich},
+  title     = {Collaborative Inference of Combined Invariants},
+  booktitle = {Proceedings of 24th International Conference on Logic for Programming, Artificial Intelligence and Reasoning},
+  editor    = {Ruzica Piskac and Andrei Voronkov},
+  series    = {EPiC Series in Computing},
+  authorscopus = {true},
+  addendum = {(Scopus)},
+  volume    = {94},
+  pages     = {288--305},
+  year      = {2023},
+  publisher = {EasyChair},
+  bibsource = {EasyChair, https://easychair.org},
+  issn      = {2398-7340},
+  doi       = {10.29007/kv72}
+}
+
+@article{kostyukov2019auto,
+  title={Автоматическое доказательство корректности программ с динамической памятью},
+  author={Костюков, Юрий Олегович and Батоев, Константин Аланович and Мордвинов, Дмитрий Александрович and Костицын, Михаил Павлович and Мисонижник, Александр Владимирович},
+  journal={Труды Института системного программирования РАН},
+  volume={31},
+  number={5},
+  pages={37--62},
+  year={2019},
+  authorvak = {true},
+  addendum = {(ВАК)},
+  language = {russian},
+  publisher={Федеральное государственное бюджетное учреждение науки Институт системного программирования РАН}
+}
+
+@article{miso2022gen,
+  title={Генерация слабейших предусловий программ с динамической памятью в символьном исполнении},
+  author={Мисонижник, Александр Владимирович and Костюков, Юрий Олегович and Костицын, Михаил Павлович and Мордвинов, Дмитрий Александрович and Кознов, Дмитрий Владимирович},
+  journal={Научно-технический вестник информационных технологий, механики и оптики},
+  volume={22},
+  number={5},
+  pages={982--991},
+  year={2022},
+  authorvak = {true},
+  addendum = {(ВАК)},
+  language = {russian},
+  publisher={Федеральное государственное бюджетное учреждение науки Институт системного программирования РАН}
+}
+
+
+@inproceedings{yang2019lemma,
+  title={Lemma Synthesis for Automating Induction over Algebraic Data Types},
+  author={Yang, Weikun and Fedyukovich, Grigory and Gupta, Aarti},
+  booktitle={International Conference on Principles and Practice of Constraint Programming},
+  pages={600--617},
+  year={2019},
+  organization={Springer}
+}
+
+
+@article{de2018solving,
+  title={Solving Horn Clauses on Inductive Data Types Without Induction},
+  author={De Angelis, Emanuele and Fioravanti, Fabio and Pettorossi, Alberto and Proietti, Maurizio},
+  journal={Theory and Practice of Logic Programming},
+  volume={18},
+  number={3-4},
+  pages={452--469},
+  year={2018},
+  publisher={Cambridge University Press}
+}
+
+@inproceedings{claessen2015tip,
+  title={TIP: tons of inductive problems},
+  author={Claessen, Koen and Johansson, Moa and Ros{\'e}n, Dan and Smallbone, Nicholas},
+  booktitle={Conferences on Intelligent Computer Mathematics},
+  pages={333--337},
+  year={2015},
+  organization={Springer}
+}
+
+@inproceedings{10.1145/3009837.3009893,
+author = {Hoenicke, Jochen and Majumdar, Rupak and Podelski, Andreas},
+title = {Thread Modularity at Many Levels: A Pearl in Compositional Verification},
+year = {2017},
+isbn = {9781450346603},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3009837.3009893},
+doi = {10.1145/3009837.3009893},
+abstract = {A thread-modular proof for the correctness of a concurrent program is based on an inductive and interference-free annotation of each thread. It is well-known that the corresponding proof system is not complete (unless one adds auxiliary variables). We describe a hierarchy of proof systems where each level k corresponds to a generalized notion of thread modularity (level 1 corresponds to the original notion). Each level is strictly more expressive than the previous. Further, each level precisely captures programs that can be proved using uniform Ashcroft invariants with k universal quantifiers. We demonstrate the usefulness of the hierarchy by giving a compositional proof of the Mach shootdown algorithm for TLB consistency. We show a proof at level 2 that shows the algorithm is correct for an arbitrary number of CPUs. However, there is no proof for the algorithm at level 1 which does not involve auxiliary state.},
+booktitle = {Proceedings of the 44th ACM SIGPLAN Symposium on Principles of Programming Languages},
+pages = {473–485},
+numpages = {13},
+keywords = {Thread-modularity, Concurrency, Owicki-Gries, Parameterized verification},
+location = {Paris, France},
+series = {POPL '17}
+}

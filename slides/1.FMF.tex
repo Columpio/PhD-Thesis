@@ -1,0 +1,73 @@
+
+% \newcommand{\evenCHCSystem}{\begin{varexampleblock}[0.75\textwidth]{CHC system \onslide<2->{as a FOL-formula}}
+%     \begin{align*}
+%     \onslide<2->{\forall x. (}x = Z &\rightarrow even(x)\onslide<2->{)\land} \\
+%     \onslide<2->{\forall x, y. (}x = S(S(y)) \land even(y) &\rightarrow even(x)\onslide<2->{)\land} \\
+%     \onslide<2->{\forall x, y. (}even(x) \land even(y) \land y = S(x) &\rightarrow \bot\onslide<2->{)}
+%     \end{align*}
+% \end{varexampleblock}}
+\newcommand{\evenCHCSystem}{\begin{varexampleblock}[0.72\textwidth]{Система дизъюнктов \onslide<2->{как формула ЛПП}}
+    \begin{align*}
+    \top&\rightarrow even(Z)\onslide<2->{)\land} \\
+    \onslide<2->{\forall y. (}even(y) &\rightarrow even(S(S(y)))\onslide<2->{)\land} \\
+    \onslide<2->{\forall x. (}even(x) \land even(S(x)) &\rightarrow \bot\onslide<2->{)}
+    \end{align*}
+\end{varexampleblock}}
+
+\newcount\rPos
+\newcount\modelFloat
+
+\begin{frame}{Вывод регулярных инвариантов при помощи поиска конечных моделей}
+\animate<3-43>
+\transduration<3-43>{0.02}
+\animatevalue<3-23>{\rPos}{20}{0}
+\pgfmathsetmacro\rPosFloat{0.1*\rPos}     % [10;0] ~> [3.5;-1.5]
+\pgfmathsetmacro\chcSystemSize{(\rPos+20) / 40} % [10;0] ~> [1.0;.5]
+\pgfmathsetmacro\chcSystemOpacity{(\rPos) / 20} % [10;0] ~> [1.0;.5]
+\animatevalue<24-44>{\modelFloat}{0}{20}
+\pgfmathsetmacro\modelPos{0.05*\modelFloat}
+\pgfmathsetmacro\modelSize{(\modelFloat+20) / 40}
+\pgfmathsetmacro\modelOpacity{(\modelFloat) / 20}
+\centering
+\begin{tikzpicture}[remember picture, overlay]
+\node[text width=\textwidth,scale=\chcSystemSize,opacity=\chcSystemOpacity] (evenCHCs) at (-0.32,\rPosFloat) {\evenCHCSystem{}};
+\onslide<1>{\calloutquote[width=7.8cm,position={(-1,0.7)},bubblePosition={(0,-0.5)},callout pointer width=.4cm,fill=yellow!60,rounded corners]{\Large АТД ограничения устранены}}
+\node<3->[inner sep=0pt] (fmfinder) at (0.3,-2.2) {\includegraphics[width=.52\textwidth,height=.28\textwidth]{resources/blender.png}};
+\node<3-> (fmfinderName) [above left=-39mm and -58mm of fmfinder,align=center,text width=50mm] {{\large Инструмент поиска конечных моделей}};
+\node<3-> (modelStart) [below right=-1.5cm and -4.6cm of fmfinder] {};
+\node<3-> (leftpath) [above left=2cm and 0.1cm of fmfinder] {};
+\node<3-> (rightpath) [above right=2cm and -0.5cm of fmfinder] {};
+\path<3-> (modelStart) |- (leftpath) node [text width=\textwidth,scale=\modelSize,opacity=\modelOpacity,pos=\modelPos] (model) {\begin{varblock}[0.5\textwidth]{}
+\begin{align*}
+    \mathattention<45>{\domain{Nat}}&\mathattention<45>{=\{0,1\}}\\
+    \mathattention<46>{\mystructur(Z)}&\mathattention<46>{=0}\\
+    \mathattention<47>{\mystructur(S)(x)}&\mathattention<47>{=1-x}\\
+    \mathattention<48>{\mystructur(even)}&\mathattention<48>{=\{0\}}
+\end{align*}
+\end{varblock}};
+\onslide<45->{\node<45-> (automaton) at (rightpath) {
+\begin{minipage}{.3\textwidth}
+\begin{varblock}[\textwidth]{}
+\begin{center}
+\vphantom{\begin{tikzpicture}[shorten >=1pt,node distance=2cm,on grid,auto]
+    \node[state,initial,initial text=$Z$,accepting] (s0) {$0$};
+    \node[state] (s1) [right=of s0] {$1$};
+    \path[->]
+        (s0)    edge [bend left=25] node {$S$}       (s1)
+        (s1)    edge [bend left=25] node {$S$}       (s0)
+    ;
+\end{tikzpicture}}\hspace*{-12mm}\raisebox{9mm}{
+\begin{tikzpicture}[remember picture,overlay,shorten >=1pt,node distance=2cm,on grid,auto]
+    \node[state,onslide=<46->{initial,initial text=$Z$},onslide=<48->{accepting}] (s0) {$0$};
+    \node[state] (s1) [right=of s0] {$1$};
+    \path<47->[onslide=<47->,->]
+        (s0)    edge [bend left=25] node {$S$}       (s1)
+        (s1)    edge [bend left=25] node {$S$}       (s0)
+    ;
+    \onslide<49>{\node[below=12mm of s0] {$\invariant(even) = \langOf{\automat}$};}
+\end{tikzpicture}}
+\end{center}
+\end{varblock}
+\end{minipage}};}
+\end{tikzpicture}
+\end{frame}

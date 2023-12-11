@@ -1,0 +1,762 @@
+\newcommand\exprVsAutomationPlot{
+\begin{tikzpicture}[domain=0:4]
+    \draw[->] (-0.5,0) -- (7,0) node[below] {Возможность автоматизации};
+    \draw[->] (0,-0.5) -- (0,5) node[above] {Выразительность};
+    \draw (2,4) node [circle,fill,inner sep=1pt,label=above:\textsc{Coq}-термы] {};
+    \draw (5,2.5) node [circle,fill,inner sep=1pt,label=above:\emph{Новое представление}] {};
+    \draw (5,1.25) node [circle,fill,inner sep=1pt,label=above:FOL-формулы] {};
+    % \draw[color=red] plot[id=x] function{x} 
+    %     node[right] {$f(x) =x$};
+    % \draw[color=blue] plot[id=sin] function{sin(x)} 
+    %     node[right] {$f(x) = \sin x$};
+    % \draw[color=orange] plot[id=exp] function{0.05*exp(x)} 
+    %     node[right] {$f(x) = \frac{1}{20} \mathrm e^x$};
+\end{tikzpicture}
+}
+
+\newcommand{\ciciPic}{
+\tikzset{empty block/.style={minimum width=70pt,minimum height=30pt}}
+\tikzset{block/.provide style={empty block, draw, rounded rectangle}}
+\hspace*{-5mm}
+\begin{tikzpicture}[every node/.style={align=center,font=\small}]
+
+\begin{scope}[overlay]
+\draw[line width=3,onslide=<3->{dash pattern={on 10pt off 10pt}}] (14, -3) circle (240pt);
+\node[rotate=-10] at (-2, -4.5) {\Large\textbf{Хорн решатели}};
+\node[rotate=10] at (8, -4.5) {\Large\textbf{Инструменты}\\\textbf{вывода теорем}};
+\end{scope}
+
+\only<1>{
+\begin{scope}[overlay,node distance=30pt]
+\node (z3) at (0,-1) {\textsc{Z3/Spacer}};
+\node[below left=of z3] {\textsc{Eldarica}};
+\node[below right=of z3] {\textsc{Hoice}};
+\node[below=of z3] {\textsc{Golem}};
+\node[above left=of z3] {\textsc{FreqHorn}};
+\node[above right=of z3] {\textsc{QARMC}};
+\node[above=of z3] {\textsc{Duality}};
+\end{scope}}
+
+\only<1-2>{
+\begin{scope}[overlay,node distance=20pt]
+\node (vampire) at (8,-1) {\textsc{Vampire}};
+\node[right=of vampire] {\textsc{E}};
+\node[below=of vampire] {\textsc{Zipperposition}};
+\node[above=of vampire] {\textsc{iProver}};
+\node[above right=of vampire] {\textsc{cvc5}};
+% \node[above right=of vampire] {\textsc{QARMC}};
+% \node[above=of vampire] {\textsc{Duality}};
+\end{scope}
+}
+
+\uncover<2->{
+\begin{scope}[node distance=50pt]
+\node[block] (isFeasible) {\textsc{IsFeasible}};
+\node[block,below=of isFeasible] (modelCheck) {\textsc{Validate}};
+\node[block,right=of modelCheck] (refine) {\textsc{Refine}};
+\node[left=of isFeasible] (unsafe) {UNSAT};
+\node[left=of modelCheck] (safe) {SAT};
+\draw[->] (isFeasible) -- (unsafe) node [midway,above] {трасса};
+\draw[->] (modelCheck) -- (safe) node [midway] {инд.\\инвариант};
+\draw[->] (refine) -- (modelCheck);
+\draw[->] (modelCheck) -- (isFeasible) node [midway,left=-1mm,align=right] {абстрактная\\трасса};
+
+\uncover<3->{
+\node[block,above=of refine] (runOracle) {\textsc{Collaborate}};
+\path (runOracle) -- (refine) node [midway] (tmp) {};
+\node[block,right=108pt of tmp] (atp) {Инструмент\\вывода\\теорем};
+\draw[->] (isFeasible) -- (runOracle);
+\draw[->] (runOracle) -- (atp) node [pos=.65,sloped] {\textit{остаточная}\\\textit{система}};
+\draw[->] (atp) -- (refine) node [pos=.4,sloped] {\textcolor{focusRed}{абстр. трасса}\\\textcolor{focusGreen}{част. инвариант}};
+\only<4>{
+\calloutquote[width=30mm,textwidth=30mm,position={(0.7,0.1)},bubblePosition={(3,-1.5)},callout pointer width=.4cm,fill=yellow!80,rounded corners]{Её достижимые состояния~--- это\\состояния исходной без состояний\\текущего кандидата в инварианты}
+}
+}
+\only<2>{
+\node (runOracle) [empty block,above=of refine] {};
+\draw (isFeasible) -- (runOracle.center);
+\draw[->] (runOracle.center) -- (refine);
+}
+\end{scope}}
+
+
+
+% \onslide<3>{\filldraw [line width=3,fill opacity=0.4,fill={rgb, 255:red, 7; green, 225; blue, 19 }] (-7.5, 2) circle (300pt);}
+
+% \onslide<4>{
+% % print(''.join(["\\textcolor{focus%s}{\\textsc{%s}}" % ("Red" if i % 2 else "Green", x) for i,x in enumerate(a)]))
+% \node[draw=focusRed,dash pattern={on 7pt off 9pt},postaction={draw=focusGreen, dash phase=8pt},align=center,inner sep=5mm,line width=2.75pt] at (500,320) {\LARGE \textcolor{focusGreen}{\textsc{C}}\textcolor{focusRed}{\textsc{o}}\textcolor{focusGreen}{\textsc{l}}\textcolor{focusRed}{\textsc{l}}\textcolor{focusGreen}{\textsc{a}}\textcolor{focusRed}{\textsc{b}}\textcolor{focusGreen}{\textsc{o}}\textcolor{focusRed}{\textsc{r}}\textcolor{focusGreen}{\textsc{a}}\textcolor{focusRed}{\textsc{t}}\textcolor{focusGreen}{\textsc{i}}\textcolor{focusRed}{\textsc{o}}\textcolor{focusGreen}{\textsc{n}}};}
+\end{tikzpicture}}
+
+\newcommand{\toolplotTwo}[2]{%
+% #1 is backend solver name
+% #2 is a .csv file name
+\pgfplotstableread[col sep = comma]{#2}\toolplotcsv
+\begin{subfigure}[t]{0.47\textwidth}
+\begin{center}
+\begin{tikzpicture}[scale=.55]
+\begin{axis}[xmode=log, ymode=log, legend pos= north west, xlabel={\ringenCICI{#1}, мс}, ylabel style = {align=center}, ylabel={{\color{red}\racer{}} и {\color{blue}\ringen{#1}}, мс}]
+    \addplot[dashed,no marks,very thin] coordinates {(10,10) (1200000,1200000)};
+    \addplot [dashed, no marks, thin] coordinates {(10,10) (1200000,1200000)};
+    \addplot [dashed, no marks, thin] coordinates {(10,600000) (600000,600000)};
+    \addplot [dashed, no marks, thin] coordinates {(600000, 10) (600000,600000)};
+    \addplot [dashed, no marks, thin] coordinates {(10, 1200000) (1200000,1200000)};
+    \addplot [dashed, no marks, thin] coordinates {(1200000, 10) (1200000,1200000)};
+    
+    % one second
+    \addplot [no marks, thin] coordinates {(1000, 10) (1000,1000)};
+    \addplot [no marks, thin] coordinates {(10, 1000) (1000,1000)};
+
+    \addplot  [only marks,  mark=o, color=red,  mark size=3pt] table [x={Collab}, y={Z3}] {\toolplotcsv};
+    \addplot  [only marks,  mark=triangle, color=blue, mark size=3pt] table [x={Collab}, y={RInGen}] {\toolplotcsv};
+\end{axis}
+\end{tikzpicture}
+\end{center}
+\end{subfigure}
+}
+
+\newcommand{\residualPic}{
+\tikzset{
+    importantNode/.style={font=\Large},
+    test1/.style={diamond, aspect=2, text width=5em, inner sep=5pt}}
+\begin{tikzpicture}
+\def\Bad{(9, 1.0) ellipse[x radius=15mm, y radius=15mm]}
+\def\Abstrk{(-1.5, -2.1) rectangle ++(4.6, 4.2)}
+\def\Abstr{(-2.2, -2.7) rectangle ++(10.5, 5.4)}
+\def\TAbstrk{(-1.2, 0) -- (-0.8,0.8) -- (1,1.5) -- (4,1) -- (5,0) -- (4,-1) -- (1,-1.5) -- (-0.8,-0.8) -- cycle}
+\def\Reach{(2.7,0) ellipse [x radius=40mm, y radius=20mm]}
+\def\ReachRes{(2.8,-2.2) rectangle ++(4.2, 4.4)}
+\def\OracleInv{(4.9,0) ellipse [x radius=26mm, y radius=40mm]}
+\def\AroundOracleInv{(4.9,0) ellipse [x radius=76mm, y radius=41mm]}
+
+
+\uncover<1-7>{
+\draw (0,0) ellipse [x radius=10mm, y radius=5mm] node (init) {$Init=R_0$};
+}
+
+\draw[draw=focusRed,ultra thick] \Bad node[importantNode] {\textcolor{focusRed}{$Bad$}};
+
+\uncover<2-7>{
+\draw (0.9,0) ellipse [x radius=20mm, y radius=10mm] node {};
+\node[right=3mm of init.east] (dots) {$\ldots$};
+\node[right=3mm of dots] (rk) {$R_k$};
+}
+
+
+\uncover<3-8, 13->{\draw[thick] \Reach;}
+\uncover<3-11, 13->{\node[importantNode,right=31mm of rk] (justr) {$R_{\invisible{k}}$};}
+\uncover<3-11>{\node[left=3mm of justr] (dots2) {$\ldots$};}
+
+\uncover<4>{\draw[overlay,ultra thick] (5, 5) -- (9.5, -5);}
+
+
+\uncover<6-12>{
+\uncover<3-8>{\draw \TAbstrk;}
+\alt<8->{
+    \node [importantNode,left=5mm of dots2] (tak) {$Init'$};
+}{
+    \node [importantNode,left=2mm of dots2] (tak) {$T(A_k)$};
+}
+\begin{scope}
+\uncover<9-12>{
+  \clip \TAbstrk;
+  \draw[thick,focusGreen] \Abstrk;
+}
+\end{scope}
+\begin{scope}
+\uncover<9-11>{
+  \clip \Reach;
+  \draw[thick] \Abstrk;
+}
+\end{scope}
+\begin{scope}[even odd rule]
+\uncover<9-12>{
+  \clip \Abstrk \Abstr;
+  \uncover<-11>{\draw[thick] \Reach;}
+  \draw[thick,focusGreen] \TAbstrk;
+}
+\end{scope}
+\begin{scope}[even odd rule]
+\uncover<9-12>{
+  \clip \Abstrk \Abstr;
+  \fill[pattern={Lines[angle=45,distance=4pt,line width=0.3mm]},pattern color=focusGreen] \TAbstrk;
+}
+\end{scope}
+}
+
+\uncover<10-12>{
+  \draw[thick,focusGreen] \ReachRes;
+  \node[importantNode] (Rres) at (5.8, 1.9) {\textcolor{focusGreen}{$R'$}};
+  \path[initial/.tip = {latex},-initial] (tak) edge [bend right,thick,focusGreen] node[black,importantNode,left=-1mm] {$T'^*$} (Rres);
+}
+
+\uncover<12>{
+  \draw[ultra thick,focusBlue] \OracleInv;
+}
+\uncover<13->{
+  \fill[pattern={Lines[angle=45,distance=4pt,line width=0.3mm]},pattern color=focusBlue] \OracleInv;
+  \begin{scope}[overlay,even odd rule]
+  \clip \Abstrk \AroundOracleInv;
+  \draw[ultra thick,focusBlue] \OracleInv;
+  \end{scope}
+}
+\uncover<12->{\node[importantNode] at (2.9, 3.2) {\textcolor{focusBlue}{$B$}};}
+
+\begin{scope}[overlay,even odd rule]
+\uncover<13->{
+  \clip \OracleInv \AroundOracleInv;
+  \draw[draw=focusViolet,ultra thick] \Abstrk;
+  % \fill[pattern=my north west lines,pattern color=focusViolet] \Abstrk;
+  % \fill[overlay,pattern=my north west lines,pattern color=focusViolet] \Abstrk;
+  % \fill[pattern=north west lines,pattern color=focusViolet] \Abstrk;
+  \fill[pattern={Lines[angle=-45,distance=4pt,line width=0.3mm]},pattern color=focusViolet] \Abstrk;
+}
+\end{scope}
+
+\uncover<5-8>{
+\draw[draw=focusViolet,ultra thick,onslide=<8>{fill=white}] \Abstrk;
+\node (ak) at (3, -1.1) {};
+}
+\uncover<5-8,13->{\node[importantNode] at (-1, 2.4) {\textcolor{focusViolet}{$A_k$}};}
+
+\uncover<6-7>{\path[initial/.tip = {latex},-initial] (ak) edge [bend right,thick] (tak);}
+\uncover<7>{
+\draw[draw=focusViolet,ultra thick] \Abstr;
+\node[importantNode] (akp1) at (7.8, -1.1) {\textcolor{focusViolet}{$A_{k+1}$}};
+\path[initial/.tip = {latex},-initial] (tak) edge [bend right,thick,focusViolet] (akp1);
+\begin{scope}
+\uncover<7>{
+  \clip \Abstr;
+  \fill[pattern={Lines[angle=45,distance=4pt,line width=0.3mm]},pattern color=focusViolet] \Bad;
+}
+\end{scope}}
+
+\begin{scope}[overlay,font=\Large]
+\only<-4>{\node[font=\large] at (-1.5,3) {
+    \begin{minipage}{40mm}
+    \begin{align*}
+    Init(x) &\rightarrow I(x)\\
+    I(x) \land Tr(x, x') &\rightarrow I(x')\\
+    I(x) \land Bad(x) &\rightarrow \bot
+    \end{align*}
+    \end{minipage}
+};}
+\node at (4, -3.4) {\begin{minipage}{\textwidth}
+\only<2>{$$R_{k}(x) = R_{k-1}(x) \lor \exists x'. \big(R_{k-1}\left(x'\right) \land Tr\left(x', x\right)\big)$$}
+\only<3>{$$R(x) = \bigvee_{k=0}^\infty R_{k}(x)$$}
+\only<4>{$$\models \forall x. \big(R(x) \land Bad(x) \rightarrow \bot\big)$$}
+\only<5>{\centering for each $i$, $\models R_i(x) \rightarrow A_i(x)$}
+\only<6>{$$\text{transition }T(A)(x) = \exists x'. \big(A(x') \land Tr(x', x)\big)$$}
+\only<7>{$$A_{k+1} = \alpha\big(T(A_k)\big)\text{ for abstraction }\alpha$$}
+\only<8-9>{\large $$Init' \text{ of residual system is } T(A_k)\Alt<8>{\land\neg}{\ \setminus} A_k\text{~--- \textbf{one-step non-inductive states}}$$}
+\only<10>{$$\text{transition }T'(B)\text{ of residual system is } T(B)\setminus A_k$$}
+\only<11>{\large $$R' = \text{reachable in residual system}=\text{reachable from non-inductive subset of }A_k$$}
+\end{minipage}};
+\only<7>{\calloutquote[position={(2,-1.9)},bubblePosition={(5.5,3.3)},callout pointer width=.5cm,fill=focusViolet!50,rounded corners]{abstract counterexample}}
+\only<12>{\calloutquote[position={(1.77,-1.9)},bubblePosition={(-0.75,2)},callout pointer width=.6cm,fill=focusBlue!50,rounded corners,font=\large]{\begin{minipage}{45mm}
+% $B$~-- residual system invariant obtained from oracle:
+\begin{align*}
+B \text{ -- } &\text{residual system invariant}\\
+&\text{obtained from oracle:}
+\end{align*}\vspace*{-8mm}
+% \alt<13>{\begin{align*}
+%     A_k(x') \land Tr(x', x) \land \neg A_k(x) &\rightarrow B(x)\\
+%     B(x) \land Tr(x, x') \land \neg A_k(x') &\rightarrow B(x')\\
+%     B(x) \land Bad(x) &\rightarrow \bot
+% \end{align*}}{
+\begin{align*}
+    Init'(x) &\rightarrow B(x)\\
+    B(x) \land Tr'(x, x') &\rightarrow B(x')\\
+    B(x) \land Bad(x) &\rightarrow \bot
+    \end{align*}
+    % }
+\end{minipage}}}
+\only<14>{\node[draw,fill=focusViolet!40,opacity=0.95,rounded rectangle,minimum height=2cm,rotate=0,align=center] at (4,-2) {\begin{minipage}{.85\textwidth}
+\centering $A_k \lor B$~--- \textbf{combined invariant} of the original system:
+\begin{align*}
+R(x) &\rightarrow A_k(x)\lor B(x)\\
+\big(A_k(x)\lor B(x)\big) \land Bad(x) &\rightarrow \bot
+\end{align*}
+\end{minipage}};}
+\end{scope}
+\end{tikzpicture}
+}
+
+% %Rounded Rect [id:dp9443796803339821] 
+% \draw   (170,249) .. controls (170,244.58) and (173.58,241) .. (178,241) -- (272,241) .. controls (276.42,241) and (280,244.58) .. (280,249) -- (280,273) .. controls (280,277.42) and (276.42,281) .. (272,281) -- (178,281) .. controls (173.58,281) and (170,277.42) .. (170,273) -- cycle ;
+% %Rounded Rect [id:dp2773818458647491] 
+% \draw   (170,148) .. controls (170,143.58) and (173.58,140) .. (178,140) -- (262,140) .. controls (266.42,140) and (270,143.58) .. (270,148) -- (270,172) .. controls (270,176.42) and (266.42,180) .. (262,180) -- (178,180) .. controls (173.58,180) and (170,176.42) .. (170,172) -- cycle ;
+% % Refine rect
+% \draw   (380,248) .. controls (380,243.58) and (383.58,240) .. (388,240) -- (472,240) .. controls (476.42,240) and (480,243.58) .. (480,248) -- (480,272) .. controls (480,276.42) and (476.42,280) .. (472,280) -- (388,280) .. controls (383.58,280) and (380,276.42) .. (380,272) -- cycle ;
+% %Straight Lines [id:da932730372325787] 
+% \draw    (380,261) -- (283,261) ;
+% \draw [shift={(280,261)}, rotate = 360] [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.08]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
+% %Straight Lines [id:da4961993079694478] 
+% \draw    (220,240) -- (220,183) ;
+% \draw [shift={(220,180)}, rotate = 90] [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.08]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
+% %Straight Lines [id:da36870516429389966] 
+% \draw    (170,260) -- (93,260) ;
+% \draw [shift={(90,260)}, rotate = 360] [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.08]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
+% %Straight Lines [id:da24013791401632556] 
+% \draw    (170,160) -- (93,160) ;
+% \draw [shift={(90,160)}, rotate = 360] [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.08]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
+
+
+
+% \onslide<2->{
+% %Rounded Rect [id:dp3414133323513948] 
+% \draw   (380,148) .. controls (380,143.58) and (383.58,140) .. (388,140) -- (472,140) .. controls (476.42,140) and (480,143.58) .. (480,148) -- (480,172) .. controls (480,176.42) and (476.42,180) .. (472,180) -- (388,180) .. controls (383.58,180) and (380,176.42) .. (380,172) -- cycle ;
+% %Straight Lines [id:da3745745784791844] 
+% % Right Arrows
+% \draw    (270,160) -- (377,160) ;
+% \draw    (430,180) -- (430,237) ;
+% \draw [shift={(380,160)}, rotate = 180] [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.08]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
+% % Text Node
+% \draw (370,197) node [anchor=north west][inner sep=0.75pt]   [align=center] {abstract\\cex};
+% % Text Node
+% \draw (379,150) node [anchor=north west][inner sep=0.75pt]   [align=center] {\textsc{RunOracle}};
+
+
+% % Text Node
+% \draw (588,160) node [anchor=north west][inner sep=0.75pt]  [align=center] {Black-Box Solver};
+% %Rounded Rect [id:dp2146350233524532] 
+% \draw   (580,152) .. controls (580,145.37) and (585.37,140) .. (592,140) -- (698,140) .. controls (704.63,140) and (710,145.37) .. (710,152) -- (710,188) .. controls (710,194.63) and (704.63,200) .. (698,200) -- (592,200) .. controls (585.37,200) and (580,194.63) .. (580,188) -- cycle ;
+
+% \alt<4->{
+% % predicates arrow
+% \draw    (480,160) -- (577.13,170) ;
+% \draw [shift={(580,170)}, rotate = 186.7] [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.08]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
+% % abs cex arrow
+% \draw    (600,200) -- (480,259.28) ;
+% \draw [shift={(480,259)}, rotate = 336.17] [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.08]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
+% % Text Node
+% \draw (492,139) node [anchor=north west][inner sep=0.75pt]  [rotate=-6.23] [align=center] {\textcolor{focusGreen}{\textbf{predicates}}};
+% % Text Node
+% \draw (488,230) node [anchor=north west][inner sep=0.75pt]  [rotate=-334.67] [align=center] {\textcolor{focusRed}{\textbf{abstract cex}}};
+% }{
+% % predicates arrow
+% \draw    (480,160) -- (577.13,170) ;
+% \draw [shift={(580,170)}, rotate = 186.7] [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.08]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
+% % abs cex arrow
+% \draw    (600,200) -- (480,259.28) ;
+% \draw [shift={(480,259)}, rotate = 336.17] [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.08]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
+% % Text Node
+% \draw (495,141.63) node [anchor=north west][inner sep=0.75pt]  [rotate=-6.23] [align=center] {predicates};
+% % Text Node
+% \draw (488,230) node [anchor=north west][inner sep=0.75pt]  [rotate=-334.67] [align=center] {abstract cex};
+% }
+
+% % SAFE arrow
+% \draw    (650,200) -- (650,260) ;
+% \draw [shift={(650,260)}, rotate = 270] [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.08]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
+% % Text Node
+% \draw (630,265) node [anchor=north west][inner sep=0.75pt]   [align=center] {$SAFE$};
+% % Text Node
+% \draw (655,220) node [anchor=north west][inner sep=0.75pt]   [align=center] {combined\\invariant};
+% }
+
+
+
+% \onslide<1>{\draw    (270,160) -- (430,160) -- (430,237) ;}
+% \draw [shift={(430,240)}, rotate = 270] [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.08]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
+
+% % Text Node
+% \draw (400,253) node [anchor=north west][inner sep=0.75pt]   [align=center] {\textsc{Refine}};
+% % Text Node
+% \draw (170,253) node [anchor=north west][inner sep=0.75pt]   [align=center] {\textsc{ModelCheck}};
+% % Text Node
+% \draw (41,252) node [anchor=north west][inner sep=0.75pt]   [align=center] {$SAFE$};
+% % Text Node
+% \draw (175,151) node [anchor=north west][inner sep=0.75pt]   [align=center] {\textsc{IsFeasible}};
+% % Text Node
+% \draw (21,151) node [anchor=north west][inner sep=0.75pt]   [align=center] {$UNSAFE$};
+% % Text Node
+% \draw (280,140) node [anchor=north west][inner sep=0.75pt]   [align=center] {abstract cex};
+% % Text Node
+% \draw (114,141) node [anchor=north west][inner sep=0.75pt]   [align=center] {cex};
+% % Text Node
+% \draw (298,242) node [anchor=north west][inner sep=0.75pt]   [align=center] {predicates};
+% % Text Node
+% \draw (98,241) node [anchor=north west][inner sep=0.75pt]   [align=center] {predicates};
+% % Text Node
+% \draw (224,190) node [anchor=north west][inner sep=0.75pt]   [align=center] {abstract\\cex};
+
+
+
+\newcommand{\invariantreprclasses}[5]
+{
+\begin{figure}[t]
+\tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt        
+\centering
+\begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-0.9,xscale=0.9]
+%uncomment if require: \path (0,300); %set diagram left start at 0, and has height of 300
+
+%Flowchart: Terminator [id:dp473438182569073] 
+\draw  [color={rgb, 255:red, 208; green, 2; blue, 27 }  ,draw opacity=1 ] (135.1,92.13) -- (328.9,92.13) .. controls (354.08,92.13) and (374.5,132.64) .. (374.5,182.63) .. controls (374.5,232.61) and (354.08,273.13) .. (328.9,273.13) -- (135.1,273.13) .. controls (109.92,273.13) and (89.5,232.61) .. (89.5,182.63) .. controls (89.5,132.64) and (109.92,92.13) .. (135.1,92.13) -- cycle ;
+%Flowchart: Terminator [id:dp2032122365868334] 
+\draw  [color={rgb, 255:red, 144; green, 19; blue, 254 }  ,draw opacity=1 ][dash pattern={on 4.5pt off 4.5pt}] (295.12,92.12) -- (423.38,92.12) .. controls (458.24,92.12) and (486.5,132.64) .. (486.5,182.63) .. controls (486.5,232.61) and (458.24,273.13) .. (423.38,273.13) -- (295.12,273.13) .. controls (260.26,273.13) and (232,232.61) .. (232,182.63) .. controls (232,132.64) and (260.26,92.12) .. (295.12,92.12) -- cycle ;
+%Flowchart: Terminator [id:dp6321668924624688] 
+\draw  [color={rgb, 255:red, 208; green, 2; blue, 27 }  ,draw opacity=1 ] (185.92,124.77) -- (287.58,124.77) .. controls (300.79,124.77) and (311.5,150.68) .. (311.5,182.63) .. controls (311.5,214.57) and (300.79,240.48) .. (287.58,240.48) -- (185.92,240.48) .. controls (172.71,240.48) and (162,214.57) .. (162,182.63) .. controls (162,150.68) and (172.71,124.77) .. (185.92,124.77) -- cycle ;
+%Flowchart: Terminator [id:dp05234016317559864] 
+% \draw  [color={rgb, 255:red, 144; green, 19; blue, 254 }  ,draw opacity=1 ][dash pattern={on 4.5pt off 4.5pt}] (273.41,124.77) -- (431.34,124.77) .. controls (451.86,124.77) and (468.5,150.68) .. (468.5,182.63) .. controls (468.5,214.57) and (451.86,240.48) .. (431.34,240.48) -- (273.41,240.48) .. controls (252.89,240.48) and (236.25,214.57) .. (236.25,182.63) .. controls (236.25,150.68) and (252.89,124.77) .. (273.41,124.77) -- cycle ;
+
+% Text Node
+\draw (120,250) node [anchor=north west][inner sep=0.75pt]   [align=left]
+% {\hyperref[sec:sizeelem-def]{$\sizeelemclass$}};
+{$\sizeelemclass$};
+% Text Node
+\draw (181,217) node [anchor=north west][inner sep=0.75pt]   [align=left]
+% {\hyperref[defn:elemclass]{$\elemclass$}};
+{$\elemclass$};
+% Text Node
+\draw (415,250) node [anchor=north west][inner sep=0.75pt]   [align=left]
+% {\hyperref[defn:regelemclass]{$\regelemclass$}};
+{$\regclass$};
+% Text Node
+% \draw (415,217) node [anchor=north west][inner sep=0.75pt]   [align=left]
+% {\hyperref[defn:regclass]{$\regclass$}};
+% {$\regclass$};
+% Text Node
+\draw (110,160) node [anchor=north west][inner sep=0.75pt]   [align=left] {\hyperref[exmpl:ltgt]{#1}};
+\draw (185,160) node [anchor=north west][inner sep=0.75pt]   [align=left] {\hyperref[exmpl:diag]{#2}};
+% \draw (250,160) node [anchor=north west][inner sep=0.75pt]   [align=left] {\hyperref[exmpl:incdec]{$IncDec$}};
+% Text Node
+\draw (325,160) node [anchor=north west][inner sep=0.75pt]   [align=left] {\hyperref[exmpl:even]{#3}};
+% Text Node
+\draw (395,160) node [anchor=north west][inner sep=0.75pt]   [align=left] {\hyperref[exmpl:evenleft]{#4}};
+\draw (395,200) node [anchor=north west][inner sep=0.75pt]   [align=left] {#5};
+% \draw (480,160) node [anchor=north west][inner sep=0.75pt]   [align=left] {\hyperref[exmp:evenodd]{$EvenOdd$}};
+\end{tikzpicture}
+    % \caption{Сравнение выразительных свойств трёх представлений инвариантов}
+    % \label{fig:representations-new}
+\end{figure}
+}
+
+\newcommand{\bubbles}[5]{%
+\tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt        
+\begin{center}
+\begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-0.9,xscale=0.9]
+%uncomment if require: \path (0,300); %set diagram left start at 0, and has height of 300
+
+%Flowchart: Terminator [id:dp473438182569073] 
+\draw  [color={rgb, 255:red, 208; green, 2; blue, 27 }  ,draw opacity=1 ] (135.1,92.13) -- (328.9,92.13) .. controls (354.08,92.13) and (374.5,132.64) .. (374.5,182.63) .. controls (374.5,232.61) and (354.08,273.13) .. (328.9,273.13) -- (135.1,273.13) .. controls (109.92,273.13) and (89.5,232.61) .. (89.5,182.63) .. controls (89.5,132.64) and (109.92,92.13) .. (135.1,92.13) -- cycle ;
+%Flowchart: Terminator [id:dp2032122365868334] 
+\draw  [color={rgb, 255:red, 144; green, 19; blue, 254 }  ,draw opacity=1 ][dash pattern={on 4.5pt off 4.5pt}] (295.12,92.12) -- (423.38,92.12) .. controls (458.24,92.12) and (486.5,132.64) .. (486.5,182.63) .. controls (486.5,232.61) and (458.24,273.13) .. (423.38,273.13) -- (295.12,273.13) .. controls (260.26,273.13) and (232,232.61) .. (232,182.63) .. controls (232,132.64) and (260.26,92.12) .. (295.12,92.12) -- cycle ;
+%Flowchart: Terminator [id:dp6321668924624688] 
+\draw  [color={rgb, 255:red, 208; green, 2; blue, 27 }  ,draw opacity=1 ] (185.92,124.77) -- (287.58,124.77) .. controls (300.79,124.77) and (311.5,150.68) .. (311.5,182.63) .. controls (311.5,214.57) and (300.79,240.48) .. (287.58,240.48) -- (185.92,240.48) .. controls (172.71,240.48) and (162,214.57) .. (162,182.63) .. controls (162,150.68) and (172.71,124.77) .. (185.92,124.77) -- cycle ;
+%Flowchart: Terminator [id:dp05234016317559864] 
+% \draw  [color={rgb, 255:red, 144; green, 19; blue, 254 }  ,draw opacity=1 ][dash pattern={on 4.5pt off 4.5pt}] (273.41,124.77) -- (431.34,124.77) .. controls (451.86,124.77) and (468.5,150.68) .. (468.5,182.63) .. controls (468.5,214.57) and (451.86,240.48) .. (431.34,240.48) -- (273.41,240.48) .. controls (252.89,240.48) and (236.25,214.57) .. (236.25,182.63) .. controls (236.25,150.68) and (252.89,124.77) .. (273.41,124.77) -- cycle ;
+
+% Text Node
+\draw (120,250) node [anchor=north west][inner sep=0.75pt]   [align=left]
+% {\hyperref[sec:sizeelem-def]{$\sizeelemclass$}};
+{$\sizeelemclass$};
+% Text Node
+\draw (181,217) node [anchor=north west][inner sep=0.75pt]   [align=left]
+% {\hyperref[defn:elemclass]{$\elemclass$}};
+{$\elemclass$};
+% Text Node
+\draw (415,250) node [anchor=north west][inner sep=0.75pt]   [align=left]
+% {\hyperref[defn:regelemclass]{$\regelemclass$}};
+{$\regclass$};
+% Text Node
+% \draw (415,217) node [anchor=north west][inner sep=0.75pt]   [align=left]
+% {\hyperref[defn:regclass]{$\regclass$}};
+% {$\regclass$};
+% Text Node
+\draw (105,160) node [anchor=north west][inner sep=0.75pt]   [align=left] {#1};
+\draw (177,160) node [anchor=north west][inner sep=0.75pt]   [align=left] {#2};
+\draw (250,160) node [anchor=north west][inner sep=0.75pt]   [align=left] {$IncDec$};
+% Text Node
+\draw (321,160) node [anchor=north west][inner sep=0.75pt]   [align=left] {#3};
+% Text Node
+\draw (395,160) node [anchor=north west][inner sep=0.75pt]   [align=left] {#4};
+\draw (395,200) node [anchor=north west][inner sep=0.75pt]   [align=left] {$STLC\mbox{-}tc$};
+
+% \draw (480,160) node [anchor=north west][inner sep=0.75pt]   [align=left] {\hyperref[exmp:evenodd]{$EvenOdd$}};
+\end{tikzpicture}
+\end{center}
+
+\vspace*{7mm}
+\begin{flushleft}\small
+\begin{minipage}[l][][c]{.9\textwidth}
+\elemclass{}: представимые формулами
+
+\sizeelemclass{}: представимые формулами с ограничениями размера
+
+\regclass{}: представимые автоматами над деревьями
+\end{minipage}
+\end{flushleft}
+}
+
+\newcommand{\exampleEven} % Even
+{
+\begin{center}
+\begin{tikzpicture}[shorten >=1pt,node distance=2cm,on grid,auto,scale=0.8,every node/.style={scale=0.8}]
+    \node[state,initial,accepting,initial text=$Z$] (s0) {$s_0$};
+    \node[state] (s1) [right=of s0] {$s_1$};
+    \path[->]
+        (s0)    edge [bend left=25] node {$S$}       (s1)
+        (s1)    edge [bend left=25] node {$S$}       (s0)
+    ;
+\end{tikzpicture}
+\end{center}
+}
+\newcommand{\exampleEvenSecond} % Even
+{
+\begin{center}
+\begin{tikzpicture}[shorten >=1pt,node distance=2cm,on grid,auto,scale=0.8,every node/.style={scale=0.8}]
+    \node[state,initial,accepting,initial text=$Z$] (s0) {$0$};
+    \node[state] (s1) [right=of s0] {$1$};
+    \path[->]
+        (s0)    edge [bend left=25] node {$S$}       (s1)
+        (s1)    edge [bend left=25] node {$S$}       (s0)
+    ;
+\end{tikzpicture}
+\end{center}
+}
+
+\newcommand{\exampleTreePumpingEmpty}{
+\vspace{-0.4cm}
+\begin{center}
+\begin{tikzpicture}[shorten >=1pt,node distance=1cm,on grid,auto,scale=0.7,every node/.style={scale=0.7}]
+    \node[state] (x) at (0:0) {$Node$};
+    \node[state] (Lx) at (210:2.5) {$Node$};
+    \node[state] (Rx) at (330:2.5) {$Node$};
+    \node[state] (LLx) at (210:4.4) {$Leaf$};
+    \node[state] (RLx) at (255:2.3) {$Leaf$};
+    \node[state] (LRx) at (285:2.3) {$Leaf$};
+    \node[state] (RRx) at (330:4.4) {$Leaf$};
+    % \node[state,initial,accepting,initial text=$Z$] (s0) {$Node$};
+    % \node[state] (s1) [right=of s0] {$1$};
+    \path[->]
+        (x)     edge  node {}     (Lx)
+                edge  node {}     (Rx)
+        (Lx)     edge  node {}     (LLx)
+                edge  node {}     (RLx)
+        (Rx)     edge  node {}     (LRx)
+                edge  node {}     (RRx)
+    ;
+\end{tikzpicture}
+\end{center}
+
+% \begin{center}
+% \tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt        
+
+% \begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-1,xscale=1,scale=0.7,every node/.style={scale=0.7}]
+% %uncomment if require: \path (0,235); %set diagram left start at 0, and has height of 235
+
+% %Shape: Circle [id:dp0986190165294798] 
+% \draw   (271,35) .. controls (271,21.19) and (282.19,10) .. (296,10) .. controls (309.81,10) and (321,21.19) .. (321,35) .. controls (321,48.81) and (309.81,60) .. (296,60) .. controls (282.19,60) and (271,48.81) .. (271,35) -- cycle ;
+% %Shape: Circle [id:dp025477163194925878] 
+% \draw   (182,98) .. controls (182,84.19) and (193.19,73) .. (207,73) .. controls (220.81,73) and (232,84.19) .. (232,98) .. controls (232,111.81) and (220.81,123) .. (207,123) .. controls (193.19,123) and (182,111.81) .. (182,98) -- cycle ;
+% %Shape: Circle [id:dp81987576246913] 
+% \draw   (346,101) .. controls (346,87.19) and (357.19,76) .. (371,76) .. controls (384.81,76) and (396,87.19) .. (396,101) .. controls (396,114.81) and (384.81,126) .. (371,126) .. controls (357.19,126) and (346,114.81) .. (346,101) -- cycle ;
+% %Shape: Circle [id:dp19011749393276545] 
+% \draw   (127,179) .. controls (127,165.19) and (138.19,154) .. (152,154) .. controls (165.81,154) and (177,165.19) .. (177,179) .. controls (177,192.81) and (165.81,204) .. (152,204) .. controls (138.19,204) and (127,192.81) .. (127,179) -- cycle ;
+% %Shape: Circle [id:dp8570558031502189] 
+% \draw   (220,178) .. controls (220,164.19) and (231.19,153) .. (245,153) .. controls (258.81,153) and (270,164.19) .. (270,178) .. controls (270,191.81) and (258.81,203) .. (245,203) .. controls (231.19,203) and (220,191.81) .. (220,178) -- cycle ;
+% %Shape: Circle [id:dp12140489944808341] 
+% \draw   (297,175) .. controls (297,161.19) and (308.19,150) .. (322,150) .. controls (335.81,150) and (347,161.19) .. (347,175) .. controls (347,188.81) and (335.81,200) .. (322,200) .. controls (308.19,200) and (297,188.81) .. (297,175) -- cycle ;
+% %Shape: Circle [id:dp5747552646079859] 
+% \draw   (402,175) .. controls (402,161.19) and (413.19,150) .. (427,150) .. controls (440.81,150) and (452,161.19) .. (452,175) .. controls (452,188.81) and (440.81,200) .. (427,200) .. controls (413.19,200) and (402,188.81) .. (402,175) -- cycle ;
+% %Straight Lines [id:da21128174001155509] 
+% \draw    (296,60) -- (207,73) ;
+% %Straight Lines [id:da11015726266257353] 
+% \draw    (296,60) -- (371,76) ;
+% %Straight Lines [id:da42937490701386716] 
+% \draw    (207,123) -- (152,154) ;
+% %Straight Lines [id:da9026178337666466] 
+% \draw    (371,126) -- (427,150) ;
+% %Straight Lines [id:da23419680399445209] 
+% \draw    (371,126) -- (322,150) ;
+% %Straight Lines [id:da15771106808872581] 
+% \draw    (207,123) -- (245,153) ;
+% %Straight Lines [id:da02293499028974022] 
+% \draw [color={rgb, 255:red, 208; green, 2; blue, 27 }  ,draw opacity=1 ]   (115,121.58) -- (129.55,147.96) ;
+% \draw [shift={(131,150.58)}, rotate = 241.11] [fill={rgb, 255:red, 208; green, 2; blue, 27 }  ,fill opacity=1 ][line width=0.08]  [draw opacity=0] (14.29,-6.86) -- (0,0) -- (14.29,6.86) -- (9.49,0) -- cycle    ;
+% %Straight Lines [id:da46749278538446104] 
+% \draw [color={rgb, 255:red, 208; green, 2; blue, 27 }  ,draw opacity=1 ]   (291,120.58) -- (305.55,146.96) ;
+% \draw [shift={(307,149.58)}, rotate = 241.11] [fill={rgb, 255:red, 208; green, 2; blue, 27 }  ,fill opacity=1 ][line width=0.08]  [draw opacity=0] (14.29,-6.86) -- (0,0) -- (14.29,6.86) -- (9.49,0) -- cycle    ;
+
+% % Text Node
+% \draw (279,26) node [anchor=north west][inner sep=0.75pt]   [align=left] {Node};
+% % Text Node
+% \draw (190,89) node [anchor=north west][inner sep=0.75pt]   [align=left] {Node};
+% % Text Node
+% \draw (354,92) node [anchor=north west][inner sep=0.75pt]   [align=left] {Node};
+% % Text Node
+% \draw (135,170) node [anchor=north west][inner sep=0.75pt]   [align=left] {Leaf};
+% % Text Node
+% \draw (228,169) node [anchor=north west][inner sep=0.75pt]   [align=left] {Leaf};
+% % Text Node
+% \draw (305,166) node [anchor=north west][inner sep=0.75pt]   [align=left] {Leaf};
+% % Text Node
+% \draw (410,166) node [anchor=north west][inner sep=0.75pt]   [align=left] {Leaf};
+% % Text Node
+% \draw (107,100) node [anchor=north west][inner sep=0.75pt]   [align=left] {p};
+% % Text Node
+% \draw (283,99) node [anchor=north west][inner sep=0.75pt]   [align=left] {P};
+
+% \end{tikzpicture}
+% \end{center}
+}
+
+\newcommand{\exampleTreePumpingPointer}{
+\vspace{-0.4cm}
+\begin{center}
+\begin{tikzpicture}[shorten >=1pt,node distance=1cm,on grid,auto,scale=0.7,every node/.style={scale=0.7}]
+    \node[state] (x) at (0:0) {$Node$};
+    \node[state] (Lx) at (210:2.5) {$Node$};
+    \node[state] (Rx) at (330:2.5) {$Node$};
+    \node[state,accepting,label=above:\textcolor{red}{$p$}] (LLx) at (210:4.4) {$Leaf$};
+    \node[state] (RLx) at (255:2.3) {$Leaf$};
+    \node[state] (LRx) at (285:2.3) {$Leaf$};
+    \node[state] (RRx) at (330:4.4) {$Leaf$};
+    % \node[state,initial,accepting,initial text=$Z$] (s0) {$Node$};
+    % \node[state] (s1) [right=of s0] {$1$};
+    \path[->]
+        (x)     edge  node {}     (Lx)
+                edge  node {}     (Rx)
+        (Lx)     edge  node {}     (LLx)
+                edge  node {}     (RLx)
+        (Rx)     edge  node {}     (LRx)
+                edge  node {}     (RRx)
+    ;
+\end{tikzpicture}
+\end{center}
+}
+\newcommand{\exampleTreePumpingPointerExtended}{
+\vspace{-0.4cm}
+\begin{center}
+\begin{tikzpicture}[shorten >=1pt,node distance=1cm,on grid,auto,scale=0.7,every node/.style={scale=0.7}]
+    \node[state] (x) at (0:0) {$Node$};
+    \node[state] (Lx) at (210:2.5) {$Node$};
+    \node[state] (Rx) at (330:2.5) {$Node$};
+    \node[state,accepting,label=above:$p$] (LLx) at (210:4.4) {$Leaf$};
+    \node[state] (RLx) at (255:2.3) {$Leaf$};
+    \node[state,accepting,label=above:\textcolor{red}{$P$}] (LRx) at (285:2.3) {$Leaf$};
+    \node[state] (RRx) at (330:4.4) {$Leaf$};
+    % \node[state,initial,accepting,initial text=$Z$] (s0) {$Node$};
+    % \node[state] (s1) [right=of s0] {$1$};
+    \path[->]
+        (x)     edge  node {}     (Lx)
+                edge  node {}     (Rx)
+        (Lx)     edge  node {}     (LLx)
+                edge  node {}     (RLx)
+        (Rx)     edge  node {}     (LRx)
+                edge  node {}     (RRx)
+    ;
+\end{tikzpicture}
+\end{center}
+}
+\newcommand{\exampleTreePumpingPointerPumped}{
+\vspace{-0.4cm}
+\begin{center}
+\begin{tikzpicture}[shorten >=1pt,node distance=1cm,on grid,auto,scale=0.7,every node/.style={scale=0.7}]
+    \node[state] (x) at (0:0) {$Node$};
+    \node[state] (Lx) at (210:2.5) {$Node$};
+    \node[state] (Rx) at (330:2.5) {$Node$};
+   \node at (210:4.4) (LLx) {};
+   \node[draw,minimum size=1.5cm,inner sep=0,regular polygon,regular polygon sides=3,label=above:$p$,below=0.5cm of LLx] (LLxTriangle) {$t$};
+    \node[state] (RLx) at (255:2.3) {$Leaf$};
+   \node at (285:2.3) (LRx) {};
+   \node[draw,minimum size=1.5cm,inner sep=0,regular polygon,regular polygon sides=3,label=above:$P$,below=0.5cm of LRx] (LRxTriangle) {$t$};
+    % \node[state,accepting,label=above:\textcolor{red}{$P$}] (LRx) at (285:2.3) {$Leaf$};
+    \node[state] (RRx) at (330:4.4) {$Leaf$};
+    % \node[state,initial,accepting,initial text=$Z$] (s0) {$Node$};
+    % \node[state] (s1) [right=of s0] {$1$};
+    \path[->]
+        (x)     edge  node {}     (Lx)
+                edge  node {}     (Rx)
+        (Lx)     edge  node {}     (LLx)
+                edge  node {}     (RLx)
+        (Rx)     edge  node {}     (LRx)
+                edge  node {}     (RRx)
+    ;
+\end{tikzpicture}
+\end{center}
+}
+
+\newcommand{\softwareverificationFlip}[2]{\alt<2>{#1}{#2}}
+
+\newcommand{\softwareverification}{
+\begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-0.8,xscale=0.9]
+%uncomment if require: \path (0,431); %set diagram left start at 0, and has height of 431
+
+%Flowchart: Data [id:dp8732756601700975] 
+\draw   (235,160) -- (430,160) -- (385,220) -- (190,220) -- cycle ;
+
+%Flowchart: Process [id:dp5292853718236602] 
+\draw   (110,75) -- (510,75) -- (510,310) -- (110,310) -- cycle ;
+%Flowchart: Data [id:dp7895813200465741] 
+\draw   (266.25,20) -- (380,20) -- (353.75,60) -- (240,60) -- cycle ;
+
+%Flowchart: Process [id:dp25379861655195624] 
+\draw   (240,90) -- (380,90) -- (380,130) -- (240,130) -- cycle ;
+%Straight Lines [id:da42254132520298326] 
+\draw    (310,60) -- (310,88) ;
+\draw [shift={(310,90)}, rotate = 270] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
+%Straight Lines [id:da6767628941551396] 
+\draw    (310,130) -- (310,158) ;
+\draw [shift={(310,160)}, rotate = 270] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
+%Straight Lines [id:da9132665796566681] 
+\draw    (310,220) -- (310,248) ;
+\draw [shift={(310,250)}, rotate = 270] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
+%Straight Lines [id:da5965426352542076] 
+\draw    (290,290) -- (241.56,328.75) ;
+\draw [shift={(240,330)}, rotate = 321.34000000000003] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
+%Straight Lines [id:da6349648032700808] 
+\draw    (330,290) -- (378.44,328.75) ;
+\draw [shift={(380,330)}, rotate = 218.66] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
+%Flowchart: Process [id:dp6399060941112645] 
+\draw   (220,250) -- (400,250) -- (400,290) -- (220,290) -- cycle ;
+
+
+% Text Node
+\draw (245,31) node [anchor=north west][inner sep=0.75pt,minimum width=3cm] [align=center] {Program};
+% Text Node
+\draw (235,170) node [anchor=north west][inner sep=0.75pt,minimum width=3cm] [align=center] {\softwareverificationFlip{Constrained Horn clauses}{Verification conditions\\(logical formula)}};
+% Text Node
+\draw (160,332) node [anchor=north west][inner sep=0.75pt] [align=left] {\textcolor{goodInvariantColor}{\softwareverificationFlip{Saturation / Finite model}{Safety proof}}};
+% Text Node
+\draw (345,332) node [anchor=north west][inner sep=0.75pt] {\textcolor{badInvariantColor}{\softwareverificationFlip{Refutation}{Counterexample trace}}};
+% Text Node
+\draw (121,82) node [anchor=north west][inner sep=0.75pt] [align=left] {\textbf{Verifier}};
+% Text Node
+\draw (255,262) node [anchor=north west][inner sep=0.75pt,minimum width=2cm] [align=center] {\softwareverificationFlip{\ourtool{}+Vampire}{Logical solver}};
+% Text Node
+\draw (260,102) node [anchor=north west][inner sep=0.75pt,minimum width=2cm] {Preprocessing};
+\end{tikzpicture}
+}
+
+\newcommand{\evenChcSystem}{%
+\begin{varblock}[0.7\textwidth]{}
+\begin{align*}
+x = Z &\rightarrow even(x)\\
+even(y) \land x = S(S(y)) &\rightarrow even(x)\\
+even(x) \land even(S(x)) &\rightarrow \bot
+\end{align*}
+\end{varblock}
+}
+
+\newcommand{\toolplot}[2]{%
+% #1 is backend solver name
+% #2 is a .csv file name
+\pgfplotstableread[col sep = comma]{#2}\toolplotcsv
+\begin{axis}[xmode=log, ymode=log, legend pos= north west, xlabel={\collab(#1)}, ylabel style = {align=center}, ylabel={{\color{red}\spacer{}} and {\color{blue}\ringen(#1)}}]
+    \addplot[dashed,no marks,very thin] coordinates {(10,10) (1200000,1200000)};
+    \addplot [dashed, no marks, thin] coordinates {(10,10) (1200000,1200000)};
+    \addplot [dashed, no marks, thin] coordinates {(10,600000) (600000,600000)};
+    \addplot [dashed, no marks, thin] coordinates {(600000, 10) (600000,600000)};
+    \addplot [dashed, no marks, thin] coordinates {(10, 1200000) (1200000,1200000)};
+    \addplot [dashed, no marks, thin] coordinates {(1200000, 10) (1200000,1200000)};
+    
+    % one second
+    \addplot [no marks, thin] coordinates {(1000, 10) (1000,1000)};
+    \addplot [no marks, thin] coordinates {(10, 1000) (1000,1000)};
+
+    \addplot  [only marks,  mark=o, color=red,  mark size=3pt] table [x={Collab}, y={Z3}] {\toolplotcsv};
+    \addplot  [only marks,  mark=triangle, color=blue, mark size=3pt] table [x={Collab}, y={RInGen}] {\toolplotcsv};
+\end{axis}
+}

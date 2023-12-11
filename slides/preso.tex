@@ -1,0 +1,303 @@
+\documentclass[22pt,aspectratio=169]{beamer}
+\input{head.tex}
+\input{title.tex}
+
+\begin{document}
+
+% \toggletrue{fastCompile}
+\togglefalse{fastCompile}
+
+\input{resources/diagram.tex}
+
+\begin{frame}[plain]
+\titlepage
+\end{frame}
+
+\begin{frame}
+\frametitle{Содержание}
+\tableofcontents[
+% currentsection,
+% currentsubsection,
+subsectionstyle=show/show/hide
+]
+\end{frame}
+
+% \AtBeginSection[]{
+% % \begin{frame}{\currentname}
+% \begin{frame}{Содержание}
+% \tableofcontents[
+% currentsection,
+% currentsubsection,
+% subsectionstyle=show/show/hide
+% ]
+% \end{frame}
+% }
+
+\whenFullCompile{\input{RelatedWork}}
+
+
+\begin{framesection}{Постановка задачи}
+\textbf{Цель работы}~--- предложение новых классов индуктивных инвариантов для программ с АТД и создание для них методов автоматического вывода. \textbf{Задачи:}
+
+\begin{enumerate}
+\item Предложить новые классы индуктивных инвариантов программ с АТД, позволяющие выражать рекурсивные и синхронные отношения
+\item Создать методы автоматического вывода инвариантов в новых классах
+\item Выполнить пилотную программную реализацию предложенных методов
+\item Провести экспериментальное сопоставление реализованного инструмента с существующими на представительном тестовом наборе
+\end{enumerate}
+\end{framesection}
+
+\input{Results}
+
+\begin{frame}{Соответствие результатов паспорту специальности 2.3.5}
+
+Результаты соответствуют направлению исследования  № 1
+\begin{itemize}
+\item Модели, \textbf{методы и алгоритмы} проектирования, анализа, трансформации, \textbf{верификации} и тестирования \textbf{программ} и программных систем
+\end{itemize}
+из паспорта специальности.
+\end{frame}
+
+\begin{framesection}{Научная новизна}
+\begin{enumerate}
+\item Впервые предложен класс инвариантов, основанный на булевой комбинации элементарных и регулярных инвариантов
+\item Впервые предложен алгоритм вывода инвариантов для программ с АТД, основанный на поиске конечных моделей
+\item Предложен новый алгоритм совместного вывода инвариантов в комбинации классов инвариантов на базе методов вывода инвариантов в подклассах
+\item Впервые введены и доказаны леммы о <<накачке>> для языков первого порядка в сигнатуре теории АТД
+\end{enumerate}
+\end{framesection}
+
+\section{Публикации и выступления}
+\begin{frame}{Публикации по теме диссертации}
+% \begin{table}
+% \centering
+% \begin{tabular}{p{.3\textwidth}|p{.7\textwidth}}
+% \citep{kostyukov2019auto} & автор выполнил реализацию сведения поиска индуктивных инвариантов функций над сложными структурами данных к решению систем дизъюнктов Хорна, а также спроектировал эксперименты с различными существующими Хорн-решателями\\
+% % ; соавторы предложили саму идею и проработали её теоретические аспекты
+% \citep{10.1145/3453483.3454055} & автор провёл теоретическое сопоставление классов индуктивных инвариантов, предложил и доказал леммы о <<накачке>> для языков первого порядка над АТД, реализовал предлагаемый подход, поставил эксперименты\\
+% % ; соавторы участвовали в обсуждении основных идей статьи, выполнили обзор существующих решений
+% \citep{LPAR2023:Collaborative_Inference_of_Combined} & автор предложил и формально обосновал коллаборационный подход к выводу инвариантов, реализовал прототип и поставил эксперименты\\
+% % ; соавторы участвовали в обсуждении презентации идей статьи и выполнили обзор существующих решений
+% \citep{miso2022gen} & вклад автора заключается в формальном описании теории вычисления предусловий программ со сложными структурами данных
+% % ; соавторы участвовали в обсуждении основных идей и реализовали подход
+%     \end{tabular}
+% \end{table}
+\footnotesize
+\bibliographystyle{ugost2008ls}
+\bibliography{bibliography.bib}
+\nocite{kostyukov2019auto}
+\nocite{10.1145/3453483.3454055}
+\nocite{LPAR2023:Collaborative_Inference_of_Combined}
+\nocite{miso2022gen}
+% \begin{enumerate}
+% \item \citee{kostyukov2019auto}
+% \item \citee{10.1145/3453483.3454055}
+% \item \citee{LPAR2023:Collaborative_Inference_of_Combined}
+% \item \citee{miso2022gen}
+% \end{enumerate}
+\end{frame}
+
+\begin{frame}{Выступления по теме диссертации}
+\begin{itemize}
+\item Международный семинар HCVS 2021 (28 марта 2021, Люксембург)
+\item Семинар компании Huawei (18-19 ноября 2021, Санкт-Петербург)
+\item Ежегодный внутренней семинар JetBrains Research (18 декабря 2021, Санкт-Петербург)
+\item Конференция PLDI 2021 (23-25 июня 2021, Канада)
+\item Внутренний семинар Венского технического университета (3 июня 2022, Австрия)
+\item Конференция LPAR 2023 (4-9 июня 2023, Колумбия)
+\end{itemize}
+
+Разработанный инструмент в 2021 и 2022 годах занял, соответственно, 2 и 1 место на АТД секции международных соревнований \chccomp{}.
+\end{frame}
+
+\input{Results}
+
+\input{ResultsExposition}
+
+\end{document}
+
+
+\begin{frame}{ATP-based CHC solving\footnote{Details in our PLDI'21 paper:\\\quad``Beyond the elementary representations of program invariants over algebraic data types''}}
+\begin{itemize}
+    \item<+-> Can we infer \attention{not FOL-based} inductive invariants by employing ATPs?
+    \item<+-> Note that a Herbrand model is \attention{almost} a model of the ADT theory
+    \item<+-> Yet it \attention{lacks} testers, selectors, and \attention{treats} disequality constraints \attention{differently}
+    \item<+-> By syntactic manipulations, CHCs over ADTs can be reduced to the \attention{\textit{free theory}}$^1$
+    \vspace*{4mm}\begin{itemize}
+        \item i.e., pure first-order logic without any theory axioms
+    \end{itemize}
+    \item<+-> After that, \attention{any} automated theorem prover can be \attention{soundly used}
+\end{itemize}
+\end{frame}
+
+\section{Collaborative Inference of Combined Invariants}
+
+\begin{frame}{Implementation}
+    \centering\begin{tikzpicture}[font=\Large]
+        \node (pic) {\includegraphics[width=.5\textwidth]{resources/spacer_and_vampire.png}};
+        \node at (-2.2, -3) {\textsc{Z3 Spacer}};
+        \node at (2.2, -3) {\textsc{Vampire}};
+        \calloutquote[position={(-2.1,-0.8)},bubblePosition={(1.9,3.3)},callout pointer width=.4cm,fill=focusRed!70,rounded corners]{residual system}
+        \calloutquote[position={(1.9,-1.6)},bubblePosition={(-1.9,3.3)},callout pointer width=.4cm,fill=focusBlue!50,rounded corners]{part of invariant}
+    \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Experiments: solved systems}
+    \centering
+    \Large
+\begin{table}[h]
+    % \small
+    % \begin{tabular}{ |c|c|r|c|c|c|c|c|  }
+    \begin{tabular}{ |r|c|c|c|c|c|  }
+     \hline
+     % \multirow{2}{*}{Benchmark} & \multirow{2}{*}{\#} &
+     \multirow{2}{*}{Answer} & \multicolumn{2}{c|}{\ringen{}} & \multirow{2}{*}{\spacer{}} & \multicolumn{2}{c|}{\collab{}}\\
+     % \cline{4-5}\cline{7-8}
+     \cline{2-3}\cline{5-6}
+     % &&
+     & \cvc{} & \vampire{} && \cvc{} & \vampire{}\\\hline
+
+     % \multirow{2}{*}{\emph{TIP}} & \multirow{2}{*}{454} &
+     SAT                   & 25    & 135    & 20   & 117  & \textbf{189}  \\
+     % && Unique SAT          & 8     & 48     &  6    &  19   &  21 \\
+     % &&
+     UNSAT               & 21    & \textbf{46}     & 15    & 19    & 28\\
+     % && Unique UNSAT        & 0     & 18     & 2     & 0     & 0\\
+     \hline
+    \end{tabular}
+
+    % \caption{Time limit: 600 seconds}
+\end{table}
+Time limit: 600 seconds
+
+% \onslide<2->{
+\begin{align*}
+  \collab(\spacer{}, \vampire{}) &> \spacer{} \parallel \vampire{}\\
+  \collab(\spacer{}, \cvc{}) &> \spacer{} \parallel \cvc{}
+\end{align*}
+% }
+\end{frame}
+
+\begin{frame}{Highlights}
+\large
+\begin{itemize}
+\item<+-> Many practical tasks reduce to CHC solving
+\item<+-> CHC solvers build infinite models modulo theories
+\item<+-> CHC solvers compute approximations instead of least fixed points
+\item<+-> ATPs can be used as CHC solvers for ADTs via simple trick
+\item<+-> CHC solvers and ATPs can collaborate instead of competing
+\item<+-> Collaboration of CHC solvers and ATPs is strictly stronger than parallel
+\end{itemize}
+
+\onslide<7->{\vspace*{10mm}
+\centering\Large Thank you! Questions?}
+\end{frame}
+
+\appendix
+
+\begin{frame}{Experiments: solving time}
+\centering
+\Large
+\begin{tikzpicture}[scale=.8]
+\begin{scope}[shift={(-5,0)}]
+\toolplot{\cvc{}}{resources/toolplot_cvc.csv}
+\end{scope}
+\begin{scope}[shift={(4,0)}]
+\toolplot{\vampire{}}{resources/toolplot_vampire.csv}
+\end{scope}
+\end{tikzpicture}
+
+Runtimes in milliseconds
+\end{frame}
+
+\begin{frame}{CHC solvers and CHC Competition 2022}
+\includegraphics[width=\textwidth]{resources/chccomp_all.png}
+\begin{tikzpicture}[remember picture,overlay]
+\begin{scope}[shift={(-0.5,-0.3)}]
+% \onslide<2->{\calloutquote[width=3.7cm,position={(-1.08,-0.55)},bubblePosition={(2.8,6.15)},callout pointer width=.5cm,fill=blue!30,rounded corners]{IC3/PDR engine in \textsc{Z3}}
+% \calloutquote[width=2.5cm,position={(-1.5,-1)},bubblePosition={(6.4,6.15)},callout pointer width=.5cm,fill=green!40,rounded corners]{Portfolio solver}
+% \calloutquote[width=5.6cm,position={(-2.,-1)},bubblePosition={(11,6.15)},callout pointer width=.7cm,fill=yellow!50,rounded corners]{CEGAR with predicate abstraction}
+% }
+\onslide<2->{
+\draw[draw=nicegreen!70,ultra thick] (7.8, 0) rectangle ++(4.2, 3.8);
+\calloutquote[width=2.4cm,position={(-1.1,-0.3)},bubblePosition={(12,2.7)},callout pointer width=.4cm,fill=nicegreen!70,rounded corners]{\Large\centering Our journey begins here}}
+\end{scope}
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}{How RInGen works}
+% \centering\begin{tikzpicture}[remember picture,overlay]
+% \node[draw,fill=blue!30,opacity=0.8,rounded rectangle,rotate=0,align=center,font=\small] at (0,-2) {* Details in our PLDI'21 paper\\``Beyond the elementary representations of program invariants over algebraic data types''};
+% \end{tikzpicture}
+% \begin{tikzpicture}[draw,opacity=0.95,rounded rectangle]
+% \node[fill=blue!30] at (0, 0) {}
+% \end{tikzpicture}
+\begin{tikzpicture}
+\node[draw,fill=blue!30,opacity=0.95,rounded rectangle] at (0, 0) {Can we infer not FOL-based inductive invariants by employing ATPs?};
+\onslide<2->{\node[draw,fill=green!40,opacity=0.95,rounded rectangle] at (2.5, -0.7) {Because obtained model may violate ADT theory axioms};}
+\onslide<3->{\node[draw,fill=green!40,opacity=0.95,rounded rectangle] at (1.85, -1.4) {The \textbf{only} reason why Herbrand model does not fit are \textbf{equalities}};}
+\end{tikzpicture}
+\onslide<4->{
+\centering $\Rightarrow$ Eliminate equalities by adding extra CHCs, e.g.:
+\begin{align*}
+    \bot&\leftarrow \neg(Z = S(Z))\\
+    \text{should}&\text{ become}\\
+    \bot&\leftarrow diseq_{Nat}(Z, S(Z))\\
+    diseq_{Nat}(Z, S(x))&\leftarrow \top\\
+    diseq_{Nat}(S(x), Z)&\leftarrow \top\\
+    diseq_{Nat}(S(x), S(y))&\leftarrow diseq_{Nat}(x, y)
+\end{align*}}
+\begin{tikzpicture}[remember picture,overlay]
+\onslide<5->{\node[draw,fill=green!40,opacity=0.95,rounded rectangle] at (2, 0.3) {The obtained CHC system can be soundly thrown into ATP};}
+\onslide<6>{\node[overlay,draw,fill=blue!30,opacity=0.95,rounded rectangle,minimum height=1.5cm,minimum width=6cm, rotate=15,align=center] at (0,3) {{\huge Details in our PLDI'21 paper}\\{``Beyond the elementary representations of program invariants over algebraic data types''}};}
+\end{tikzpicture}
+\end{frame}
+
+\whenFullCompile{\input{RInGenHowTo}}
+
+\begin{frame}{ATP-based CHC solving}
+\begin{tikzpicture}
+\onslide<1->{\node[draw,fill=blue!30,opacity=0.95,rounded rectangle] at (-2, 0) {What kind of inductive invariants can be inferred this way?};}
+\onslide<2->{\node[draw,fill=green!40,opacity=0.95,rounded rectangle,align=center] at (2.3, -0.9) {Depends on ATP backend: e.g., if it is a finite-model finder, then\\
+it infers \textbf{regular} inductive invariants based on tree automata};}
+\end{tikzpicture}
+
+\onslide<3->{
+For $even$ example it automatically infers the following inductive invariant:
+$$ \invariant \equiv \mathcal{H}\left\{ even \mapsto \mathcal{L}\left(\mathcal{A}\right) \right\} \equiv \mathcal{H}\left\{ even \mapsto\left\{ S^{2n}(Z) \mid n \geq 0 \right\}\right\}$$
+based on the tree automaton
+$$ \mathcal{A} = \theAutomatoN{s_0, s_1}{\{Z, S\}}{s_0}{\Delta} $$
+\vspace*{-10mm}\exampleEven{}}
+\begin{tikzpicture}
+\onslide<4->{\node[draw,fill=green!40,opacity=0.95,rounded rectangle,align=center] at (0, 0) {\Large The power of the technique is that \textbf{any ATP} can be soundly used};}
+\end{tikzpicture}
+\end{frame}
+
+\end{document}
+
+% \begin{frame}{Our success on Horn solving competition: \ringen{} with Vampire backend}
+% \includegraphics[width=\textwidth]{resources/chccompres.png}
+% \begin{tikzpicture}[remember picture,overlay]
+% \onslide<2->{\calloutquote[width=3cm,position={(-1,-0.02)},bubblePosition={(5.5,6.4)},fill=red!30,rounded corners]{ADT track on CHC-COMP 2022}}
+% \onslide<3->{\calloutquote[width=3.2cm,position={(-1,1.39)},bubblePosition={(2.5,2)},fill=green!30,rounded corners]{CHC-COMP winner for last 4 years}}
+% \onslide<4->{
+% \draw[draw=blue!30,ultra thick] (5,3) rectangle ++(2.45,2.6);
+% \draw[draw=blue!30,ultra thick] (9.97,3) rectangle ++(1.45,2.6);
+% \calloutquote[width=4.4cm,position={(-2,-0.55)},bubblePosition={(10,6.4)},callout pointer width=.5cm,fill=blue!30,rounded corners]{win by sat, unsat and time}
+% \calloutquote[width=4.4cm,position={(.5,-0.55)},bubblePosition={(10,6.4)},callout pointer width=.3cm,fill=blue!30,rounded corners]{win by sat, unsat and time}
+% }
+% \end{tikzpicture}
+% \end{frame}
+
+
+
+% \begin{frame}{Useful links}
+% \begin{itemize}
+% \item State-of-art Horn solver \spacer{}/\textsc{Spacer}: \url{https://github.com/z3prover/z3}
+% \item Our Horn solver \ringen{}: \url{https://github.com/Columpio/RInGen}
+% \item Our PLDI paper on \ringen{}: \url{https://arxiv.org/abs/2104.04463}
+% \item Our Vampire fork: \url{https://github.com/Columpio/Vampire/tree/chc-comp22}
+% \item Demo files for these slides: \url{https://gitlab.com/Columpio/demos}
+% \item CHC-COMP results: \href{https://chc-comp.github.io/CHC-COMP2022_presentation.pdf}{\detokenize{chc-comp.github.io/CHC-COMP2022_presentation.pdf}}
+% \end{itemize}
+% \end{frame}

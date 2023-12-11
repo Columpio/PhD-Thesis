@@ -8,6 +8,10 @@
 *.toc
 *.xdv
 _minted-dissertation/
+_minted-preso/
+*.nav
+*.snm
+*.vrb
 *.bbl
 *.bcf
 *.blg
@@ -21,3 +25,4 @@ _minted-dissertation/
 !/dissertation.pdf
 !/PhDThesis/dissertation.pdf
 !/PhDThesisEng/dissertation.pdf
+!/slides/preso.pdf

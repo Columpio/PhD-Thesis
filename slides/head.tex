@@ -1,0 +1,567 @@
+
+% There are many different themes available for Beamer. A comprehensive
+% list with examples is given here:
+% http://deic.uab.es/~iblanes/beamer_gallery/index_by_theme.html
+% You can uncomment the themes below if you would like to use a different
+% one:
+%\usetheme{AnnArbor}
+%\usetheme{Antibes}
+%\usetheme{Bergen}
+%\usetheme{Berkeley}
+%\usetheme{Berlin}
+%\usetheme{Boadilla}
+\usetheme{boxes}
+%\usetheme{CambridgeUS}
+%\usetheme{Copenhagen}
+%\usetheme{Darmstadt}
+%\usetheme{default}
+%\usetheme{Frankfurt}
+%\usetheme{Goettingen}
+%\usetheme{Hannover}
+%\usetheme{Ilmenau}
+%\usetheme{JuanLesPins}
+%\usetheme{Luebeck}
+% \usetheme{Madrid}
+%\usetheme{Malmoe}
+%\usetheme{Marburg}
+%\usetheme{Montpellier}
+%\usetheme{PaloAlto}
+%\usetheme{Pittsburgh}
+%\usetheme{Rochester}
+%\usetheme{Singapore}
+%\usetheme{Szeged}
+% \usetheme{Warsaw}
+% \setbeamertemplate{footline}{} % remove footnote line
+
+\usepackage[T2A]{fontenc}           % кодировка
+\usepackage[utf8]{inputenc}         % кодировка исходного текста
+\usepackage[english,russian]{babel}
+\hypersetup{unicode=true}
+% \usepackage[T1]{fontenc}
+\usepackage{mathtools}
+\usepackage{listings}
+\usepackage{tikz}
+\usetikzlibrary{matrix, patterns, patterns.meta, backgrounds, automata, positioning, tikzmark, calc, arrows, arrows.meta, shapes, shadows.blur, shapes.misc, shapes.callouts}
+\usepackage{minted}
+\usepackage{advdate}
+\usepackage[normalem]{ulem}
+\usepackage[export]{adjustbox}
+\usepackage{makecell}
+\usepackage{environ}
+\usepackage{amsmath}
+\usepackage{multirow}
+\usepackage{pgfplots}
+\usepackage{natbib}
+\usepackage{bibentry}
+\usepackage{nameref}
+\usepackage{etoolbox}
+\usepackage{hyperref}
+\usepackage{pifont} % for ding
+\usepackage{subcaption} % for subfigure
+\usepackage{appendixnumberbeamer}
+\usepackage{diagbox}
+\usepackage{stmaryrd}
+\setbeamertemplate{blocks}[rounded][shadow=false]
+
+\setbeamertemplate{footline}{}
+\beamertemplatenavigationsymbolsempty
+\setbeamertemplate{footline}[frame number]
+\let\otp\titlepage
+\renewcommand{\titlepage}{\otp\addtocounter{framenumber}{-1}}
+
+
+% \BeforeBeginEnvironment{itemize}{\vskip-2ex} % remove spaces before itemize
+
+\newtoggle{fastCompile}
+\toggletrue{fastCompile}
+\newcommand{\whenFullCompile}[1]{\iftoggle{fastCompile}{
+{%\setbeamercolor{background canvas}{bg=red}\begin{frame}{FAST COMPILATION MOCK}\end{frame}
+}}{#1}}
+
+\newcommand{\btVFill}{\vskip0pt plus 1filll}
+
+
+\newcommand\blfootnote[1]{%
+  \begingroup
+  \renewcommand\thefootnote{}\footnote{#1}%
+  \addtocounter{footnote}{-1}%
+  \endgroup
+}
+
+\tikzset{
+    onslide/.code args={<#1>#2}{\only<#1>{\pgfkeysalso{#2}}}, 
+}
+\tikzset{/handlers/.provide style/.code={%
+    \pgfkeysifdefined{\pgfkeyscurrentpath/.@cmd}{}%
+        {\pgfkeys {\pgfkeyscurrentpath /.code=\pgfkeysalso {#1}}}%
+}}
+
+\AtBeginDocument{\setlength\abovedisplayskip{0pt}}
+% \AtBeginDocument{\setlength\belowdisplayskip{0pt}}
+
+\pgfkeys{%
+    /calloutquote/.cd,
+    width/.code                   =  {\def\calloutquotewidth{#1}},
+    position/.code                =  {\def\calloutquotepos{#1}}, 
+    bubblePosition/.code          =  {\def\calloutquoteBubblePos{#1}}, 
+    author/.code                  =  {\def\calloutquoteauthor{#1}},
+    /calloutquote/.unknown/.code   =  {\let\searchname=\pgfkeyscurrentname
+                                 \pgfkeysalso{\searchname/.try=#1,                                
+    /tikz/\searchname/.retry=#1},\pgfkeysalso{\searchname/.try=#1,
+                                  /pgf/\searchname/.retry=#1}}
+                            }  
+
+\newcommand\calloutquote[2][]{%
+       \pgfkeys{/calloutquote/.cd,
+         width               = 5cm,
+         position            = {(0,-1)},
+         author              = {}}
+  \pgfqkeys{/calloutquote}{#1}                   
+  \node [rectangle callout,callout relative pointer={\calloutquotepos},/calloutquote/.cd,
+     #1] (tmpcall) at \calloutquoteBubblePos {#2};
+  \node at (tmpcall.pointer){\calloutquoteauthor};    
+}  
+
+\newenvironment<>{framesection}[1]{\section{#1}\begin{frame}{#1}#2}{\end{frame}}
+
+\let\oldfootnote\footnote
+\renewcommand\footnote[1][]{\oldfootnote[frame,#1]}
+\renewcommand{\footref}[1]{\textsuperscript{\ref{#1}}}
+
+\newenvironment<>{varblock}[2][0.9\textwidth]{%
+  \begin{center}
+    \begin{minipage}{#1}
+    \setlength{\textwidth}{#1}%
+    \setlength{\linewidth}{\textwidth}% required to itemize respect the width of block
+  \begin{actionenv}#3%
+    \def\insertblocktitle{#2}%
+    \par%
+    \usebeamertemplate{block begin}}
+  {\par%
+  \usebeamertemplate{block end}%
+  \end{actionenv}
+  \end{minipage}
+    \end{center}}
+
+
+
+% Variable width example block
+\newenvironment<>{varexampleblock}[2][0.9\textwidth]{%
+  \begin{center}
+    \begin{minipage}{#1}
+    \setlength{\textwidth}{#1}%
+    \setlength{\linewidth}{\textwidth}%
+  \begin{actionenv}#3%
+    \def\insertblocktitle{#2}%
+    \par%
+    \setbeamercolor{local structure}{parent=example text}%
+    \usebeamertemplate{block example begin}}
+  {\par%
+  \usebeamertemplate{block example end}%
+    \end{actionenv}
+  \end{minipage}
+    \end{center}}
+
+% Variable width alert block
+\newenvironment<>{varalertblock}[2][0.9\textwidth]{%
+  \begin{center}
+    \begin{minipage}{#1}
+    \setlength{\textwidth}{#1}%
+    \setlength{\linewidth}{\textwidth}%
+  \begin{actionenv}#3%
+    \def\insertblocktitle{#2}%
+    \par%
+    \setbeamercolor{local structure}{parent=alerted text}%
+    \usebeamertemplate{block alerted begin}}
+  {\par%
+  \usebeamertemplate{block alerted end}%
+    \end{actionenv}
+  \end{minipage}
+    \end{center}}
+
+
+\tikzset{
+    invisible/.style={opacity=0,text opacity=0},
+    visible on/.style={alt=#1{}{invisible}},
+    alt/.code args={<#1>#2#3}{%
+      \alt<#1>{\pgfkeysalso{#2}}{\pgfkeysalso{#3}} 
+    },
+    beameralert/.style={alt=<#1>{fill=red!30,rounded corners}{},anchor=base},
+    BeamerAlert/.style={alt=#1{fill=red!30,rounded corners}{},anchor=base}
+}
+  \newcommand<>{\tikzMe}[1]{% previously: \def\tikzMe<#1>#2{…
+    \tikz[baseline]\node[BeamerAlert=#2,anchor=base] {#1};
+}
+
+\newcommand{\mattention}[1]{\color{focusColor}#1} % TODO: \bm
+\newcommand<>{\mathattention}[1]{\alt#2{\mattention{#1}}{#1}}
+% \addtobeamertemplate{block begin}{\setlength\abovedisplayskip{-1cm}}
+
+
+\newcommand{\currentTableOfContents}{\begin{frame}{Содержание}\tableofcontents[currentsection]\end{frame}}
+
+\newcommand\eqby[1]{\mathrel{\stackrel{\makebox[0pt]{\mbox{\normalfont\tiny #1}}}{=}}}
+\newcommand\eqbyref[1]{\mathrel{\stackrel{\makebox[0pt]{\mbox{\normalfont\tiny\eqref{#1}}}}{=}}}
+\newcommand\restr[2]{{% we make the whole thing an ordinary symbol
+  \left.\kern-\nulldelimiterspace % automatically resize the bar with \right
+  #1 % the function
+  \vphantom{\big|} % pretend it's a little taller at normal size
+  \right|_{#2} % this is the delimiter
+  }}
+
+\newcommand{\csharp}{\textsc{C\#}}
+\newcommand{\java}{\textsc{Java}}
+\newcommand{\scala}{\textsc{Scala}}
+\newcommand{\dotnet}{\textsc{.NET}}
+\newcommand{\clang}{\textsc{C}}
+\newcommand{\cpplang}{\textsc{C++}}
+\newcommand{\coq}{\textsc{Coq}}
+
+\lstdefinelanguage{CSharp}
+{
+ morecomment = [l]{//}, 
+ morecomment = [l]{///},
+ morecomment = [s]{/*}{*/},
+ morestring=[b]", 
+ sensitive = true,
+ morekeywords = {abstract,  event,  new,  struct,
+  as,  explicit,  null,  switch,
+  base,  extern,  object,  this,
+  bool,  false,  operator,  throw,
+  break,  finally,  out,  true,
+  byte,  fixed,  override,  try,
+  case,  float,  params,  typeof,
+  catch,  for,  private,  uint,
+  char,  foreach,  protected,  ulong,
+  checked,  goto,  public,  unchecked,
+  class,  if,  readonly,  unsafe,
+  const,  implicit,  ref,  ushort,
+  continue,  in,  return,  using,
+  decimal,  int,  sbyte,  virtual,
+  default,  interface,  sealed,  volatile,
+  delegate,  internal,  short,  void,
+  do,  is,  sizeof,  while, where,
+  double,  lock,  stackalloc,   
+  else,  long,  static,   
+  enum,  namespace,  string, Span, var,
+  ValueListBuilder}
+}
+
+\lstdefinestyle{sharpc}{language=CSharp,
+    %frame=lr,
+    % frame=l,
+    rulecolor=\color{blue!80!black},
+    basicstyle=\fontsize{9}{13}\selectfont\ttfamily,
+    keywordstyle=\color{blue}\ttfamily,
+    stringstyle=\color{red}\ttfamily,
+    commentstyle=\color{green}\ttfamily,
+    morecomment=[l][\color{magenta}]{\#}
+}
+
+\lstdefinelanguage{mycpp}{
+  keywords={assume, for, assert},
+  keywordstyle=\color{blue}\bfseries,
+  keywords=[2]{size_t, int},
+  keywordstyle=[2]\color{red}\bfseries,
+  identifierstyle=\color{black},
+  sensitive=false,
+  comment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  commentstyle=\color{purple}\ttfamily,
+  stringstyle=\color{red}\ttfamily,
+  morestring=[b]',
+  morestring=[b]"
+}
+
+\lstset{
+   language=mycpp,
+   extendedchars=true,
+   basicstyle=\small\ttfamily,
+   showstringspaces=false,
+   showspaces=false,
+   tabsize=2,
+   breaklines=true,
+   showtabs=false
+}
+
+\newcommand\eqdef{\mathrel{\stackrel{\makebox[0pt]{\mbox{\normalfont\tiny def}}}{=}}}
+
+\newcommand\drawCodeBox[2]{%
+  \begin{tikzpicture}[remember picture,overlay]
+    \coordinate (start) at ([yshift=1.7ex]pic cs:#1);
+    \coordinate (end) at ([yshift=-0.3ex]pic cs:#2);
+    \node[line width=2pt, inner sep=2pt,draw=red,fit=(start) (end)] {};
+  \end{tikzpicture}%
+}
+
+
+\newcommand\pair[2]{\langle#1, #2\rangle}
+\newcommand\mg[2]{#1=#2}
+\newcommand\nmg[2]{#1\neq#2}
+\newcommand\li[1]{LI(#1)}
+\let\emptyheap\epsilon
+\newcommand\agrec{Rec}
+\newcommand\agmerge{Merge}
+\newcommand\agcompose{\bigcirc}
+\newcommand\GRec[1]{\agrec\big(#1\big)}
+\newcommand\GMerge[1]{\agmerge\big(#1\big)}
+\newcommand\GCompose[2]{#1\agcompose#2}
+\newcommand\agho{App}
+\newcommand\gapp[1]{\agho(#1)}
+\newcommand\GApp[1]{\agho\big(#1\big)}
+\newcommand\aunion{union}
+\newcommand\union[1]{\aunion\big(#1\big)}
+\newcommand\Union[1]{\aunion\Big(#1\Big)}
+\newcommand\aderef{read}
+\newcommand\afind{find}
+\newcommand\find[5]{\afind(#1,#2,#3,#4,#5)}
+\newcommand\finD[5]{\afind\big(#1,#2,#3,#4,#5\big)}
+\newcommand\Find[5]{\afind\Big(#1,#2,#3,#4,#5\Big)}
+\newcommand\deref[2]{\aderef(#1,#2)}
+\newcommand\Deref[2]{\aderef\big(#1,#2\big)}
+\newcommand\compose[2]{#1\circ#2}
+\newcommand\lmbd[2]{\lambda #1.#2}
+\newcommand\lmbdx[1]{\lambda x.#1}
+\newcommand\dom[1]{dom(#1)}
+\newcommand\Dom[1]{dom\big(#1\big)}
+
+\newcommand\exprset{Expr}
+\newcommand\guardset{Guard}
+
+\newcommand\pro{\item[$+$]}
+\newcommand\contra{\item[$-$]}
+
+\newcommand{\ruquote}[1]{«#1»}
+
+\theoremstyle{plain}
+\newtheorem{thm}{Теорема}%[section]
+\newtheorem{lem}{Лемма}%[section]
+% \newtheorem{crlr}{Corollary}%[section]
+
+\theoremstyle{definition}
+\newtheorem{defn}{Определение}
+\newtheorem{remk}{Замечание}
+\newtheorem{prop}{Утверждение}
+\newtheorem{exmp}{Пример}
+
+\newcommand\encircle[1]{%
+  \tikz[baseline=(X.base)] 
+    \node (X) [draw, shape=circle, inner sep=0] {\strut #1};}
+    
+    
+
+\definecolor{dgreen}{rgb}{0.,0.6,0.}
+\definecolor{focusGreen}{RGB}{7,225,19}
+\definecolor{focusRed}{RGB}{254,31,31}
+\definecolor{focusViolet}{RGB}{143,00,255}
+\definecolor{focusBlue}{HTML}{1620A6}
+
+\makeatletter
+\pgfdeclarepatternformonly[\LineSpace]{my north east lines}{\pgfqpoint{-1pt}{-1pt}}{\pgfqpoint{\LineSpace}{\LineSpace}}{\pgfqpoint{\LineSpace}{\LineSpace}}%
+{
+    \pgfsetcolor{\tikz@pattern@color}
+    \pgfsetlinewidth{0.4pt}
+    \pgfpathmoveto{\pgfqpoint{0pt}{0pt}}
+    \pgfpathlineto{\pgfqpoint{\LineSpace + 0.1pt}{\LineSpace + 0.1pt}}
+    \pgfusepath{stroke}
+}
+
+\pgfdeclarepatternformonly[\LineSpace]{my north west lines}{\pgfqpoint{-1pt}{-1pt}}{\pgfqpoint{\LineSpace}{\LineSpace}}{\pgfqpoint{\LineSpace}{\LineSpace}}%
+{
+    \pgfsetcolor{\tikz@pattern@color}
+    \pgfsetlinewidth{0.4pt}
+    \pgfpathmoveto{\pgfqpoint{0pt}{\LineSpace}}
+    \pgfpathlineto{\pgfqpoint{\LineSpace + 0.1pt}{-0.1pt}}
+    \pgfusepath{stroke}
+}
+\makeatother
+
+\newdimen\LineSpace
+\tikzset{
+    line space/.code={\LineSpace=#1},
+    line space=7pt
+}
+
+\newcommand{\codefontsize}{\footnotesize}
+
+\NewEnviron{onslideenv}{\onslide<2>{\BODY}}{}
+
+
+\renewcommand{\phi}{\varphi}
+
+\newcommand{\pdr}{IC3/PDR}
+\newcommand{\cegar}{CEGAR}
+\newcommand{\ice}{ICE}
+\newcommand{\fmf}{FMF}
+\newcommand{\satur}{Насыщение}
+
+\newcommand{\theregclass}{Reg}
+\newcommand{\regclass}{\textsc{\theregclass{}}}
+\newcommand{\theelemclass}{Elem}
+\newcommand{\elemclass}{\textsc{\theelemclass{}}}
+\newcommand{\elemextclass}{\textsc{\theelemclass{}\textsubscript{*}}}
+\newcommand{\sizeelemclass}{\textsc{Size\theelemclass{}}}
+\newcommand{\sizeelemextclass}{\textsc{Size\theelemclass{}\textsubscript{*}}}
+\newcommand{\catelemclass}{\textsc{Cat\theelemclass{}}}
+\newcommand{\syncRegFlatClass}{\regclass{}\textsubscript{+}} %TODO: take it from Haudebourg
+\newcommand{\syncRegFullClass}{\regclass{}\textsubscript{$\times$}}
+\newcommand{\regelemclass}{\textsc{\theelemclass{}\theregclass{}}}
+
+\newcommand{\zprover}{\textsc{Z3}}
+\newcommand{\cvc}{\textsc{cvc5}}
+\newcommand{\princess}{\textsc{Princess}}
+\newcommand{\chaff}{\textsc{Chaff}}
+\newcommand{\cvcind}{\textsc{\cvc{}-Ind}}
+\newcommand{\mace}{\textsc{Mace4}}
+\newcommand{\kodkod}{\textsc{Kodkod}}
+\newcommand{\paradox}{\textsc{Paradox}}
+\newcommand{\vampire}{\textsc{Vampire}}
+\newcommand{\eprover}{\textsc{E}}
+\newcommand{\zipperposition}{\textsc{Zipperposition}}
+
+\newcommand{\eldarica}{\textsc{Eldarica}}
+\newcommand{\theringen}{\textsc{RInGen}}
+\newcommand{\ringenAny}[2]{#1(#2)}
+\newcommand{\ringenSyncAny}[1]{\textsc{#1-Sync}}
+\newcommand{\theringenCICIAny}[1]{\textsc{#1-CICI}}
+\newcommand{\ringenCICIAny}[2]{\theringenCICIAny{#1}(#2)}
+\newcommand{\ringen}[1]{\ringenAny{\theringen}{#1}}
+\newcommand{\ringenSync}{\ringenSyncAny{\theringen}}
+\newcommand{\theringenCICI}{\theringenCICIAny{\theringen}}
+\newcommand{\ringenCICI}[1]{\ringenCICIAny{\theringen}{#1}}
+\newcommand{\verifier}{\mathcal{V}}
+\newcommand{\spacer}{\textsc{Spacer}}
+\newcommand{\racer}{\textsc{Racer}}
+\newcommand{\hoice}{\textsc{HoIce}}
+\newcommand{\rchc}{\textsc{RCHC}}
+\newcommand{\vericat}{\textsc{VeriCaT}}
+\newcommand{\verimap}{\textsc{VeriMAP-iddt}}
+
+\newcommand{\signature}{\Sigma}
+\newcommand{\theory}{\mathcal{T}}
+\newcommand{\relations}{\mathcal{R}}
+\newcommand{\oracle}{\mathcal{O}}
+\newcommand{\ourCEGAR}{\cegar{}($\oracle$)}
+\newcommand{\prog}{\mathcal{S}}
+\newcommand{\fsymbs}{\signature_F}
+\newcommand{\btuple}[1]{\big\langle #1 \big\rangle}
+\newcommand{\theautomaton}[4]{\btuple{#1, #2, #3, #4}}
+\newcommand{\autInit}{s_0}
+\newcommand{\autStates}{S}
+\newcommand{\autFinStates}{\autStates_F}
+\newcommand{\autTrans}{\Delta}
+\newcommand{\autApp}[1]{A\left(#1\right)}
+\newcommand{\automaton}[3]{\theautomaton{#1}{\fsymbs}{#2}{#3}}
+\newcommand{\automatonDef}{\automaton{\autStates}{\autFinStates}{\autTrans}}
+\newcommand{\Automaton}[2]{\automaton{\{#1\}}{\{#2\}}{\autTrans}}
+\newcommand{\sautomatonGen}[4]{\theautomaton{#1}{\fsymbs^{\leq #2}}{#3}{#4}}
+\newcommand{\sautomaton}[3]{\sautomatonGen{\{#1\}}{#2}{\{#3\}}{\autTrans}}
+
+
+\newcommand{\structur}{\mathcal{H}}
+\newcommand{\mystructur}{\mathcal{M}}
+\newcommand{\invariant}{\mathcal{I}}
+\newcommand{\thedomain}{\left|\mystructur\right|}
+\newcommand{\domain}[1]{\thedomain_{#1}}
+\newcommand{\tuple}[1]{\langle #1 \rangle}
+
+
+\let\oldemptyset\emptyset
+\let\emptyset\varnothing
+
+\newcommand{\formallang}{\mathbf{L}}
+\newcommand{\automat}{\mathcal{A}}
+\newcommand{\langOf}[1]{\mathcal{L}(#1)}
+\newcommand{\height}[1]{\mathcal{H}eight(#1)}
+
+\definecolor{badInvariantColor}{RGB}{255,50,50}
+\definecolor{goodInvariantColor}{RGB}{5,150,2}
+\definecolor{darkyellow}{RGB}{153,153,0}
+\definecolor{focusColor}{RGB}{230,5,5}
+\definecolor{nicegreen}{RGB}{5,150,2}
+% \definecolor{nicegreen}{rgb}{0.0, 0.8, 0.3}
+\newcommand{\xmark}{\text{\ding{53}}}%
+
+\newcommand{\attention}[1]{\textcolor{badInvariantColor}{\textbf{#1}}}
+
+\makeatletter
+\newcommand*{\currentname}{\@currentlabelname}
+\makeatother
+
+\newcommand{\beamermessage}[2]{%
+\begin{beamercolorbox}[wd=#1,center,rounded=true]{author in head/foot}
+#2
+%[wd=#1,ht=3ex,dp=2ex,center,rounded=true]{author in head/foot}
+%\hfill\parbox[c][7ex][c]{#1}{\centering\LARGE #2}\hfill\null
+\end{beamercolorbox}}
+
+\makeatletter
+\newcommand*\Alt{\alt{\Alt@branch0}{\Alt@branch1}}
+
+\newcommand\Alt@branch[3]{%
+  \begingroup
+  \ifbool{mmode}{%
+    \mathchoice{%
+      \Alt@math#1{\displaystyle}{#2}{#3}%
+    }{%
+      \Alt@math#1{\textstyle}{#2}{#3}%
+    }{%
+      \Alt@math#1{\scriptstyle}{#2}{#3}%
+    }{%
+      \Alt@math#1{\scriptscriptstyle}{#2}{#3}%
+    }%
+  }{%
+    \sbox0{#2}%
+    \sbox1{#3}%
+    \Alt@typeset#1%
+  }%
+  \endgroup
+}
+
+\newcommand\Alt@math[4]{%
+  \sbox0{$#2{#3}\m@th$}%
+  \sbox1{$#2{#4}\m@th$}%
+  \Alt@typeset#1%
+}
+
+\newcommand\Alt@typeset[1]{%
+  \ifnumcomp{\wd0}{>}{\wd1}{%
+    \def\setwider   ##1##2{##2##1##2 0}%
+    \def\setnarrower##1##2{##2##1##2 1}%
+  }{%
+    \def\setwider   ##1##2{##2##1##2 1}%
+    \def\setnarrower##1##2{##2##1##2 0}%
+  }%
+  \sbox2{}%
+  \sbox3{}%
+  \setwider2{\wd}%
+  \setwider2{\ht}%
+  \setwider2{\dp}%
+  \setnarrower3{\ht}%
+  \setnarrower3{\dp}%
+  \leavevmode
+  \rlap{\usebox#1}%
+  \usebox2%
+  \usebox3%
+}
+\makeatother
+
+\newcommand{\Focus}[2]{{\begin{center}#1 #2\end{center}}}
+\newcommand{\focus}[1]{\Focus{\huge}{#1}}
+
+% \DeclareFieldFormat*{citetitle}{<<#1>>} % removes ``quotes'' from title
+% \newcommand{\citee}[1]{\citetitle{#1}}
+\newcommand{\citee}[1]{\bibentry{#1}}
+
+\newcommand{\chccomp}{CHC-COMP}
+\newcommand{\fsharp}{F\#}
+
+\delimitershortfall=-1pt % вложенные скобки
+
+\newcolumntype{x}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}p{#1}}
+\newcommand{\tnote}[1]{$^{#1}$}
+\newcommand{\exRef}[1]{\textit{#1}}
+\newcommand{\exEvenLeft}{\exRef{even}}
+\newcommand{\exLR}{\exRef{lr}}
+\newcommand{\exLt}{\exRef{lt}}
+\newcommand{\exNode}{\exRef{node}}

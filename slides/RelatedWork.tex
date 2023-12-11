@@ -1,0 +1,243 @@
+\section{Обзор предметной области}% 3-5 слайдов, очень лайтово
+
+\begin{frame}[fragile]{Дизъюнкты Хорна над АТД}
+\begin{exampleblock}{Пример программы на языке \textsc{Haskell}:}
+% \begin{minipage}[t][][t]{\textwidth}
+\begin{minted}[tabsize=4,escapeinside=@@]{haskell}
+data Nat = Z | S Nat
+data List = nil | cons Nat List
+drop Z xs = xs
+drop _ nil = nil
+drop (S n) (cons(_, xs)) = drop n xs
+assert (@$\neg\exists$@ n xs . xs /= nil && drop n xs == drop (S n) xs)
+\end{minted}
+% \end{minipage}
+\end{exampleblock}
+\begin{exampleblock}{Условия верификации в виде дизъюнктов Хорна над АТД:}
+\begin{align*}
+\top &\rightarrow drop(Z, xs, xs)\\
+\top &\rightarrow drop(S(n), nil, nil)\\
+drop(n, xs, rs) &\rightarrow drop(S(n), cons(x, xs), rs)\\
+\neg (xs = nil) \land drop(n, xs, ys) \land drop(S(n), xs, ys) &\rightarrow \bot
+\end{align*}
+\end{exampleblock}
+\end{frame}
+
+\begin{frame}{Применения Хорн решателей}
+\vspace*{3mm}\hspace*{-3mm}\begin{tikzpicture}[every node/.append style={draw,rounded rectangle,minimum height=1.cm,minimum width=2cm,align=center,opacity=0.95,scale=.8}, X/.tip={latex}]
+    \node[fill=green!40,minimum height=1.2cm] (solver) {Хорн решатель};
+    \node[above= 30mm of solver] (smart) {Верификация самоисполняющихся контрактов$^3$};
+    \node[above left= 30mm of solver] (refTypes) {Вывод ограниченных типов$^2$};
+    \node[below= 10mm of refTypes] (loops) {Вывод инвариантов циклов$^1$};
+    \node[above right= 30mm of solver] (conc) {Верификация параллельных программ$^4$};
+    \node[below= 10mm of conc] (hyp) {Верификация гипербезопастности$^5$};
+    \draw[-X] (refTypes) -- (solver);
+    \draw[-X] (loops) -- (solver);
+    \draw[-X] (hyp) -- (solver);
+    \draw[-X] (conc) -- (solver);
+    \draw[-X] (smart) -- (solver);
+\end{tikzpicture}
+\blfootnote{$^1$ Gurfinkel и др. The SeaHorn Verification Framework. CAV'15}
+\blfootnote{$^2$ Tan и др. SolType: refinement types for arithmetic overflow in solidity. POPL'22}
+\blfootnote{$^3$ Alt и др. SolCMC: Solidity Compiler’s Model Checker. CAV'22}
+\blfootnote{$^4$ Hoenicke и др. Thread Modularity at Many Levels. POPL'17}
+\blfootnote{$^5$ Shemer и др. Property Directed Self Composition. CAV'19}
+\end{frame}
+
+% \section{Constrained Horn Clauses}
+% \begin{frame}[fragile]{SMT-based program verification}
+% \vspace*{-1cm}
+% \focus{How to verify such programs?}
+% \vspace*{5mm}
+% \begin{lstlisting}
+% assume (crc != 0 && buf.size() > n);
+% for (size_t i = 0; i < buf.size(); i++) {
+%   crc ^= buf[i];
+%   for (int k = 0; k < 8; k++)
+%     crc = crc & 1 ? (crc >> 1) ^ 0x42f0e1eba9ea3693 : crc >> 1;
+% }
+% assert (crc != 0);
+% \end{lstlisting}
+% \onslide<2->{
+% \begin{tikzpicture}[overlay,remember picture]
+% \draw[draw=red!70,ultra thick] (0.9, 1.4) rectangle ++(13, 0.5);
+% \draw[draw=red!70,ultra thick] (2.0, 2.25) rectangle ++(1.5, 0.5);
+% \draw[draw=red!70,ultra thick] (5, 2.65) rectangle ++(2.5, 0.5);
+% \calloutquote[position={(-0.5,-1.9)},bubblePosition={(10.5,4)},callout pointer width=.4cm,fill=red!70,rounded corners]{Bit vector operations}
+% \calloutquote[position={(0.5,-1.)},bubblePosition={(2,4)},callout pointer width=.4cm,fill=red!70,rounded corners]{Array operations}
+% \calloutquote[position={(0.5,-0.6)},bubblePosition={(6,4)},callout pointer width=.4cm,fill=red!70,rounded corners]{String operations}
+% \node[overlay,draw,fill=green!40,opacity=0.95,rounded rectangle,minimum height=1.5cm,minimum width=12cm,rotate=0,align=center] at (7,0.2) {{\huge SMT-solvers successfully handle such theories}\\{\onslide<3>{\Large But how to employ them to \textbf{verify} programs with \textbf{loops}?}}};
+% \end{tikzpicture}
+% }
+% \end{frame}
+
+% \begin{frame}[fragile,t]{Program verification via loop inductive invariants}%
+% % \vspace*{-4mm}
+% \begin{tikzpicture}[ampersand replacement=\&,
+%   column 1/.style={anchor=base west},
+%   column 2/.style={anchor=base east}]
+% \only<-6>{\node at (0, -0.3) {\begin{minipage}{5cm}
+% \begin{align*}%
+%     &\Alt<2->{\{x = 0 \land y = 0\}}{x, y := 0, 0}\\
+%     &\texttt{\textcolor{blue}{while }} * \texttt{ \textcolor{blue}{do}}\\
+%     &\qquad y := y + x\\
+%     &\qquad x := x + 1\\
+%     &\Alt<2->{\{y\geq 0\}}{\texttt{\textcolor{blue}{assert}} (y\geq 0)}
+% \end{align*}
+% \end{minipage}};}
+% \begin{scope}[rounded corners=3mm,opacity=0.95]
+% \onslide<3->{\draw[fill=blue!30] (-6.5,-2.5) rectangle +(8.5,.6) node[midway] {How to prove the correctness of this Hoare triple?};}
+% \only<4->{\draw[fill=green!40] (-2.5,-3.2) rectangle +(9.8,.6) node[midway] {By induction, using the \emph{user-specified} \textbf{inductive invariant}};}
+% \only<5->{\draw[fill=blue!30] (-6.5,-3.9) rectangle +(6.7,.6) node[midway] {\textbf{User}: Is $y\geq 0$ an inductive invariant?};}
+% \only<8->{\draw[fill=green!40] (-1.,-4.6) rectangle +(8.3,.6) node[midway] {\textbf{SMT solver}: No, it can be violated for $x \mapsto -1$};}
+% \only<9->{\draw[fill=blue!30] (-6.5,-5.3) rectangle +(9.8,.6) node[midway] {\textbf{User}: I see\dots What if I strengthen it like: $x \geq 0 \land y \geq 0$?};}
+% \only<10->{\draw[fill=green!40] (-3.0,-6.0) rectangle +(10.3,.6) node[midway] {\textbf{SMT solver}: Yes! Your formula is a valid inductive invariant};}
+% \end{scope}
+% \only<7-8>{
+% \begin{scope}[shift={(-8,-6)}]
+% \node at (5,0.5) (formula) {$VC$};
+% \node [rectangle, draw, 
+%     text width=6em, text centered, rounded corners, minimum height=3em] at (8,0.5) (smt) {SMT solver};
+% \node at (12,1) (ok) {$\color{green}\checkmark$ (safe)};
+% \node at (12.55,0)  (bad) {$\color{red}\xmark$
+% % $\mathbin{\tikz [x=1.4ex,y=1.4ex,line width=.2ex, red] \draw (0,0) -- (1,1) (0,1) -- (1,0);}$
+% ($\phi(\overline{x})$ is bad)};
+% %
+% \path [->] (formula) edge node {} (smt);
+% \path [->] (smt) edge node {} (ok);
+% \alt<8->{\path [->] [line width=0.4mm, red] (smt) edge node {} (bad);}{\path [->] (smt) edge node {} (bad);}
+% \end{scope}}
+% % \onslide<7-8>{
+% % \draw[draw=red!70,ultra thick] (-1.5, -4.3) rectangle ++(7.8, 0.6);
+% % \calloutquote[width=4.1cm,position={(1,-2.08)},bubblePosition={(-2,-1.4)},callout pointer width=.4cm,fill=red!70,rounded corners]{Can be violated for $x < 0$}
+% % }
+% % \onslide<8>{\node[draw,fill=green!55,text width=5cm] at (-2,-2.5) {Should be \textbf{strengthened}, e.g.,$$I(x,y)\equiv x \geq 0 \land y \geq 0$$};}
+% \end{tikzpicture}
+% % \begin{tikzpicture}[remember picture,overlay]
+% % \node at (0, -5) {
+% \only<4->{
+% \btVFill
+% % \begin{minipage}{10cm}
+% \hspace*{-5mm}\begin{align*}
+% \onslide<6-8>{VC := \left\{}
+% \begin{array}{rl}
+%     \onslide<6-8>{\forall x, y.\big(}x = 0 \land y = 0 &\rightarrow \Alt<6-8>{y\geq 0}{\phi(x, y)}\onslide<6-8>{\big)\land}\\
+%     \onslide<6-8>{\forall x, y, x', y'. \big(} \Alt<6-8>{y\geq 0}{\phi(x, y)}\land x' = x + 1 \land y' = y + x &\rightarrow \Alt<6-8>{y'\geq 0}{\phi(x', y')}\onslide<6-8>{\big)\land}\\
+%     \onslide<6-8>{\forall x, y.\big(}\Alt<6-8>{y\geq 0}{\phi(x, y)} &\rightarrow y \geq 0\onslide<6-8>{\big)}
+% \end{array}
+% \onslide<6-8>{\right.}%
+% \end{align*}
+% }
+% % \end{minipage}
+% % };
+% % \end{tikzpicture}
+% \end{frame}
+
+% \begin{frame}{Constrained Horn Clauses}
+% \begin{tikzpicture}
+% \onslide<1->{\node[draw,fill=blue!30,opacity=0.95,rounded rectangle,minimum height=6mm] at (0, 0) {\textbf{How to automate} an inference of inductive invariants?};}
+% \onslide<2->{\node[draw,fill=green!40,opacity=0.95,rounded rectangle] at (3.7, -0.7) {Instead of user-specified formula introduce \textbf{uninterpreted} symbol $I$};}
+% \begin{scope}[shift={(-1,+0.3)}]
+% \node (chcs) at (2, -3) {\begin{minipage}{10cm}
+% \begin{align*}
+% x = 0 \land y = 0 &\rightarrow I(x, y)\\
+% I(x, y)\land x' = x + 1 \land y' = y + x &\rightarrow I(x', y')\\
+% I(x, y) &\rightarrow y \geq 0
+% \end{align*}
+% \end{minipage}};
+% \onslide<3->{
+% \draw[draw=nicegreen!70,ultra thick] (-0.15, -2.2) rectangle ++(4, -1.1);
+% \calloutquote[width=2.4cm,position={(0.6,-0.25)},bubblePosition={(2,-1.7)},callout pointer width=.4cm,fill=nicegreen!70,rounded corners]{\Large Constrained}
+% \calloutquote[width=2.6cm,position={(-0.55,-0.5)},bubblePosition={(4.8,-1.7)},callout pointer width=.2cm,fill=red!60,rounded corners]{\Large Horn clauses}
+% }
+% \end{scope}
+% \end{tikzpicture}
+% \end{frame}
+
+\begin{frame}{Дизъюнкты Хорна формально}
+\begin{block}{}
+\attention{Дизъюнкт Хорна} $C$~--- это формула первого порядка следующего вида:
+\vspace*{10pt}
+\begin{align*}
+\phi\land P_1(\overline{x}_1)\land\ldots\land P_n(\overline{x}_n) \rightarrow H
+\end{align*}
+\vspace*{-20pt}
+\begin{itemize}
+    \item \attention{ограничение} $\phi$~--- это формула теории алгебраических типов данных
+    \item \attention{голова} $H$~--- это либо ложь $\bot$, либо атом $P(\overline{x})$
+    \item $P_1,\ldots,P_n, P$~--- это неинтерпретированные символы
+    \item все переменные (неявно) универсально квантифицированы
+\end{itemize}
+\attention{Система дизъюнктов Хорна}~--- это конъюнкция дизъюнктов Хорна
+\end{block}
+\end{frame}
+
+\begin{frame}[t]{Индуктивный инвариант}
+Пусть $\structur$~--- модель теории АТД, $\prog$~--- система дизъюнктов Хорна.
+
+\attention{Индуктивный инвариант} $\invariant$~--- расширение модели $\invariant=\tuple{\structur, \relations}$, такое что $\invariant\models\prog$.
+
+\pause
+\vspace*{-10pt}\begin{align*}
+x = Z \land y = S(Z) &\rightarrow inc(x, y)\\
+x' = S(x) \land y' = S(y) \land inc(x, y) &\rightarrow inc(x', y')\\
+x = y \land inc(x, y) &\rightarrow \bot
+\end{align*}
+\begin{tikzpicture}[remember picture,overlay,every node/.append style={draw,rounded rectangle,align=center,opacity=0.95}]
+\begin{scope}[shift={(+3,-1.8)}]
+\onslide<2>{\node[fill=green!40] at (4,-0.3) {\LARGE Индуктивные инварианты составляют решётку};}
+\onslide<3->{\node[fill=red!40] at (1,-0.3) {\large Как представлять эти \textbf{бесконечные} множества?};}
+\onslide<4->{
+  \node[fill=darkyellow!40] at (5,-1.3) {\large Инварианты обычно представляются в логике первого порядка (ЛПП)\\ЛПП задаёт т.н. \emph{класс элементарных инвариантов}
+  };
+  \begin{scope}[draw,darkyellow!40,ultra thick]
+  \node[minimum width=16mm,rectangle,opacity=1., minimum height=6mm] at (5.85, 2.0) {};
+  \node[minimum width=16mm,rectangle,opacity=1., minimum height=6mm] at (5.85, 1.2) {};
+  \end{scope}
+}
+% \onslide<5>{\node[fill=green!40,minimum height=1.4cm] at (4,-2.1) {\Large $\Rightarrow$ CHC solving is concerned with building \textbf{infinite} models \textbf{automatically}};}
+\end{scope}
+\end{tikzpicture}
+\vspace*{-6mm}\begin{align*}
+    \invariant_1 &= \structur\big\{ inc\mapsto \Alt<4->{}{\{ (x, y) \mid}\ y = S(x) \big\}\\
+    \invariant_2 &= \structur\big\{ inc\mapsto \Alt<4->{}{\{ (x, y) \mid}\ \Alt<4->{\neg(x = y)}{x\neq y} \big\}\\
+    \invariant_3 &= \ldots
+\end{align*}
+\end{frame}
+
+\begin{frame}[t]{Проблема выразимости класса элементарных инвариантов}
+\vspace*{-6mm}\hspace*{-20mm}\begin{tikzpicture}
+\node[text width=.9\textwidth] (chcSystem) at (-1, 0) {\evenChcSystem{}};
+\onslide<2->{\node (unsafe) at (2.2,-2.7) {\beamermessage{.17\textwidth}{Невыполнима}};}
+\onslide<2->{\draw[line width=1.2pt, -{Latex}] (chcSystem) -- (unsafe) ;}
+
+\onslide<3->{\node (safe) at (-4.2,-2.7) {\beamermessage{.17\textwidth}{Выполнима}};}
+\onslide<3->{\draw[line width=1.2pt, -{Latex}] (chcSystem) -- (safe) ;}
+
+\onslide<4->{\node[text width=.5\textwidth] (invariant) at (-6.5, -4.7) {\begin{varexampleblock}[.8\textwidth]{\centering Инвариант выразим элементарно}\centering $\invariant(even) \equiv \phi$\end{varexampleblock}};}
+\onslide<4->{\draw[line width=1.2pt, -{Latex}] (safe) -- (-5.5,-4) ;}
+
+\onslide<5->{\node[text width=.5\textwidth] (nothing) at (-1.2, -4.7) {%
+\begin{varalertblock}[.8\textwidth]{\centering Инвариант невыразим элементарно}
+\onslide<9->{\centering\LARGE\textbf{???}}
+\end{varalertblock}};}
+\onslide<5->{\draw[line width=1.2pt, -{Latex}] (safe) -- (-2.5,-4) ;}
+
+\onslide<6-8>{\calloutquote[width=80mm,position={(0,-1.2)},bubblePosition={(-1,-3)},callout pointer width=.3cm,fill=yellow!80,rounded corners]{\begin{minipage}{80mm}
+\centering Язык АТД первого порядка:
+$$\phi \Coloneqq t = t' \mid \neg\psi \mid \psi \land \psi' \mid \psi \lor \psi' \mid \forall x\,.\,\psi \mid \exists x\,.\,\psi$$
+\end{minipage}}}
+
+\onslide<7-8>{
+\draw[red!80,line width=0.6mm] (0.7,-3.25) -- (3,-3.25) node [midway] (qeLineCenter) {};
+\calloutquote[width=80mm,position={(0.6,0.6)},bubblePosition={(0.3,-4.1)},callout pointer width=.3cm,fill=red!80,rounded corners]{Теория АТД допускает устранение кванторов}}
+% \begin{minipage}{6.1cm}
+% \centering ADT admits quantifier elimination, so
+% $$\invariant(even) \Leftrightarrow \bigvee_{i=0}^{\text{\Large$\infty$}} \left(x = S^{2i}(Z)\right)$$
+% \end{minipage}}}
+% \onslide<8>{\calloutquote[width=4.7cm,position={(+0.9,-2.25)},bubblePosition={(-1,-1.8)},callout pointer width=.5cm,fill=blue!60,rounded corners]{\LARGE You cannot avoid it!}}
+
+\onslide<10->{\node[overlay,draw,fill=red!40,opacity=0.95,rounded rectangle,minimum height=2cm,minimum width=15cm,rotate=15,align=center] at (-1.2,-2) {{\huge Вывод инвариантов в языке АТД \textbf{расходится}!}\\{например, \textsc{Z3/Spacer} расходится}};}
+% \onslide<11>{\node[overlay,draw,fill=blue!30,opacity=0.95,rounded rectangle,minimum height=2cm,minimum width=15cm,rotate=0,align=center] at (-1,-2) {\huge Can we infer not FOL-based inductive invariants\\\huge by employing automated theorem provers?};}
+\end{tikzpicture}
+\end{frame}
