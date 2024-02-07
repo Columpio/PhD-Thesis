@@ -47,7 +47,7 @@ Section~\cref{sec:relatedWork/modelBuilding} presents an overview of representat
             \item [9] see~Section~\cref{sec:SyncReg/decidability}
             \item [10] see~\cite[Corollary~2]{comon1994equational}
             \end{tablenotes}
-\end{multicols}          
+\end{multicols}
     \end{threeparttable}
 \end{table}
 
@@ -142,7 +142,7 @@ $$ \exLR{} \eqdef \big\{ x \mid \exists t\ .\ x = node(t, t) \big\}.$$
 % Это множество лежит в классе элементарных инвариантов, однако не может быть выражено никаким синхронным автоматов над деревьями даже с полной синхронизацией, как показывает следующая лемма.
 This set lies in the class of elementary invariants, yet it cannot be expressed by any synchronous tree automaton even with full convolution, as the next lemma shows.
 \begin{lemma}\label{lemm:lr-not-in-reg-full}
-% Существуют элементарные инварианты, которые не являются инвариантами, выразимыми регулярно с полной синхронизацией, т.\:е. 
+% Существуют элементарные инварианты, которые не являются инвариантами, выразимыми регулярно с полной синхронизацией, т.\:е.
 There are elementary invariants which are not expressible regularly with full synchronization, i.\:e., $\exLR{}\not\in\syncRegFullClass{}$.
 \end{lemma}
 \begin{proof}
@@ -288,7 +288,7 @@ Next, we introduce a similar lemma for a first-order language with term size con
 % Заимствуя обозначения из работы~\cite{hojjat2017deciding}, обозначим $ \termsOfSize{\sigma}{k} = \{t \text{ имеет сорт } \sigma \mid \sizename(t) = k \} $.
 % Для каждого  $ \sigma $, являющегося АТД-сортом,  определим множество размеров термов $ \sizesOfSort{\sigma} = \{\sizename(t) \mid t \in \huniv{\sigma} \} $.
 % \emph{Линейное множество}~--- это множество вида $ \{\mathbf{v} + \sum_{i = 1} ^ n k_i \mathbf{v_i} \mid k_i \in \mathbb{N} _0 \}$, где все $\mathbf{v}$  и $\mathbf{v_i}$ являются векторами над $ \mathbb{N} _0 = \mathbb{N} \cup \{0 \} $.
-% 
+%
 Borrowing notation from~\cite{hojjat2017deciding}, we denote $ \termsOfSize{\sigma}{k} = \{t \text{ has sort } \sigma \mid \sizename(t) = k \} $.
 For each ADT sort $ \sigma $ we define the set of term sizes as $ \sizesOfSort{\sigma} = \{\sizename(t) \mid t \in \huniv{\sigma} \} $.
 A \emph{linear set} is a set of the form $ \{\mathbf{v} + \sum_{i = 1} ^ n k_i \mathbf{v_i} \mid k_i \in \mathbb{N} _0 \}$, where all $\mathbf{v}$ and $\mathbf{v_i}$ are vectors over $ \mathbb{N} _0 = \mathbb{N} \cup \{0 \} $.
@@ -368,7 +368,7 @@ The problem of finite term set representation is also stated in the context of f
 
 
 % Стоит отдельно упомянуть работы по расширению автоматов над деревьями SMT-ограничениями из других теорий до т.\:н. символьных автоматов над деревьями~\cite{VEANES2015418,10.1145/2933575.2933578}. Класс инвариантов, построенный на таких автоматах, позволит проверять выполнимость систем дизъюнктов Хорна над комбинацией АТД с другими SMT-теориями, как было замечено в работе~\cite{10.1007/978-3-031-13188-2_13}. Авторы этой работы начали адаптацию символьных автоматов к задаче проверке выполнимости систем дизъюнктов Хорна в рамках, реализовав учитель для этого класса инвариантов в рамках подхода \ice{}. Дальнейшее исследование класса инвариантов, построенного на символьных автоматах над деревьями, в рамках задачи автоматического вывода инвариантов представляется наиболее перспективным.
-Works focusing on extending tree automata with SMT constraints from other theories to so-called \emph{symbolic tree automata} deserve separate mention~\cite{VEANES2015418,10.1145/2933575.2933578}. The class of invariants built on such automata could enable checking the satisfiability of Horn clause systems over a combination of ADTs with other SMT theories, as noted in~\cite{10.1007/978-3-031-13188-2_13}. The authors of this work initiated the adaptation of symbolic automata to the task of satisfiability checking for Horn clause systems no top of the \ice{} framework, implementing a teacher for this class of invariants. Further exploration of the class of invariants built on symbolic tree automata in the context of automatic invariant inference seems particularly promising.
+Works focusing on extending tree automata with SMT constraints from other theories to so-called \emph{symbolic tree automata} deserve separate mention~\cite{VEANES2015418,10.1145/2933575.2933578}. The class of invariants built on such automata could enable checking the satisfiability of Horn clause systems over a combination of ADTs with other SMT theories, as noted in~\cite{10.1007/978-3-030-88806-0_20}. The authors of this work initiated the adaptation of symbolic automata to the task of satisfiability checking for Horn clause systems no top of the \ice{} framework, implementing a teacher for this class of invariants. Further exploration of the class of invariants built on symbolic tree automata in the context of automatic invariant inference seems particularly promising.
 
 % Итак, конечные представления множеств кортежей термов, представленные в работах из этих областей, могут стать основой для будущих классов индуктивных инвариантов над АТД. Поскольку многие из них построены как расширения классов, рассмотренных в данной работе, предложенные в данной работе методы вывода инвариантов могут быть также адаптированы, чтобы выводить инварианты в новых классах.
 Therefore, finite representations of tuple sets presented in works from these areas can serve as a foundation for future classes of inductive invariants over ADTs. Since many of them are constructed as extensions of the classes examined in this work, the methods of invariant inference proposed in this work can also be adapted to infer invariants in these new classes.
