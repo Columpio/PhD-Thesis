@@ -19,15 +19,15 @@
 \onslide<3->{\draw[fill=blue!30] (-6.5,-2.5) rectangle +(8.5,.6) node[midway] {Как доказать корректность этой тройки Хоара?};}
 \only<4->{\draw[fill=green!40] (-3.5,-3.2) rectangle +(11,.6) node[midway] {При помощи \emph{пользовательского} \textbf{индуктивного инварианта} $\phi$};}
 \only<5->{\draw[fill=blue!30] (-6.5,-3.9) rectangle +(9,.6) node[midway] {\textbf{Пользователь}: $y\geq 0$~--- индуктивный инвариант?};}
-\only<8->{\draw[fill=green!40] (-3.5,-4.6) rectangle +(11,.6) node[midway] {\textbf{SMT решатель}: Нет, индутивность нарушается при $x \mapsto -1$};}
+\only<8->{\draw[fill=green!40] (-3.5,-4.6) rectangle +(11,.6) node[midway] {\textbf{SMT-решатель}: Нет, индутивность нарушается при $x \mapsto -1$};}
 \only<9->{\draw[fill=blue!30] (-6.5,-5.3) rectangle +(9.6,.6) node[midway] {\textbf{Пользователь}: А усиленная формула: $x \geq 0 \land y \geq 0$?};}
-\only<10->{\draw[fill=green!40] (-5.0,-6.0) rectangle +(12.5,.6) node[midway] {\textbf{SMT решатель}: Да, эта формула является индуктивным инвариантом};}
+\only<10->{\draw[fill=green!40] (-5.0,-6.0) rectangle +(12.5,.6) node[midway] {\textbf{SMT-решатель}: Да, эта формула является индуктивным инвариантом};}
 \end{scope}
 \only<7-8>{
 \begin{scope}[shift={(-8,-6)}]
 \node at (5,0.5) (formula) {$VC$};
 \node [rectangle, draw,
-    text width=6em, text centered, rounded corners, minimum height=3em] at (8,0.5) (smt) {SMT решатель};
+    text width=6em, text centered, rounded corners, minimum height=3em] at (8,0.5) (smt) {SMT-решатель};
 \node at (12,1) (ok) {$\color{green}\checkmark$ (безопасно)};
 \node at (12.55,0)  (bad) {$\color{red}\xmark$
 % $\mathbin{\tikz [x=1.4ex,y=1.4ex,line width=.2ex, red] \draw (0,0) -- (1,1) (0,1) -- (1,0);}$
@@ -104,9 +104,9 @@ I(x, y) &\rightarrow y \geq 0
 \end{block}
 \end{frame}
 
-\begin{frame}{Применения Хорн решателей}
+\begin{frame}{Применения Хорн-решателей}
 \vspace*{3mm}\hspace*{-3mm}\begin{tikzpicture}[every node/.append style={draw,rounded rectangle,minimum height=1.cm,minimum width=2cm,align=center,opacity=0.95,scale=.8}, X/.tip={latex}]
-    \node[fill=green!40,minimum height=1.2cm] (solver) {Хорн решатель};
+    \node[fill=green!40,minimum height=1.2cm] (solver) {Хорн-решатель};
     \node[above= 30mm of solver] (smart) {Верификация самоисполняющихся контрактов$^3$};
     \node[above left= 30mm of solver] (refTypes) {Вывод ограниченных типов$^2$};
     \node[below= 10mm of refTypes] (loops) {Вывод инвариантов циклов$^1$};
