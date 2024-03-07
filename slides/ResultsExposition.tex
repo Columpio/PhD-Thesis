@@ -1,9 +1,15 @@
-\whenFullCompile{\input{1.FMF}}
+\section{Результаты}
+\input{1.FMF}
 
-\begin{frame}{Вывод синхронных регулярных инвариантов при помощи поиска конечных моделей}
+\begin{frame}{\textbf{Результат 2.} Предложен метод вывода синхронных регулярных инвариантов при помощи поиска конечных моделей}
+\only<2>{\framesubtitle{\textbf{Этап 1.} Устранить АТД ограничения при помощи унификации и введения новых дизъюнктов}}
+\only<3>{\framesubtitle{\textbf{Этап 2.} Построить декларативное описание синхронного автомата, выражающего инвариант системы}}
+\only<4>{\framesubtitle{\textbf{Этап 3.} Передать формулу в сторонний инструмент поиска конечных моделей}}
+\only<5>{\framesubtitle{\textbf{Этап 4.} По конечной модели построить автомат над деревьями}}
 \begin{columns}
 \begin{column}{0.49\textwidth}
-\begin{exampleblock}{Регулярные языки не позволяют представлять синхронные отношения:}
+\vspace*{-8pt}
+\begin{exampleblock}{Регулярные языки не позволяют представлять синхронные отношения}
 \small\vspace*{-10pt}
 \begin{align*}
     \top &\rightarrow lt(Z, S(x))\\
@@ -13,16 +19,18 @@
 \end{exampleblock}
 \end{column}
 \begin{column}{0.48\textwidth}
-\begin{exampleblock}{Идея: порождать декларативное описание синхронного автомата}
+\onslide<3->{
+\begin{exampleblock}{Декларативное описание синхронного автомата}
 \small\vspace*{-10pt}
 \begin{align*}
 &R(q) \rightarrow R(p(d(f,g, q), d(f, g, q)))\\
 &R(p(q_1, q_2)) \rightarrow \big(F(q_1) \rightarrow F(d(S, S, q_2))\big)\\
 &\dots
 \end{align*}
-\end{exampleblock}
+\end{exampleblock}}
 \end{column}
 \end{columns}
+\onslide<5->{
 \vspace*{-15pt}
 \begin{varexampleblock}[\textwidth]{Из модели можно извлечь определение синхронного автомата $$A = \sautomaton{0, 1}{2}{1}$$}
 \small\vspace*{-10pt}
@@ -32,42 +40,56 @@
 \end{align*}
 $$\langOf{A} = \left\{ \tuple{S^n(Z), S^m(Z)} \mid n < m \right\}$$
 \end{varexampleblock}
+}
 \end{frame}
 
-\begin{frame}{Совместный вывод комбинированных инвариантов}
+\begin{frame}{\textbf{Результат 3.} Предложен новый класс инвариантов, основанный на булевой комбинации элементарных и регулярных инвариантов}
+Новый класс \emph{комбинированных инвариантов} представляется формулами вида:
+$$\phi \Coloneqq \overline{t}\in \langOf{A} \mid t = t' \mid \neg\psi \mid \psi \land \psi' \mid \psi \lor \psi'$$
+\vspace*{-8mm}
+\begin{itemize}
+    \item $\overline{t}\in \langOf{A}$~--- принадлежность кортежа термов регулярном языку автомата $A$
+\end{itemize}
+% \begin{tikzpicture}
+% \node[draw,fill=green!40,opacity=0.95,rounded rectangle,minimum height=2cm,align=center] at (-1,0) {\begin{minipage}{80mm}$$\phi \Coloneqq \overline{x}\in \langOf{A} \mid t = t' \mid \neg\psi \mid \psi \land \psi' \mid \psi \lor \psi'$$\end{minipage}};
+% \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{\textbf{Результат 4.} Предложен метод совместного вывода инвариантов в этом классе посредством вывода инвариантов в подклассах}
 \whenFullCompile{\centering\ciciPic}
 \end{frame}
 
-\begin{frame}{Теоретическое сравнение классов инвариантов}
+\begin{frame}{\textbf{Результат 5.} Проведено теоретическое сравнение рассмотренных классов инвариантов}
+\framesubtitle{\textcolor{myResult}{Зелёным} выделены мои результаты; \textcolor{trivialResult}{фиолетовым}~--- результаты с тривиальным доказательством}
 \begin{table}
-\footnotesize
+\scriptsize
 \begin{tabular}{| m{31mm} || c | c | c | c | c | c |}
 \hline
 \diagbox[width=35mm]{Свойство}{Класс} & \elemclass{} & \sizeelemclass{} & \regclass{} & \syncRegFlatClass{} & \syncRegFullClass{} & \regelemclass{} \\
 \hline
-Замкнут по $\cap$       & Да & Да & Да\tnote{1} & Да\tnote{2} & Да\tnote{2} & Да \\
-Замкнут по $\cup$       & Да & Да & Да\tnote{1} & Да\tnote{2} & Да\tnote{2} & Да \\
-Замкнут по $\setminus$  & Да & Да & Да\tnote{1} & Да\tnote{2} & Да\tnote{2} & Да \\
-Разрешимо $\overline{t} \in I$          & Да\tnote{3} & Да\tnote{4} & Да\tnote{5} & Да\tnote{7} & Да\tnote{9} & Да\tnote{10} \\
-Разрешимо $I = \emptyset$    & Да\tnote{3} & Да\tnote{4} & Да\tnote{6} & Да\tnote{8} & Да\tnote{9} & Да\tnote{10}\\
-Выразимы рекурсивные отношения & Нет & Частично & Да & Да & Да & Да \\
-Выразимы синхронные отношения & Да & Да & Нет & Частично & Да & Да \\
+Замкнут по $\cap$       & \itsTrivial{Да} & \itsTrivial{Да} & Да & \itsMyresult{Да} & \itsMyresult{Да} & \itsTrivial{Да} \\
+Замкнут по $\cup$       & \itsTrivial{Да} & \itsTrivial{Да} & Да & \itsMyresult{Да} & \itsMyresult{Да} & \itsTrivial{Да} \\
+Замкнут по $\setminus$       & \itsTrivial{Да} & \itsTrivial{Да} & Да & \itsMyresult{Да} & \itsMyresult{Да} & \itsTrivial{Да} \\
+Разрешимо $\overline{t} \in I$          & Да & Да & Да & Да & \itsMyresult{Да} & Да \\
+Разрешимо $I = \emptyset$    & Да & Да & Да & Да & \itsMyresult{Да} & Да\\
+Выразимы рекурсивные отношения & \itsTrivial{Нет} & \itsTrivial{Частично} & \itsTrivial{Да} & \itsTrivial{Да} & \itsTrivial{Да} & \itsTrivial{Да} \\
+Выразимы синхронные отношения & \itsTrivial{Да} & \itsTrivial{Да} & \itsTrivial{Нет} & \itsTrivial{Частично} & \itsTrivial{Да} & \itsTrivial{Да} \\
 \hline
-\end{tabular}        
+\end{tabular}
 \end{table}
 \begin{table}
-\footnotesize
+\scriptsize
 \centering
 \begin{tabular}{| m{15mm} || x{13mm} | x{17mm} | x{10mm} | c | c | c |}
 \hline
 Класс & \elemclass{} & \sizeelemclass{} & \regclass{} & \syncRegFlatClass{} & \syncRegFullClass{} & \regelemclass{} \\
 \hline
-\elemclass{} & $\emptyset$ & $\emptyset$ & \exLR{}\tnote{1,4,5} & \exLR{}\tnote{1,5} & \exLR{}\tnote{1} & $\emptyset$\\
-\sizeelemclass{} & $\infty$ & $\emptyset$ & \exLR{}\tnote{1,4,5} & \exLR{}\tnote{1,5} & \exLR{}\tnote{1} & \exLt{}\tnote{3} \\
-\regclass{} & \exEvenLeft{}\tnote{2} & \exEvenLeft{}\tnote{2} & $\emptyset$ & $\emptyset$\tnote{4} & $\emptyset$\tnote{4,5} & $\emptyset$\\
-\syncRegFlatClass{} & \exEvenLeft{}\tnote{2,7} & \exEvenLeft{}\tnote{2,4} & $\infty$\tnote{4} & $\emptyset$ & $\emptyset$\tnote{5} & \exLt{}\tnote{3}\\
-\syncRegFullClass{} & \exEvenLeft{}\tnote{2,4,5} & \exEvenLeft{}\tnote{2,4,5} & $\infty$\tnote{4,5} & $\infty$\tnote{5} & $\emptyset$ & \exLt{}\tnote{3,5}\\
-\regelemclass{} & $\infty$ & \exEvenLeft{}\tnote{2} & $\infty$ & \exLR{}\tnote{1,5} & \exLR{}\tnote{1} & $\emptyset$\\
+\elemclass{} & \itsTrivial$\emptyset$ & \itsTrivial$\emptyset$ & \itsMyresult\exLR{} & \itsMyresult\exLR{} & \itsMyresult\exLR{} & \itsTrivial$\emptyset$\\
+\sizeelemclass{} & \itsTrivial$\infty$ & \itsTrivial$\emptyset$ & \itsMyresult\exLR{} & \itsMyresult\exLR{} & \itsMyresult\exLR{} & \itsMyresult\exLt{} \\
+\regclass{} & \itsMyresult\exEvenLeft{} & \itsMyresult\exEvenLeft{} & \itsTrivial$\emptyset$ & \itsTrivial$\emptyset$ & \itsTrivial$\emptyset$ & \itsTrivial$\emptyset$\\
+\syncRegFlatClass{} & \itsMyresult\exEvenLeft{} & \itsMyresult\exEvenLeft{} & \itsTrivial$\infty$ & \itsTrivial$\emptyset$ & \itsTrivial$\emptyset$ & \itsMyresult\exLt{}\\
+\syncRegFullClass{} & \itsMyresult\exEvenLeft{} & \itsMyresult\exEvenLeft{} & \itsTrivial$\infty$ & \itsTrivial$\infty$ & \itsTrivial$\emptyset$ & \itsMyresult\exLt{}\\
+\regelemclass{} & \itsTrivial$\infty$ & \itsMyresult\exEvenLeft{} & \itsTrivial$\infty$ & \itsMyresult\exLR{} & \itsMyresult\exLR{} & \itsTrivial$\emptyset$\\
 \hline
 \end{tabular}
 \end{table}

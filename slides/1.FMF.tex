@@ -1,11 +1,3 @@
-
-% \newcommand{\evenCHCSystem}{\begin{varexampleblock}[0.75\textwidth]{CHC system \onslide<2->{as a FOL-formula}}
-%     \begin{align*}
-%     \onslide<2->{\forall x. (}x = Z &\rightarrow even(x)\onslide<2->{)\land} \\
-%     \onslide<2->{\forall x, y. (}x = S(S(y)) \land even(y) &\rightarrow even(x)\onslide<2->{)\land} \\
-%     \onslide<2->{\forall x, y. (}even(x) \land even(y) \land y = S(x) &\rightarrow \bot\onslide<2->{)}
-%     \end{align*}
-% \end{varexampleblock}}
 \newcommand{\evenCHCSystem}{\begin{varexampleblock}[0.72\textwidth]{Система дизъюнктов \onslide<2->{как формула ЛПП}}
     \begin{align*}
     \top&\rightarrow even(Z)\onslide<2->{)\land} \\
@@ -17,35 +9,34 @@
 \newcount\rPos
 \newcount\modelFloat
 
-\begin{frame}{Вывод регулярных инвариантов при помощи поиска конечных моделей}
-\animate<3-43>
-\transduration<3-43>{0.02}
-\animatevalue<3-23>{\rPos}{20}{0}
-\pgfmathsetmacro\rPosFloat{0.1*\rPos}     % [10;0] ~> [3.5;-1.5]
-\pgfmathsetmacro\chcSystemSize{(\rPos+20) / 40} % [10;0] ~> [1.0;.5]
-\pgfmathsetmacro\chcSystemOpacity{(\rPos) / 20} % [10;0] ~> [1.0;.5]
-\animatevalue<24-44>{\modelFloat}{0}{20}
-\pgfmathsetmacro\modelPos{0.05*\modelFloat}
-\pgfmathsetmacro\modelSize{(\modelFloat+20) / 40}
-\pgfmathsetmacro\modelOpacity{(\modelFloat) / 20}
+\begin{frame}{\textbf{Результат 1.} Предложен метод вывода регулярных инвариантов при помощи поиска конечных моделей}
+\only<1>{\framesubtitle{\textbf{Этап 1.} Устранить АТД ограничения при помощи унификации и введения новых дизъюнктов}}
+\only<2>{\framesubtitle{\textbf{Этап 2.} Трансформировать систему в формулу ЛПП введением логических связок}}
+\only<3-4>{\framesubtitle{\textbf{Этап 3.} Передать формулу в сторонний инструмент поиска конечных моделей}}
+\only<5->{\framesubtitle{\textbf{Этап 4.} По конечной модели построить автомат над деревьями}}
+
 \centering
 \begin{tikzpicture}[remember picture, overlay]
-\node[text width=\textwidth,scale=\chcSystemSize,opacity=\chcSystemOpacity] (evenCHCs) at (-0.32,\rPosFloat) {\evenCHCSystem{}};
+\node<-3>[text width=\textwidth] (evenCHCs) at (-0.32,1.8) {\evenCHCSystem{}};
 \onslide<1>{\calloutquote[width=7.8cm,position={(-1,0.7)},bubblePosition={(0,-0.5)},callout pointer width=.4cm,fill=yellow!60,rounded corners]{\Large АТД ограничения устранены}}
-\node<3->[inner sep=0pt] (fmfinder) at (0.3,-2.2) {\includegraphics[width=.52\textwidth,height=.28\textwidth]{resources/blender.png}};
-\node<3-> (fmfinderName) [above left=-39mm and -58mm of fmfinder,align=center,text width=50mm] {{\large Инструмент поиска конечных моделей}};
-\node<3-> (modelStart) [below right=-1.5cm and -4.6cm of fmfinder] {};
+\node<3-4>[inner sep=0pt] (fmfinder) at (0.3,-2.2) {\includegraphics[width=.52\textwidth,height=.28\textwidth]{resources/blender.png}};
+\node<3-4> (fmfinderName) [above left=-39mm and -58mm of fmfinder,align=center,text width=50mm] {{\large Инструмент поиска конечных моделей}};
 \node<3-> (leftpath) [above left=2cm and 0.1cm of fmfinder] {};
 \node<3-> (rightpath) [above right=2cm and -0.5cm of fmfinder] {};
-\path<3-> (modelStart) |- (leftpath) node [text width=\textwidth,scale=\modelSize,opacity=\modelOpacity,pos=\modelPos] (model) {\begin{varblock}[0.5\textwidth]{}
+\node<3-4> (modelStart) [below=22mm of evenCHCs] {};
+\draw<3>[->] (evenCHCs) edge (modelStart) {};
+\node<4-> (model) [text width=\textwidth] at (leftpath) {\begin{varblock}[0.5\textwidth]{}
 \begin{align*}
-    \mathattention<45>{\domain{Nat}}&\mathattention<45>{=\{0,1\}}\\
-    \mathattention<46>{\mystructur(Z)}&\mathattention<46>{=0}\\
-    \mathattention<47>{\mystructur(S)(x)}&\mathattention<47>{=1-x}\\
-    \mathattention<48>{\mystructur(even)}&\mathattention<48>{=\{0\}}
+    \mathattention<5>{\domain{Nat}}&\mathattention<5>{=\{0,1\}}\\
+    \mathattention<6>{\mystructur(Z)}&\mathattention<6>{=0}\\
+    \mathattention<7>{\mystructur(S)(x)}&\mathattention<7>{=1-x}\\
+    \mathattention<8>{\mystructur(even)}&\mathattention<8>{=\{0\}}
 \end{align*}
 \end{varblock}};
-\onslide<45->{\node<45-> (automaton) at (rightpath) {
+\node<3-> (modelEnd) [right=10mm of leftpath] {};
+\draw<4>[->] (modelStart) |- (modelEnd);
+\onslide<9>{\node[overlay,draw,fill=green!40,opacity=0.95,rounded rectangle,minimum height=15mm,minimum width=15cm,align=center] at (0, -1) {Язык построенного автомата является регулярным инвариантом исходной системы\\$\invariant(even) = \langOf{\automat} = \{ S^{2n}(Z) \mid n \geq 0 \}$};}
+\onslide<5->{\node<5-> (automaton) at (rightpath) {
 \begin{minipage}{.3\textwidth}
 \begin{varblock}[\textwidth]{}
 \begin{center}
@@ -58,13 +49,12 @@
     ;
 \end{tikzpicture}}\hspace*{-12mm}\raisebox{9mm}{
 \begin{tikzpicture}[remember picture,overlay,shorten >=1pt,node distance=2cm,on grid,auto]
-    \node[state,onslide=<46->{initial,initial text=$Z$},onslide=<48->{accepting}] (s0) {$0$};
+    \node[state,onslide=<6->{initial,initial text=$Z$},onslide=<8->{accepting}] (s0) {$0$};
     \node[state] (s1) [right=of s0] {$1$};
-    \path<47->[onslide=<47->,->]
+    \path<7->[onslide=<7->,->]
         (s0)    edge [bend left=25] node {$S$}       (s1)
         (s1)    edge [bend left=25] node {$S$}       (s0)
     ;
-    \onslide<49>{\node[below=12mm of s0] {$\invariant(even) = \langOf{\automat}$};}
 \end{tikzpicture}}
 \end{center}
 \end{varblock}
