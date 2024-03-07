@@ -9,7 +9,7 @@
 \newcount\rPos
 \newcount\modelFloat
 
-\begin{frame}{\textbf{Результат 1.} Предложен метод вывода регулярных инвариантов при помощи поиска конечных моделей}
+\begin{frame}{\textbf{Результат 1.} Предложен метод вывода регулярных инвариантов при помощи поиска конечных моделей и доказана его корректность}
 \only<1>{\framesubtitle{\textbf{Этап 1.} Устранить АТД ограничения при помощи унификации и введения новых дизъюнктов}}
 \only<2>{\framesubtitle{\textbf{Этап 2.} Трансформировать систему в формулу ЛПП введением логических связок}}
 \only<3-4>{\framesubtitle{\textbf{Этап 3.} Передать формулу в сторонний инструмент поиска конечных моделей}}
@@ -19,11 +19,11 @@
 \begin{tikzpicture}[remember picture, overlay]
 \node<-3>[text width=\textwidth] (evenCHCs) at (-0.32,1.8) {\evenCHCSystem{}};
 \onslide<1>{\calloutquote[width=7.8cm,position={(-1,0.7)},bubblePosition={(0,-0.5)},callout pointer width=.4cm,fill=yellow!60,rounded corners]{\Large АТД ограничения устранены}}
-\node<3-4>[inner sep=0pt] (fmfinder) at (0.3,-2.2) {\includegraphics[width=.52\textwidth,height=.28\textwidth]{resources/blender.png}};
+\node<3-4>[inner sep=0pt] (fmfinder) at (0.3,-1.8) {\includegraphics[width=.52\textwidth,height=.28\textwidth]{resources/blender.png}};
 \node<3-4> (fmfinderName) [above left=-39mm and -58mm of fmfinder,align=center,text width=50mm] {{\large Инструмент поиска конечных моделей}};
-\node<3-> (leftpath) [above left=2cm and 0.1cm of fmfinder] {};
-\node<3-> (rightpath) [above right=2cm and -0.5cm of fmfinder] {};
-\node<3-4> (modelStart) [below=22mm of evenCHCs] {};
+\node<3-> (leftpath) [above left=17mm and 0.1cm of fmfinder] {};
+\node<3-> (rightpath) [above right=17mm and -0.5cm of fmfinder] {};
+\node<3-4> (modelStart) [below=20mm of evenCHCs] {};
 \draw<3>[->] (evenCHCs) edge (modelStart) {};
 \node<4-> (model) [text width=\textwidth] at (leftpath) {\begin{varblock}[0.5\textwidth]{}
 \begin{align*}

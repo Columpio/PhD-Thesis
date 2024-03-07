@@ -1,11 +1,12 @@
 \section{Результаты}
 \input{1.FMF}
 
-\begin{frame}{\textbf{Результат 2.} Предложен метод вывода синхронных регулярных инвариантов при помощи поиска конечных моделей}
+\begin{frame}{\textbf{Результат 2.} Предложен метод вывода синхронных регулярных инвариантов при помощи поиска конечных моделей и доказана его корректность}
 \only<2>{\framesubtitle{\textbf{Этап 1.} Устранить АТД ограничения при помощи унификации и введения новых дизъюнктов}}
 \only<3>{\framesubtitle{\textbf{Этап 2.} Построить декларативное описание синхронного автомата, выражающего инвариант системы}}
 \only<4>{\framesubtitle{\textbf{Этап 3.} Передать формулу в сторонний инструмент поиска конечных моделей}}
 \only<5>{\framesubtitle{\textbf{Этап 4.} По конечной модели построить автомат над деревьями}}
+\vspace*{-4pt}
 \begin{columns}
 \begin{column}{0.49\textwidth}
 \vspace*{-8pt}
@@ -33,7 +34,7 @@
 \onslide<5->{
 \vspace*{-15pt}
 \begin{varexampleblock}[\textwidth]{Из модели можно извлечь определение синхронного автомата $$A = \sautomaton{0, 1}{2}{1}$$}
-\small\vspace*{-10pt}
+\small\vspace*{-20pt}
 \begin{align*}
 \tuple{Z, Z} &\mapsto 0 &Z &\mapsto 0 &S(q) &\mapsto 0\\
 \tuple{Z, S}(q) &\mapsto 1 &\tuple{S, Z}(q) &\mapsto 0 &\tuple{S, S}(q) &\mapsto q
@@ -55,12 +56,12 @@ $$\phi \Coloneqq \overline{t}\in \langOf{A} \mid t = t' \mid \neg\psi \mid \psi 
 % \end{tikzpicture}
 \end{frame}
 
-\begin{frame}{\textbf{Результат 4.} Предложен метод совместного вывода инвариантов в этом классе посредством вывода инвариантов в подклассах}
+\begin{frame}{\textbf{Результат 4.} Предложен метод совместного вывода инвариантов в этом классе посредством вывода инвариантов в подклассах и доказана его корректность}
 \whenFullCompile{\centering\ciciPic}
 \end{frame}
 
 \begin{frame}{\textbf{Результат 5.} Проведено теоретическое сравнение рассмотренных классов инвариантов}
-\framesubtitle{\textcolor{myResult}{Зелёным} выделены мои результаты; \textcolor{trivialResult}{фиолетовым}~--- результаты с тривиальным доказательством}
+\framesubtitle{\textcolor{myResult}{Результаты, доказанные в диссертации}; \textcolor{trivialResult}{результаты с тривиальным доказательством}}
 \begin{table}
 \scriptsize
 \begin{tabular}{| m{31mm} || c | c | c | c | c | c |}
@@ -103,31 +104,6 @@ $$\phi \Coloneqq \overline{t}\in \langOf{A} \mid t = t' \mid \neg\psi \mid \psi 
 \caption{Хорн-решатель \theringen{}: \url{https://github.com/Columpio/RInGen}}
 % \label{fig:ringen-arch}
 \end{figure}
-\end{frame}
-
-\begin{frame}{Сравнение Хорн-решателей с поддержкой АТД}
-\begin{table}
-\centering\footnotesize
-% \caption{Сравнение Хорн-решателей с поддержкой АТД}\label{tab:hornSolvers}%
-\begin{tabular}{| m{38mm} || x{18mm} | x{18mm} | x{18mm} | x{23mm} |}
-% \hline
-\hline
-Инструмент & Класс\quad\ \ \  инвариантов & Метод & Возвращает инвариант & Полностью автоматический\\\hline\hline
-\spacer{} & \elemclass{} & \pdr{} & Да & Да\\
-\racer{} & \catelemclass{} & \pdr{} & Нет & Нет\\
-\eldarica{} & \sizeelemclass{} & \cegar{} & Да & Да\\
-\vericat{} & -- & Трансф. & Нет & Да\\
-\hoice{} & \elemclass{} & \ice{} & Да & Да\\
-\rchc{}  & \syncRegFlatClass{} & \ice{} & Да & Да\\\hline
-\ringen{\cvc} & \regclass{} & Трансф. + \fmf{} & Да & Да\\
-\ringen{\vampire} & -- & Трансф. + \satur{} & Нет & Да\\
-\ringenSync{} & \syncRegFullClass{} & Трансф. + \fmf{} & Да & Да\\
-\ringenCICI{\cvc} & \regelemclass{} & \ourCEGAR{} & Да & Да\\
-\ringenCICI{\vampire} & -- & \ourCEGAR{} & Нет & Да\\
-\hline
-% \hline
-\end{tabular}
-\end{table}
 \end{frame}
 
 \begin{frame}{Эксперименты}

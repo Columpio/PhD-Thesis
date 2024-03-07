@@ -20,36 +20,36 @@
 \hspace*{-5mm}
 \begin{tikzpicture}[every node/.style={align=center,font=\small}]
 
-\begin{scope}[overlay]
-\draw[line width=3,onslide=<3->{dash pattern={on 10pt off 10pt}}] (14, -3) circle (240pt);
-\node[rotate=-10] at (-2, -4.5) {\Large\textbf{Хорн-решатели}};
-\node[rotate=10] at (8, -4.5) {\Large\textbf{Инструменты}\\\textbf{вывода теорем}};
-\end{scope}
+% \begin{scope}[overlay]
+% \draw[line width=3,onslide=<3->{dash pattern={on 10pt off 10pt}}] (14, -3) circle (240pt);
+% \node[rotate=-10] at (-2, -4.5) {\Large\textbf{Хорн-решатели}};
+% \node[rotate=10] at (8, -4.5) {\Large\textbf{Инструменты}\\\textbf{вывода теорем}};
+% \end{scope}
 
-\only<1>{
-\begin{scope}[overlay,node distance=30pt]
-\node (z3) at (0,-1) {\textsc{Z3/Spacer}};
-\node[below left=of z3] {\textsc{Eldarica}};
-\node[below right=of z3] {\textsc{Hoice}};
-\node[below=of z3] {\textsc{Golem}};
-\node[above left=of z3] {\textsc{FreqHorn}};
-\node[above right=of z3] {\textsc{QARMC}};
-\node[above=of z3] {\textsc{Duality}};
-\end{scope}}
+% \only<1>{
+% \begin{scope}[overlay,node distance=30pt]
+% \node (z3) at (0,-1) {\textsc{Z3/Spacer}};
+% \node[below left=of z3] {\textsc{Eldarica}};
+% \node[below right=of z3] {\textsc{Hoice}};
+% \node[below=of z3] {\textsc{Golem}};
+% \node[above left=of z3] {\textsc{FreqHorn}};
+% \node[above right=of z3] {\textsc{QARMC}};
+% \node[above=of z3] {\textsc{Duality}};
+% \end{scope}}
 
-\only<1-2>{
-\begin{scope}[overlay,node distance=20pt]
-\node (vampire) at (8,-1) {\textsc{Vampire}};
-\node[right=of vampire] {\textsc{E}};
-\node[below=of vampire] {\textsc{Zipperposition}};
-\node[above=of vampire] {\textsc{iProver}};
-\node[above right=of vampire] {\textsc{cvc5}};
-% \node[above right=of vampire] {\textsc{QARMC}};
-% \node[above=of vampire] {\textsc{Duality}};
-\end{scope}
-}
+% \only<1-2>{
+% \begin{scope}[overlay,node distance=20pt]
+% \node (vampire) at (8,-1) {\textsc{Vampire}};
+% \node[right=of vampire] {\textsc{E}};
+% \node[below=of vampire] {\textsc{Zipperposition}};
+% \node[above=of vampire] {\textsc{iProver}};
+% \node[above right=of vampire] {\textsc{cvc5}};
+% % \node[above right=of vampire] {\textsc{QARMC}};
+% % \node[above=of vampire] {\textsc{Duality}};
+% \end{scope}
+% }
 
-\uncover<2->{
+% \uncover<2->{
 \begin{scope}[node distance=50pt]
 \node[block] (isFeasible) {\textsc{IsFeasible}};
 \node[block,below=of isFeasible] (modelCheck) {\textsc{Validate}};
@@ -61,23 +61,24 @@
 \draw[->] (refine) -- (modelCheck);
 \draw[->] (modelCheck) -- (isFeasible) node [midway,left=-1mm,align=right] {абстрактная\\трасса};
 
-\uncover<3->{
+\uncover<2->{
 \node[block,above=of refine] (runOracle) {\textsc{Collaborate}};
 \path (runOracle) -- (refine) node [midway] (tmp) {};
 \node[block,right=108pt of tmp] (atp) {Инструмент\\вывода\\теорем};
 \draw[->] (isFeasible) -- (runOracle);
 \draw[->] (runOracle) -- (atp) node [pos=.65,sloped] {\textit{остаточная}\\\textit{система}};
 \draw[->] (atp) -- (refine) node [pos=.4,sloped] {\textcolor{focusRed}{абстр. трасса}\\\textcolor{focusGreen}{част. инвариант}};
-\only<4>{
+% \only<4>{
 \calloutquote[width=30mm,textwidth=30mm,position={(0.7,0.1)},bubblePosition={(3,-1.5)},callout pointer width=.4cm,fill=yellow!80,rounded corners]{Её достижимые состояния~--- это\\состояния исходной без состояний\\текущего кандидата в инварианты}
+% }
 }
-}
-\only<2>{
+\only<1>{
 \node (runOracle) [empty block,above=of refine] {};
 \draw (isFeasible) -- (runOracle.center);
 \draw[->] (runOracle.center) -- (refine);
 }
-\end{scope}}
+\end{scope}
+% }
 
 
 

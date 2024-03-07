@@ -48,6 +48,8 @@ subsectionstyle=show/show/hide
 \end{enumerate}
 \end{framesection}
 
+\input{Results}
+
 \input{ResultsExposition}
 
 \input{Results}
@@ -111,6 +113,32 @@ subsectionstyle=show/show/hide
 \end{itemize}
 
 Разработанный инструмент в 2021 и 2022 годах занял, соответственно, 2 и 1 место на АТД секции международных соревнований \chccomp{}.
+\end{frame}
+
+% Extra
+\begin{frame}{Сравнение Хорн-решателей с поддержкой АТД}
+\begin{table}
+\centering\footnotesize
+% \caption{Сравнение Хорн-решателей с поддержкой АТД}\label{tab:hornSolvers}%
+\begin{tabular}{| m{38mm} || x{18mm} | x{18mm} | x{18mm} | x{23mm} |}
+% \hline
+\hline
+Инструмент & Класс\quad\ \ \  инвариантов & Метод & Возвращает инвариант & Полностью автоматический\\\hline\hline
+\spacer{} & \elemclass{} & \pdr{} & Да & Да\\
+\racer{} & \catelemclass{} & \pdr{} & Нет & Нет\\
+\eldarica{} & \sizeelemclass{} & \cegar{} & Да & Да\\
+\vericat{} & -- & Трансф. & Нет & Да\\
+\hoice{} & \elemclass{} & \ice{} & Да & Да\\
+\rchc{}  & \syncRegFlatClass{} & \ice{} & Да & Да\\\hline
+\ringen{\cvc} & \regclass{} & Трансф. + \fmf{} & Да & Да\\
+\ringen{\vampire} & -- & Трансф. + \satur{} & Нет & Да\\
+\ringenSync{} & \syncRegFullClass{} & Трансф. + \fmf{} & Да & Да\\
+\ringenCICI{\cvc} & \regelemclass{} & \ourCEGAR{} & Да & Да\\
+\ringenCICI{\vampire} & -- & \ourCEGAR{} & Нет & Да\\
+\hline
+% \hline
+\end{tabular}
+\end{table}
 \end{frame}
 
 \end{document}
