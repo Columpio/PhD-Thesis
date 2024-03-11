@@ -5,7 +5,7 @@
 \only<2>{\framesubtitle{\textbf{Этап 1.} Устранить АТД ограничения при помощи унификации и введения новых дизъюнктов}}
 \only<3>{\framesubtitle{\textbf{Этап 2.} Построить декларативное описание синхронного автомата, выражающего инвариант системы}}
 \only<4>{\framesubtitle{\textbf{Этап 3.} Передать формулу в сторонний инструмент поиска конечных моделей}}
-\only<5>{\framesubtitle{\textbf{Этап 4.} По конечной модели построить автомат над деревьями}}
+\only<5>{\framesubtitle{\textbf{Этап 4.} По конечной модели построить синхронный автомат над деревьями}}
 \vspace*{-4pt}
 \begin{columns}
 \begin{column}{0.49\textwidth}
@@ -33,7 +33,7 @@
 \end{columns}
 \onslide<5->{
 \vspace*{-15pt}
-\begin{varexampleblock}[\textwidth]{Из модели можно извлечь определение синхронного автомата $$A = \sautomaton{0, 1}{2}{1}$$}
+\begin{varexampleblock}[\textwidth]{Синхронный автомат над деревьями, выражающий инвариант: $$A = \sautomaton{0, 1}{2}{1}$$}
 \small\vspace*{-20pt}
 \begin{align*}
 \tuple{Z, Z} &\mapsto 0 &Z &\mapsto 0 &S(q) &\mapsto 0\\
@@ -56,12 +56,12 @@ $$\phi \Coloneqq \overline{t}\in \langOf{A} \mid t = t' \mid \neg\psi \mid \psi 
 % \end{tikzpicture}
 \end{frame}
 
-\begin{frame}{\textbf{Результат 4.} Предложен метод совместного вывода инвариантов в этом классе посредством вывода инвариантов в подклассах и доказана его корректность}
+\begin{frame}{\textbf{Результат 4.} Предложен метод совместного вывода инвариантов в классе комбинированных инвариантов посредством вывода инвариантов в подклассах и доказана его корректность}
 \whenFullCompile{\centering\ciciPic}
 \end{frame}
 
 \begin{frame}{\textbf{Результат 5.} Проведено теоретическое сравнение рассмотренных классов инвариантов, доказаны леммы о накачке}
-\framesubtitle{\textcolor{myResult}{Результаты, доказанные в диссертации}; \textcolor{trivialResult}{результаты с тривиальным доказательством}}
+\framesubtitle{\textcolor{myResult}{Теоремы, доказанные в диссертации}; \textcolor{trivialResult}{тривиальные теоремы}}
 \begin{table}
 \scriptsize
 \begin{tabular}{| m{31mm} || c | c | c | c | c | c |}
